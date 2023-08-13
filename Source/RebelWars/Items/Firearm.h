@@ -65,6 +65,18 @@ struct FFirearmAnimations
 	UAnimSequence* Unarmed;
 };
 
+USTRUCT(BlueprintType)
+struct FFirearmViewPunchConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector2D PitchSpread;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector2D YawSpread;
+};
+
 UCLASS()
 class REBELWARS_API AFirearm : public AItemBase
 {
@@ -101,20 +113,31 @@ public:
 	bool bHasSlideLock;
 
 	// Rate of fire of the firearm in shots per second
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ClampMin = "0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
 	int32 FireRate;
 
 	// How much time does the tactical reload take in seconds
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ClampMin = "0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
 	float ReloadLength;
 
 	// How much time does the dry reload take in seconds
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ClampMin = "0"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
 	float ReloadDryLength;
 
 	// How much time does it take to deploy the weapon
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ClampMin = "0.1"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0.1"))
 	float DeployLength;
+
+	// How many bullets comes out from the gun during one shot. Useful for shotguns
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
+	int32 BulletsPerShot;
+
+	// How much the bullets from the shot spread. 0.0f - no spread
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0.0"))
+	float Spread;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FFirearmViewPunchConfig ViewPunchConfig;
 
 	// How many shells fit into the magazine
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo", Meta = (ClampMin = "0"))

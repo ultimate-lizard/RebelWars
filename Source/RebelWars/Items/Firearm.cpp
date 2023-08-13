@@ -21,6 +21,10 @@ AFirearm::AFirearm()
 	ReloadLength = 2.0f;
 	ReloadDryLength = 3.0f;
 	DeployLength = 0.5f;
+	BulletsPerShot = 1;
+	Spread = 0.0f;
+	ViewPunchConfig.PitchSpread = FVector2D(-1.0f, 2.5f);
+	ViewPunchConfig.YawSpread = FVector2D(-1.0f, 1.0f);
 
 	MagAmmoCapacity = 30;
 	ReserveAmmoCapacity = 120;
@@ -200,7 +204,7 @@ void AFirearm::PrimaryFire()
 	{
 		if (AHumanPlayerController* PlayerController = Cast<AHumanPlayerController>(OwnerCharacter->GetController()))
 		{
-			PlayerController->AddViewPunch(FRotator(FMath::RandRange(-1.0f, 2.5f), FMath::RandRange(-1.0f, 1.0f), 0.0f));
+			PlayerController->AddViewPunch(FRotator(FMath::RandRange(ViewPunchConfig.PitchSpread.X, ViewPunchConfig.PitchSpread.Y), FMath::RandRange(ViewPunchConfig.YawSpread.X, ViewPunchConfig.YawSpread.Y), 0.0f));
 		}
 	}
 }
@@ -270,14 +274,28 @@ void AFirearm::TraceBullet()
 				FCollisionQueryParams QueryParams;
 				QueryParams.AddIgnoredActor(this);
 
-				TArray<FHitResult> Hits;
-				World->LineTraceMultiByChannel(Hits, EyesLocation, EyesLocation + EyesRotation.Vector() * 10000.0f, ECollisionChannel::ECC_Visibility, QueryParams);
-
-				for (FHitResult& Hit : Hits)
+				for (int32 i = 0; i < BulletsPerShot; ++i)
 				{
-					if (Hit.Actor != this)
+					float SpreadSqrt = FMath::Sqrt(Spread);
+
+					FVector RandomizedSpread;
+					RandomizedSpread.X = FMath::RandRange(-SpreadSqrt, SpreadSqrt);
+					RandomizedSpread.Y = FMath::RandRange(-SpreadSqrt, SpreadSqrt);
+					RandomizedSpread.Z = FMath::RandRange(-SpreadSqrt, SpreadSqrt);
+
+					static const float MaxTraceDistance = 1'000'000.0f;
+					static const float RandomizedSpreadScale = 0.01f;
+
+					TArray<FHitResult> Hits;
+					FVector TraceDestination = EyesLocation + (EyesRotation.Vector() + RandomizedSpread * RandomizedSpreadScale) * MaxTraceDistance;
+					World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_Visibility, QueryParams);
+
+					for (FHitResult& Hit : Hits)
 					{
-						BroadcastDebugEffects(Hit.Location);
+						if (Hit.Actor != this)
+						{
+							BroadcastDebugEffects(Hit.Location);
+						}
 					}
 				}
 			}
