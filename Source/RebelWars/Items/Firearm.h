@@ -56,13 +56,22 @@ struct FFirearmAnimations
 	UAnimMontage* ReloadDry;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAnimMontage* ReloadStart;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAnimMontage* ReloadEnd;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAnimMontage* ReloadEndDry;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UAnimMontage* LoadRound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UAnimSequence* Default;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UAnimSequence* DefaultDry;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UAnimSequence* Unarmed;
 };
 
 USTRUCT(BlueprintType)
@@ -112,9 +121,19 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bHasSlideLock;
 
+	// Whether the reloading should use single round load montages and reload like a bolt-action or a shotgun
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bUseSequentialReload;
+
 	// Rate of fire of the firearm in shots per second
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
 	int32 FireRate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
+	float ReloadStartLength;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
+	float ReloadEndLength;
 
 	// How much time does the tactical reload take in seconds
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
@@ -170,8 +189,12 @@ protected:
 	virtual void PrimaryFire();
 	// Perform the actual reload here
 	virtual void Reload_Internal();
+	virtual void StartSequentialReload();
+	virtual void EndSequentialReload();
+	virtual void LoadRound();
 
 	virtual void OnFinishReload();
+	virtual void OnRoundLoaded();
 	virtual void OnFinishDeploy();
 
 	virtual void PlayPrimaryShotEffects();
@@ -215,4 +238,7 @@ protected:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	bool bIsDeployed;
+
+	bool bLastShotDry;
+	bool bWantsToFire;
 };

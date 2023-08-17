@@ -33,6 +33,8 @@ AFirearm::AFirearm()
 
 	FirearmState = EFirearmState::Idle;
 	bIsDeployed = false;
+
+	bLastShotDry = false;
 }
 
 void AFirearm::PlayPrimaryShotEffects()
@@ -46,11 +48,22 @@ void AFirearm::PlayPrimaryShotEffects()
 
 	CachedOwner->PlayAnimMontage(FirearmAnimations.PrimaryFire3P);
 
+	// Dry fire montage
 	if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
 	{
 		if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
 		{
-			WeaponAnimInstance->Montage_Play(CurrentMagAmmo > 0 ? FirearmAnimations.PrimaryFire : FirearmAnimations.PrimaryFireDry);
+			UAnimMontage* FireMontage = FirearmAnimations.PrimaryFire;
+
+			if (CurrentMagAmmo <= 0)
+			{
+				if (FirearmAnimations.PrimaryFireDry)
+				{
+					FireMontage = FirearmAnimations.PrimaryFireDry;
+				}
+			}
+
+			WeaponAnimInstance->Montage_Play(FireMontage);
 		}
 	}
 
@@ -102,6 +115,11 @@ void AFirearm::Tick(float DeltaTime)
 	{
 		if (IsReadyForNextShot() && CanFire())
 		{
+			if (CurrentFireMode == EFirearmFireMode::SemiAuto)
+			{
+				FirearmState = EFirearmState::Idle;
+			}
+
 			PrimaryFire();
 			PlayPrimaryShotEffects();
 		}
@@ -149,6 +167,8 @@ void AFirearm::StartPrimaryFire()
 		ServerStartPrimaryFire();
 	}
 
+	bWantsToFire = true;
+
 	if (CanFire())
 	{
 		FirearmState = EFirearmState::Firing;
@@ -162,9 +182,14 @@ void AFirearm::StopPrimaryFire()
 		ServerStopPrimaryFire();
 	}
 
-	if (IsFiring())
+	bWantsToFire = false;
+
+	if (CurrentFireMode == EFirearmFireMode::Auto)
 	{
-		FirearmState = EFirearmState::Idle;
+		if (IsFiring())
+		{
+			FirearmState = EFirearmState::Idle;
+		}
 	}
 }
 
@@ -185,11 +210,6 @@ void AFirearm::PrimaryFire()
 		if (CurrentMagAmmo > 0)
 		{
 			--CurrentMagAmmo;
-		}
-
-		if (CurrentFireMode == EFirearmFireMode::SemiAuto)
-		{
-			FirearmState = EFirearmState::Idle;
 		}
 	}
 
@@ -224,38 +244,134 @@ bool AFirearm::IsReadyForNextShot() const
 
 void AFirearm::Reload_Internal()
 {
+	bLastShotDry = CurrentMagAmmo <= 0;
+
 	if (CanReload())
 	{
+		if (bUseSequentialReload)
+		{
+			StartSequentialReload();
+			return;
+		}
+
 		FirearmState = EFirearmState::Reloading;
 
 		GetWorldTimerManager().SetTimer(ReloadTimer, this, &ThisClass::OnFinishReload, CurrentMagAmmo > 0 ? ReloadLength : ReloadDryLength);
-
-		// Play effects
 
 		if (!CachedOwner)
 		{
 			return;
 		}
 
+		// Dry reload
 		if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
 		{
 			if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
 			{
-				if (CurrentMagAmmo > 0)
+				UAnimMontage* ReloadMontage = FirearmAnimations.Reload;
+
+				if (CurrentMagAmmo <= 0)
 				{
-					WeaponAnimInstance->Montage_Play(FirearmAnimations.Reload);
+					if (FirearmAnimations.ReloadDry)
+					{
+						ReloadMontage = FirearmAnimations.ReloadDry;
+					}
 				}
-				else
-				{
-					WeaponAnimInstance->Montage_Play(FirearmAnimations.ReloadDry);
-				}
+				
+				WeaponAnimInstance->Montage_Play(ReloadMontage);
 			}
 		}
 
+		// Reload 3P
 		if (CachedOwner)
 		{
 			CachedOwner->PlayAnimMontage(FirearmAnimations.Reload3P);
 		}
+	}
+}
+
+void AFirearm::StartSequentialReload()
+{
+	FirearmState = EFirearmState::Reloading;
+
+	if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
+	{
+		if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
+		{
+			WeaponAnimInstance->Montage_Play(FirearmAnimations.ReloadStart);
+		}
+	}
+
+	GetWorldTimerManager().SetTimer(ReloadTimer, this, &ThisClass::LoadRound, ReloadStartLength);
+}
+
+void AFirearm::OnFinishReload()
+{
+	int32 TotalAmmo = CurrentMagAmmo + CurrentReserveAmmo;
+	if (TotalAmmo - MagAmmoCapacity >= 0)
+	{
+		TotalAmmo -= MagAmmoCapacity;
+		CurrentMagAmmo = MagAmmoCapacity;
+		CurrentReserveAmmo = TotalAmmo;
+	}
+	else
+	{
+		CurrentMagAmmo = TotalAmmo;
+		CurrentReserveAmmo = 0;
+	}
+
+	FirearmState = EFirearmState::Idle;
+
+	GetWorldTimerManager().ClearTimer(ReloadTimer);
+}
+
+void AFirearm::LoadRound()
+{
+	if (CurrentMagAmmo < MagAmmoCapacity && CurrentReserveAmmo > 0)
+	{
+		GetWorldTimerManager().SetTimer(ReloadTimer, this, &ThisClass::OnRoundLoaded, ReloadLength);
+
+		if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
+		{
+			if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
+			{
+				WeaponAnimInstance->Montage_Play(FirearmAnimations.LoadRound);
+			}
+		}
+	}
+	else
+	{
+		EndSequentialReload();
+	}
+}
+
+void AFirearm::EndSequentialReload()
+{
+	FirearmState = EFirearmState::Idle;
+
+	if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
+	{
+		if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
+		{
+			WeaponAnimInstance->Montage_Play(bLastShotDry ? FirearmAnimations.ReloadEndDry : FirearmAnimations.ReloadEnd);
+		}
+	}
+}
+
+void AFirearm::OnRoundLoaded()
+{
+	--CurrentReserveAmmo;
+	++CurrentMagAmmo;
+
+	GetWorldTimerManager().ClearTimer(ReloadTimer);
+
+	if (bWantsToFire)
+	{
+		EndSequentialReload();
+	}
+	else
+	{
+		LoadRound();
 	}
 }
 
@@ -348,32 +464,12 @@ void AFirearm::OnRep_FirearmState()
 
 bool AFirearm::CanReload() const
 {
-	return !IsReloading() && CurrentMagAmmo < MagAmmoCapacity&& CurrentReserveAmmo > 0;
+	return !IsFiring() && !IsReloading() && CurrentMagAmmo < MagAmmoCapacity&& CurrentReserveAmmo > 0;
 }
 
 bool AFirearm::IsReloading() const
 {
 	return FirearmState == EFirearmState::Reloading;
-}
-
-void AFirearm::OnFinishReload()
-{
-	int32 TotalAmmo = CurrentMagAmmo + CurrentReserveAmmo;
-	if (TotalAmmo - MagAmmoCapacity >= 0)
-	{
-		TotalAmmo -= MagAmmoCapacity;
-		CurrentMagAmmo = MagAmmoCapacity;
-		CurrentReserveAmmo = TotalAmmo;
-	}
-	else
-	{
-		CurrentMagAmmo = TotalAmmo;
-		CurrentReserveAmmo = 0;
-	}
-
-	FirearmState = EFirearmState::Idle;
-
-	GetWorldTimerManager().ClearTimer(ReloadTimer);
 }
 
 void AFirearm::OnFinishDeploy()
