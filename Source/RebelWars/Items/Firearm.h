@@ -86,6 +86,7 @@ struct FFirearmViewPunchConfig
 	FVector2D YawSpread;
 };
 
+/* A simple automatic or semi-automatic weapon */
 UCLASS()
 class REBELWARS_API AFirearm : public AItemBase
 {
@@ -93,9 +94,6 @@ class REBELWARS_API AFirearm : public AItemBase
 	
 public:
 	AFirearm();
-
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
 
 	virtual void Pickup(class UInventoryComponent* InInventory) override;
 	virtual void Drop() override;
@@ -105,7 +103,7 @@ public:
 	virtual bool CanFire() const;
 	bool IsFiring() const;
 
-	void Reload();
+	virtual void Reload(bool bFromReplication = false);
 	virtual bool CanReload() const;
 	bool IsReloading() const;
 
@@ -120,10 +118,6 @@ public:
 	// Should animation consider slide lock
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bHasSlideLock;
-
-	// Whether the reloading should use single round load montages and reload like a bolt-action or a shotgun
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bUseSequentialReload;
 
 	// Rate of fire of the firearm in shots per second
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
@@ -182,19 +176,16 @@ public:
 	USoundCue* FireSound;
 
 protected:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void PrimaryFire();
-	// Perform the actual reload here
-	virtual void Reload_Internal();
-	virtual void StartSequentialReload();
-	virtual void EndSequentialReload();
-	virtual void LoadRound();
 
 	virtual void OnFinishReload();
-	virtual void OnRoundLoaded();
 	virtual void OnFinishDeploy();
 
 	virtual void PlayPrimaryShotEffects();
@@ -240,5 +231,4 @@ protected:
 	bool bIsDeployed;
 
 	bool bLastShotDry;
-	bool bWantsToFire;
 };

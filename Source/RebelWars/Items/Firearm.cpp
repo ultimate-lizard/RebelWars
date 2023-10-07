@@ -111,18 +111,9 @@ void AFirearm::BeginPlay()
 
 void AFirearm::Tick(float DeltaTime)
 {
-	if (FirearmState == EFirearmState::Firing)
+	if (CurrentFireMode == EFirearmFireMode::Auto && FirearmState == EFirearmState::Firing && IsReadyForNextShot() && CanFire())
 	{
-		if (IsReadyForNextShot() && CanFire())
-		{
-			if (CurrentFireMode == EFirearmFireMode::SemiAuto)
-			{
-				FirearmState = EFirearmState::Idle;
-			}
-
-			PrimaryFire();
-			PlayPrimaryShotEffects();
-		}
+		PrimaryFire();
 	}
 }
 
@@ -165,13 +156,24 @@ void AFirearm::StartPrimaryFire()
 	if (GetLocalRole() < ENetRole::ROLE_Authority)
 	{
 		ServerStartPrimaryFire();
+		return;
 	}
-
-	bWantsToFire = true;
 
 	if (CanFire())
 	{
-		FirearmState = EFirearmState::Firing;
+		switch (CurrentFireMode)
+		{
+		case EFirearmFireMode::Auto:
+			FirearmState = EFirearmState::Firing;
+			break;
+		case EFirearmFireMode::SemiAuto:
+			if (IsReadyForNextShot())
+			{
+				FirearmState = EFirearmState::Firing;
+				PrimaryFire();
+			}
+			break;
+		}
 	}
 }
 
@@ -180,16 +182,12 @@ void AFirearm::StopPrimaryFire()
 	if (GetLocalRole() < ENetRole::ROLE_Authority)
 	{
 		ServerStopPrimaryFire();
+		return;
 	}
 
-	bWantsToFire = false;
-
-	if (CurrentFireMode == EFirearmFireMode::Auto)
+	if (IsFiring())
 	{
-		if (IsFiring())
-		{
-			FirearmState = EFirearmState::Idle;
-		}
+		FirearmState = EFirearmState::Idle;
 	}
 }
 
@@ -227,6 +225,8 @@ void AFirearm::PrimaryFire()
 			PlayerController->AddViewPunch(FRotator(FMath::RandRange(ViewPunchConfig.PitchSpread.X, ViewPunchConfig.PitchSpread.Y), FMath::RandRange(ViewPunchConfig.YawSpread.X, ViewPunchConfig.YawSpread.Y), 0.0f));
 		}
 	}
+
+	PlayPrimaryShotEffects();
 }
 
 bool AFirearm::IsReadyForNextShot() const
@@ -242,67 +242,64 @@ bool AFirearm::IsReadyForNextShot() const
 	return false;
 }
 
-void AFirearm::Reload_Internal()
+void AFirearm::Reload(bool bFromReplication)
 {
-	bLastShotDry = CurrentMagAmmo <= 0;
-
-	if (CanReload())
+	if (!bFromReplication)
 	{
-		if (bUseSequentialReload)
+		if (GetLocalRole() < ENetRole::ROLE_Authority)
 		{
-			StartSequentialReload();
+			ServerReload();
 			return;
-		}
-
-		FirearmState = EFirearmState::Reloading;
-
-		GetWorldTimerManager().SetTimer(ReloadTimer, this, &ThisClass::OnFinishReload, CurrentMagAmmo > 0 ? ReloadLength : ReloadDryLength);
-
-		if (!CachedOwner)
-		{
-			return;
-		}
-
-		// Dry reload
-		if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
-		{
-			if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
-			{
-				UAnimMontage* ReloadMontage = FirearmAnimations.Reload;
-
-				if (CurrentMagAmmo <= 0)
-				{
-					if (FirearmAnimations.ReloadDry)
-					{
-						ReloadMontage = FirearmAnimations.ReloadDry;
-					}
-				}
-				
-				WeaponAnimInstance->Montage_Play(ReloadMontage);
-			}
-		}
-
-		// Reload 3P
-		if (CachedOwner)
-		{
-			CachedOwner->PlayAnimMontage(FirearmAnimations.Reload3P);
 		}
 	}
-}
 
-void AFirearm::StartSequentialReload()
-{
-	FirearmState = EFirearmState::Reloading;
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		if (!CanReload())
+		{
+			return;
+		}
 
+		if (GetLocalRole() == ENetRole::ROLE_Authority)
+		{
+			bLastShotDry = CurrentMagAmmo <= 0;
+
+			FirearmState = EFirearmState::Reloading;
+
+			GetWorldTimerManager().SetTimer(ReloadTimer, this, &ThisClass::OnFinishReload, CurrentMagAmmo > 0 ? ReloadLength : ReloadDryLength);
+		}
+	}
+
+	// Animations
+	if (!CachedOwner)
+	{
+		return;
+	}
+
+	// Dry reload
 	if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
 	{
 		if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
 		{
-			WeaponAnimInstance->Montage_Play(FirearmAnimations.ReloadStart);
+			UAnimMontage* ReloadMontage = FirearmAnimations.Reload;
+
+			if (CurrentMagAmmo <= 0)
+			{
+				if (FirearmAnimations.ReloadDry)
+				{
+					ReloadMontage = FirearmAnimations.ReloadDry;
+				}
+			}
+
+			WeaponAnimInstance->Montage_Play(ReloadMontage);
 		}
 	}
 
-	GetWorldTimerManager().SetTimer(ReloadTimer, this, &ThisClass::LoadRound, ReloadStartLength);
+	// Reload 3P
+	if (CachedOwner)
+	{
+		CachedOwner->PlayAnimMontage(FirearmAnimations.Reload3P);
+	}
 }
 
 void AFirearm::OnFinishReload()
@@ -323,56 +320,6 @@ void AFirearm::OnFinishReload()
 	FirearmState = EFirearmState::Idle;
 
 	GetWorldTimerManager().ClearTimer(ReloadTimer);
-}
-
-void AFirearm::LoadRound()
-{
-	if (CurrentMagAmmo < MagAmmoCapacity && CurrentReserveAmmo > 0)
-	{
-		GetWorldTimerManager().SetTimer(ReloadTimer, this, &ThisClass::OnRoundLoaded, ReloadLength);
-
-		if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
-		{
-			if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
-			{
-				WeaponAnimInstance->Montage_Play(FirearmAnimations.LoadRound);
-			}
-		}
-	}
-	else
-	{
-		EndSequentialReload();
-	}
-}
-
-void AFirearm::EndSequentialReload()
-{
-	FirearmState = EFirearmState::Idle;
-
-	if (USkeletalMeshComponent* WeaponMesh1P = CachedOwner->GetWeaponMesh1P())
-	{
-		if (UAnimInstance* WeaponAnimInstance = WeaponMesh1P->GetAnimInstance())
-		{
-			WeaponAnimInstance->Montage_Play(bLastShotDry ? FirearmAnimations.ReloadEndDry : FirearmAnimations.ReloadEnd);
-		}
-	}
-}
-
-void AFirearm::OnRoundLoaded()
-{
-	--CurrentReserveAmmo;
-	++CurrentMagAmmo;
-
-	GetWorldTimerManager().ClearTimer(ReloadTimer);
-
-	if (bWantsToFire)
-	{
-		EndSequentialReload();
-	}
-	else
-	{
-		LoadRound();
-	}
 }
 
 void AFirearm::TraceBullet()
@@ -437,16 +384,6 @@ bool AFirearm::IsFiring() const
 	return FirearmState == EFirearmState::Firing;
 }
 
-void AFirearm::Reload()
-{
-	if (GetLocalRole() < ENetRole::ROLE_Authority)
-	{
-		ServerReload();
-	}
-
-	Reload_Internal();
-}
-
 void AFirearm::ServerReload_Implementation()
 {
 	Reload();
@@ -457,7 +394,13 @@ void AFirearm::OnRep_FirearmState()
 	switch (FirearmState)
 	{
 	case EFirearmState::Reloading:
-		Reload_Internal();
+		Reload(true);
+		break;
+	case EFirearmState::Firing:
+		if (CurrentFireMode == EFirearmFireMode::SemiAuto)
+		{
+			PrimaryFire();
+		}
 		break;
 	}
 }
