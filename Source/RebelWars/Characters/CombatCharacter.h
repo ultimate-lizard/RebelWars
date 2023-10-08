@@ -7,6 +7,8 @@
 
 #include "CombatCharacter.generated.h"
 
+class AItemBase;
+
 UENUM(BlueprintType)
 enum class ECharacterMovementType : uint8
 {
@@ -75,6 +77,7 @@ public:
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -102,6 +105,10 @@ protected:
 	void ServerPrimaryFire(AFirearm* InFirearm);
 	void ServerPrimaryFire_Implementation(AFirearm* InFirearm);
 
+	UFUNCTION(Server, Reliable)
+	void ServerUse();
+	void ServerUse_Implementation();
+
 	UFUNCTION(NetMulticast, Reliable, Category = "Movement")
 	void BroadcastUpdateMovement();
 	void BroadcastUpdateMovement_Implementation();
@@ -126,4 +133,15 @@ protected:
 	ECharacterMovementType MovementType;
 
 	FGenericTeamId TeamId;
+
+	UPROPERTY(Transient, BlueprintReadOnly)
+	AItemBase* FocusedItem;
+
+	FRotator TargetRotation;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Movement")
+	FRotator HeadRotation;
+
+	/*UPROPERTY(Replicated, BlueprintReadOnly, Category = "Movement")
+	FRotator BodyRotation;*/
 };

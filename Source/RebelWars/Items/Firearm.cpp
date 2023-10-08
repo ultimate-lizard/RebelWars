@@ -120,16 +120,12 @@ void AFirearm::Tick(float DeltaTime)
 void AFirearm::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	ensure(PickupTraceSphere);
-	PickupTraceSphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnPickupBeginOverlap);
 }
 
 void AFirearm::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	PickupTraceSphere->OnComponentBeginOverlap.RemoveAll(this);
 	ReloadTimer.Invalidate();
 	DeployTimer.Invalidate();
 }

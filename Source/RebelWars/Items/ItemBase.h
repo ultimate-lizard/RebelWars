@@ -40,9 +40,6 @@ protected:
 	void DropOnGround();
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item")
-	USphereComponent* PickupTraceSphere;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
 	UStaticMeshComponent* PickupMesh;
 

@@ -5,8 +5,6 @@
 
 UInventoryComponent::UInventoryComponent()
 {
-	// PrimaryComponentTick.bCanEverTick = true;
-
 	SetIsReplicatedByDefault(true);
 }
 
@@ -17,44 +15,16 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME(UInventoryComponent, PrimaryFirearm);
 }
 
-void UInventoryComponent::PickupFirearm_Internal(AFirearm* InFirearm)
-{
-	if (!InFirearm)
-	{
-		return;
-	}
-
-	InFirearm->Pickup(this);
-
-	PrimaryFirearm = InFirearm;
-
-	OnFirearmPickupDelegate.Broadcast(InFirearm); 
-}
-
-void UInventoryComponent::DropFirearm_Internal(AFirearm* InFirearm)
-{
-	if (!InFirearm || InFirearm->IsFiring() || InFirearm->IsReloading())
-	{
-		return;
-	}
-
-	InFirearm->Drop();
-
-	PrimaryFirearm = nullptr;
-
-	OnFirearmDropDelegate.Broadcast(InFirearm);
-}
-
 void UInventoryComponent::OnRep_PrimaryFirearm()
 {
 	if (PrimaryFirearm)
 	{
 		SimulatedPrimaryFirearm = PrimaryFirearm;
-		PickupFirearm_Internal(PrimaryFirearm);
+		PickupFirearm(PrimaryFirearm, true);
 	}
 	else
 	{
-		DropFirearm_Internal(SimulatedPrimaryFirearm);
+		DropFirearm(SimulatedPrimaryFirearm, true);
 		SimulatedPrimaryFirearm = nullptr;
 	}
 }
@@ -64,29 +34,61 @@ AFirearm* UInventoryComponent::GetPrimaryFirearm()
 	return PrimaryFirearm;
 }
 
+void UInventoryComponent::PickupFirearm(AFirearm* InFirearm, bool bFromReplication)
+{
+	if (!bFromReplication)
+	{
+		if (GetOwnerRole() < ENetRole::ROLE_Authority)
+		{
+			ServerPickupFirearm(InFirearm);
+			return;
+		}
+
+		if (GetOwnerRole() == ENetRole::ROLE_Authority)
+		{
+			if (!InFirearm)
+			{
+				return;
+			}
+
+			PrimaryFirearm = InFirearm;
+		}
+	}
+
+	InFirearm->Pickup(this);
+
+	OnFirearmPickupDelegate.Broadcast(InFirearm);
+}
+
+void UInventoryComponent::DropFirearm(AFirearm* InFirearm, bool bFromReplication)
+{
+	if (!bFromReplication)
+	{
+		if (GetOwnerRole() < ENetRole::ROLE_Authority)
+		{
+			ServerDropFirearm(InFirearm);
+			return;
+		}
+
+		if (GetOwnerRole() == ENetRole::ROLE_Authority)
+		{
+			if (!InFirearm || InFirearm->IsFiring() || InFirearm->IsReloading())
+			{
+				return;
+			}
+
+			PrimaryFirearm = nullptr;
+		}
+	}
+	
+	InFirearm->Drop();
+
+	OnFirearmDropDelegate.Broadcast(InFirearm);
+}
+
 void UInventoryComponent::ServerPickupFirearm_Implementation(AFirearm* InFirearm)
 {
 	PickupFirearm(InFirearm);
-}
-
-void UInventoryComponent::PickupFirearm(AFirearm* InFirearm)
-{
-	if (GetOwnerRole() < ENetRole::ROLE_Authority)
-	{
-		ServerPickupFirearm(InFirearm);	
-	}
-
-	PickupFirearm_Internal(InFirearm);
-}
-
-void UInventoryComponent::DropFirearm(AFirearm* InFirearm)
-{
-	if (GetOwnerRole() < ENetRole::ROLE_Authority)
-	{
-		ServerDropFirearm(InFirearm);
-	}
-
-	DropFirearm_Internal(InFirearm);
 }
 
 void UInventoryComponent::ServerDropFirearm_Implementation(AFirearm* InFirearm)

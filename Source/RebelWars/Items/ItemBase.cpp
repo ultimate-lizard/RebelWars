@@ -9,22 +9,18 @@
 
 AItemBase::AItemBase()
 {
-	PickupTraceSphere = CreateDefaultSubobject<USphereComponent>(FName(TEXT("Pickup Trace Sphere")));
-	PickupTraceSphere->SetupAttachment(RootComponent);
-	PickupTraceSphere->InitSphereRadius(60.0f);
-	PickupTraceSphere->SetGenerateOverlapEvents(true);
-	PickupTraceSphere->SetCollisionProfileName(FName(TEXT("Pickup")));
-	PickupTraceSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
 	PickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(FName(TEXT("Item Pickup Mesh")));
-	PickupMesh->SetupAttachment(PickupTraceSphere);
-	PickupMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PickupMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	PickupMesh->SetSimulatePhysics(true);
 	PickupMesh->SetGenerateOverlapEvents(false);
+	PickupMesh->SetEnableGravity(true);
+	PickupMesh->SetCollisionProfileName(FName(TEXT("Pickup")));
+	PickupMesh->CanCharacterStepUpOn = ECanBeCharacterBase::ECB_No;
 
 	AIPerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(FName(TEXT("AI Perception Stimuli")));
 
-	PrimaryActorTick.bCanEverTick = false;
-	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	SetReplicates(true);
 	SetReplicateMovement(true);
@@ -60,71 +56,61 @@ void AItemBase::Pickup(class UInventoryComponent* InInventory)
 	SetOwner(InInventory->GetOwner());
 
 	ensure(PickupMesh);
-	ensure(PickupTraceSphere);
 	ensure(AIPerceptionStimuliSource);
 
 	PickupMesh->SetVisibility(false);
-
-	PickupTraceSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PickupMesh->SetSimulatePhysics(false);
 
 	AttachToActor(GetOwner(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, false));
 
 	AIPerceptionStimuliSource->UnregisterFromPerceptionSystem();
 
 	CachedOwner = Cast<ACombatCharacter>(GetOwner());
-
-	SetActorTickEnabled(true);
 }
 
 void AItemBase::Drop()
 {
-	SetOwner(nullptr);
-
-	ensure(PickupMesh);
-	ensure(PickupTraceSphere);
-	ensure(AIPerceptionStimuliSource);
-
 	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{
+		SetOwner(nullptr);
+
+		ensure(PickupMesh);
+		ensure(AIPerceptionStimuliSource);
+
+		PickupMesh->SetSimulatePhysics(true);
+
+		AIPerceptionStimuliSource->RegisterWithPerceptionSystem();
+
 		DropOnGround();
 	}
 
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		CachedOwner = nullptr;
+	}
+
 	PickupMesh->SetVisibility(true);
-
-	AIPerceptionStimuliSource->RegisterWithPerceptionSystem();
-
-	CachedOwner = nullptr;
-
-	PickupTraceSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-
-	SetActorTickEnabled(false);
 }
 
 void AItemBase::DropOnGround()
 {
-	if (UWorld* World = GetWorld())
+	DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
+
+	if (!CachedOwner)
 	{
-		FHitResult HitResult;
-		World->LineTraceSingleByObjectType(HitResult, GetActorLocation(), GetActorLocation() + FVector(0.0f, 0.0f, -1'000'000.0f), FCollisionObjectQueryParams(ECollisionChannel::ECC_WorldStatic));
-
-		FRotator ItemRotator = GetActorRotation();
-		ItemRotator.Pitch = 90.0f;
-		ItemRotator.Roll = 90.0f;
-
-		SetActorRotation(ItemRotator);
-
-		FVector MeshMin;
-		FVector MeshMax;
-
-		PickupMesh->GetLocalBounds(MeshMin, MeshMax);
-
-		float ItemWidth = FMath::Abs(MeshMin.X) + FMath::Abs(MeshMax.X);
-
-		FVector ItemLocation = HitResult.Location;
-		ItemLocation.Z += ItemWidth / 2.0f;
-
-		SetActorLocation(ItemLocation, false, nullptr, ETeleportType::ResetPhysics);
+		return;
 	}
 
-	DetachFromActor(FDetachmentTransformRules(EDetachmentRule::KeepWorld, false));
+	FVector EyesLocation;
+	FRotator EyesRotation;
+	CachedOwner->GetActorEyesViewPoint(EyesLocation, EyesRotation);
+
+	FRotator ItemRotator = GetActorRotation();
+	ItemRotator.Yaw += 70.0f;
+	SetActorRotation(ItemRotator, ETeleportType::ResetPhysics);
+
+	FVector SpawnLocation = EyesLocation + EyesRotation.Vector() * 20.0f;
+
+	SetActorLocation(SpawnLocation, false, nullptr, ETeleportType::ResetPhysics);
+	PickupMesh->AddImpulse(EyesRotation.Vector() * 500.0f * PickupMesh->GetMass());
 }

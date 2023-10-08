@@ -13,6 +13,7 @@
 #include "Player/RWPlayerStart.h"
 #include "AIController.h"
 #include "Controllers/HumanPlayerController.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ACombatCharacter::ACombatCharacter()
 {
@@ -56,6 +57,8 @@ ACombatCharacter::ACombatCharacter()
 	Tags.Add(FName(TEXT("character")));
 
 	Affiliation = EAffiliation::Neutrals;
+
+	TargetRotation = GetActorRotation();
 }
 
 void ACombatCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -95,12 +98,19 @@ void ACombatCharacter::PostInitializeComponents()
 	InventoryComponent->OnFirearmDropDelegate.AddDynamic(this, &ThisClass::FirearmDrop);
 }
 
+void ACombatCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void ACombatCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACombatCharacter, CurrentHealth);
 	DOREPLIFETIME(ACombatCharacter, MovementType);
+	DOREPLIFETIME(ACombatCharacter, HeadRotation);
+	// DOREPLIFETIME(ACombatCharacter, BodyRotation);
 }
 
 void ACombatCharacter::AttachWeaponMesh(AFirearm* InFirearm)
@@ -154,6 +164,74 @@ void ACombatCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateViewModelTransform();
+
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		HeadRotation = GetControlRotation();
+		// BodyRotation = GetActorRotation();
+
+		FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(HeadRotation, GetActorRotation());
+
+		if (GetVelocity() != FVector::ZeroVector)
+		{
+			FRotator ControlRotator = HeadRotation;
+			FRotator ActorRotator = GetActorRotation();
+
+			ActorRotator.Yaw = ControlRotator.Yaw;
+
+			TargetRotation = ActorRotator;
+		}
+		else if (Delta.Yaw < -90.0f || Delta.Yaw > 90.0f)
+		{
+			FRotator ControlRotator = HeadRotation;
+			FRotator ActorRotator = GetActorRotation();
+
+			ActorRotator.Yaw = ControlRotator.Yaw;
+			TargetRotation = ActorRotator;
+		}
+
+		FRotator ActorRotator = GetActorRotation();
+		if (ActorRotator != TargetRotation)
+		{
+			FRotator CurrentRotation = FMath::RInterpTo(ActorRotator, TargetRotation, DeltaTime, 10.0f);
+			SetActorRotation(CurrentRotation);
+		}
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	FVector EyesLocation;
+	FRotator EyesRotation;
+	GetActorEyesViewPoint(EyesLocation, EyesRotation);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	const float MaxTraceDistance = 300.0f;
+
+	TArray<FHitResult> Hits;
+	FVector TraceDestination = EyesLocation + EyesRotation.Vector() * MaxTraceDistance;
+	World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_GameTraceChannel1, QueryParams);
+
+	FocusedItem = nullptr;
+
+	for (const FHitResult& Hit : Hits)
+	{
+		if (Hit.Actor.IsValid())
+		{
+			if (const UClass* HitActorClass = Hit.Actor->GetClass())
+			{
+				if (HitActorClass->IsChildOf(AItemBase::StaticClass()))
+				{
+					FocusedItem = Cast<AItemBase>(Hit.Actor.Get());
+				}
+			}
+		}
+	}
 }
 
 void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -219,9 +297,22 @@ void ACombatCharacter::DropFirearm()
 
 void ACombatCharacter::Use()
 {
-	if (AHumanPlayerController* CharacterController = Cast<AHumanPlayerController>(GetController()))
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
 	{
-		CharacterController->AddViewPunch(FRotator(-20.0f, 0.0f, 0.0f));
+		ServerUse();
+		return;
+	}
+
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		if (AFirearm* FocusedFirearm = Cast<AFirearm>(FocusedItem))
+		{
+			ensure(InventoryComponent);
+			if (!InventoryComponent->GetPrimaryFirearm())
+			{
+				InventoryComponent->PickupFirearm(FocusedFirearm);
+			}
+		}
 	}
 }
 
@@ -279,12 +370,16 @@ void ACombatCharacter::DebugDropWeapon()
 
 void ACombatCharacter::MoveForward(float InRate)
 {
-	AddMovementInput(GetActorForwardVector(), InRate);
+	FRotator ControlRotator = GetControlRotation();
+	ControlRotator.Pitch = 0.0f;
+	AddMovementInput(ControlRotator.Quaternion().GetForwardVector(), InRate);
 }
 
 void ACombatCharacter::MoveRight(float InRate)
 {
-	AddMovementInput(GetActorRightVector(), InRate);
+	FRotator ControlRotator = GetControlRotation();
+	ControlRotator.Pitch = 0.0f;
+	AddMovementInput(ControlRotator.Quaternion().GetRightVector(), InRate);
 }
 
 void ACombatCharacter::LookUp(float InRate)
@@ -425,4 +520,9 @@ void ACombatCharacter::ServerPrimaryFire_Implementation(AFirearm* InFirearm)
 			}
 		}
 	}
+}
+
+void ACombatCharacter::ServerUse_Implementation()
+{
+	Use();
 }

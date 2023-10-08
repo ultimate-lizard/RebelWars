@@ -20,10 +20,10 @@ public:
 	class AFirearm* GetPrimaryFirearm();
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	void PickupFirearm(AFirearm* InFirearm);
+	void PickupFirearm(AFirearm* InFirearm, bool bFromReplication = false);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	void DropFirearm(AFirearm* InFirearm);
+	void DropFirearm(AFirearm* InFirearm, bool bFromReplication = false);
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -35,15 +35,8 @@ public:
 private:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	// ----- REPLICATION -----
-
-	void PickupFirearm_Internal(AFirearm* InFirearm);
-	void DropFirearm_Internal(AFirearm* InFirearm);
-
 	UFUNCTION()
 	void OnRep_PrimaryFirearm();
-
-	// -----------------------
 
 	UFUNCTION(Server, Reliable)
 	void ServerPickupFirearm(class AFirearm* InFirearm);
