@@ -9,6 +9,7 @@
 class ACombatCharacter;
 class USphereComponent;
 class UAIPerceptionStimuliSourceComponent;
+class UInteractableComponent;
 
 UCLASS()
 class REBELWARS_API AItemBase : public AActor
@@ -21,7 +22,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	UInventoryComponent* GetInventory();
 
-	virtual void Pickup(class UInventoryComponent* InInventory);
 	virtual void Drop();
 
 	UStaticMeshComponent* GetPickupMesh();
@@ -37,18 +37,27 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void Pickup(class UInventoryComponent* InInventory);
+
 	void DropOnGround();
+
+	UFUNCTION()
+	virtual void OnInteract(AActor* Initiator);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")
 	UStaticMeshComponent* PickupMesh;
-
-	UPROPERTY(Replicated)
-	UInventoryComponent* Inventory;
 
 	UPROPERTY()
 	UAIPerceptionStimuliSourceComponent* AIPerceptionStimuliSource;
 
 	// OwningCharacter that caches during item pickup. Useful since do not require cast
 	ACombatCharacter* CachedOwner;
+
+private:
+	UPROPERTY(Replicated)
+	UInventoryComponent* Inventory;
+
+	// Add ability to interact with the item, specifically - pick up
+	UInteractableComponent* InteractableComponent;
 };

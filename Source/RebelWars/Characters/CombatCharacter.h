@@ -8,6 +8,7 @@
 #include "CombatCharacter.generated.h"
 
 class AItemBase;
+class UInteractableComponent;
 
 UENUM(BlueprintType)
 enum class ECharacterMovementType : uint8
@@ -135,7 +136,7 @@ protected:
 	FGenericTeamId TeamId;
 
 	UPROPERTY(Transient, BlueprintReadOnly)
-	AItemBase* FocusedItem;
+	UInteractableComponent* FocusedInteractable;
 
 	FRotator TargetRotation;
 

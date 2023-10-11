@@ -3,11 +3,11 @@
 #include "Controllers/CombatAIController.h"
 #include "Items/Firearm.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 
 UBTTask_FindClosestItem::UBTTask_FindClosestItem()
 {
-	BlackboardKey.AddVectorFilter(this, GET_MEMBER_NAME_CHECKED(UBTTask_FindClosestItem, BlackboardKey));
+	BlackboardKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTTask_FindClosestItem, BlackboardKey), AFirearm::StaticClass());
 }
 
 EBTNodeResult::Type UBTTask_FindClosestItem::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -40,7 +40,7 @@ EBTNodeResult::Type UBTTask_FindClosestItem::ExecuteTask(UBehaviorTreeComponent&
 			{
 				if (ClosestActor.Get()->GetClass() == ItemClass || ClosestActor.Get()->GetClass()->IsChildOf(ItemClass))
 				{
-					BB->SetValue<UBlackboardKeyType_Vector>(BlackboardKey.GetSelectedKeyID(), ClosestActor->GetActorLocation());
+					BB->SetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID(), ClosestActor.Get());
 					return EBTNodeResult::Succeeded;
 				}
 			}

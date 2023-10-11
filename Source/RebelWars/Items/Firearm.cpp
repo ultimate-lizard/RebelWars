@@ -1,6 +1,7 @@
 #include "Items/Firearm.h"
 
 #include "Components/SphereComponent.h"
+#include "Components/InteractableComponent.h"
 #include "Items/InventoryComponent.h"
 #include "Characters/CombatCharacter.h"
 #include "Kismet/GameplayStatics.h"
@@ -120,6 +121,8 @@ void AFirearm::Tick(float DeltaTime)
 void AFirearm::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	// GetInteractableComponent()->OnInteract.AddDynamic(this, &AFirearm::OnInteract);
 }
 
 void AFirearm::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -128,6 +131,14 @@ void AFirearm::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	ReloadTimer.Invalidate();
 	DeployTimer.Invalidate();
+}
+
+void AFirearm::OnInteract(AActor* Initiator)
+{
+	if (UInventoryComponent* InitiatorInventory = Initiator->FindComponentByClass<UInventoryComponent>())
+	{
+		InitiatorInventory->PickupFirearm(this);
+	}
 }
 
 void AFirearm::Pickup(UInventoryComponent* InInventory)
@@ -415,18 +426,4 @@ void AFirearm::OnFinishDeploy()
 {
 	bIsDeployed = true;
 	GetWorldTimerManager().ClearTimer(DeployTimer);
-}
-
-void AFirearm::OnPickupBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (!GetOwner() && GetLocalRole() == ENetRole::ROLE_Authority)
-	{
-		if (auto InventoryComponent = OtherActor->FindComponentByClass<UInventoryComponent>())
-		{
-			if (!InventoryComponent->GetPrimaryFirearm())
-			{
-				InventoryComponent->PickupFirearm(this);
-			}
-		}
-	}
 }

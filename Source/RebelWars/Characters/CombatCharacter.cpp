@@ -10,6 +10,7 @@
 #include "Camera/CameraComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/InteractableComponent.h"
 #include "Player/RWPlayerStart.h"
 #include "AIController.h"
 #include "Controllers/HumanPlayerController.h"
@@ -217,18 +218,15 @@ void ACombatCharacter::Tick(float DeltaTime)
 	FVector TraceDestination = EyesLocation + EyesRotation.Vector() * MaxTraceDistance;
 	World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_GameTraceChannel1, QueryParams);
 
-	FocusedItem = nullptr;
+	FocusedInteractable = nullptr;
 
 	for (const FHitResult& Hit : Hits)
 	{
 		if (Hit.Actor.IsValid())
 		{
-			if (const UClass* HitActorClass = Hit.Actor->GetClass())
+			if (UInteractableComponent* Interactable = Hit.Actor->FindComponentByClass<UInteractableComponent>())
 			{
-				if (HitActorClass->IsChildOf(AItemBase::StaticClass()))
-				{
-					FocusedItem = Cast<AItemBase>(Hit.Actor.Get());
-				}
+				FocusedInteractable = Interactable;
 			}
 		}
 	}
@@ -305,13 +303,9 @@ void ACombatCharacter::Use()
 
 	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{
-		if (AFirearm* FocusedFirearm = Cast<AFirearm>(FocusedItem))
+		if (FocusedInteractable)
 		{
-			ensure(InventoryComponent);
-			if (!InventoryComponent->GetPrimaryFirearm())
-			{
-				InventoryComponent->PickupFirearm(FocusedFirearm);
-			}
+			FocusedInteractable->Interact(this);
 		}
 	}
 }

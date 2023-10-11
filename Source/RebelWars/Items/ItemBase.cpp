@@ -1,6 +1,7 @@
 #include "Items/ItemBase.h"
 
 #include "Components/SphereComponent.h"
+#include "Components/InteractableComponent.h"
 #include "Items/InventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
@@ -19,6 +20,8 @@ AItemBase::AItemBase()
 
 	AIPerceptionStimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(FName(TEXT("AI Perception Stimuli")));
 
+	InteractableComponent = CreateDefaultSubobject<UInteractableComponent>(FName(TEXT("Interactable Component")));
+
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
@@ -33,6 +36,9 @@ void AItemBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	AIPerceptionStimuliSource->RegisterForSense(UAISense_Sight::StaticClass());
+
+	InteractableComponent->OnInteract.AddDynamic(this, &AItemBase::OnInteract);
+	InteractableComponent->Prompt = GetName();
 }
 
 void AItemBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -49,6 +55,11 @@ UInventoryComponent* AItemBase::GetInventory()
 UStaticMeshComponent* AItemBase::GetPickupMesh()
 {
 	return PickupMesh;
+}
+
+void AItemBase::OnInteract(AActor* Initiator)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("The player has interacted with an item, but nothing happened"));
 }
 
 void AItemBase::Pickup(class UInventoryComponent* InInventory)
@@ -81,8 +92,10 @@ void AItemBase::Drop()
 
 		AIPerceptionStimuliSource->RegisterWithPerceptionSystem();
 
-		DropOnGround();
+		
 	}
+
+	DropOnGround();
 
 	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{
@@ -112,5 +125,10 @@ void AItemBase::DropOnGround()
 	FVector SpawnLocation = EyesLocation + EyesRotation.Vector() * 20.0f;
 
 	SetActorLocation(SpawnLocation, false, nullptr, ETeleportType::ResetPhysics);
-	PickupMesh->AddImpulse(EyesRotation.Vector() * 500.0f * PickupMesh->GetMass());
+
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		PickupMesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
+		PickupMesh->AddImpulse(EyesRotation.Vector() * 500.0f * PickupMesh->GetMass());
+	}
 }

@@ -50,6 +50,7 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;
 
 	UFUNCTION()
 	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
