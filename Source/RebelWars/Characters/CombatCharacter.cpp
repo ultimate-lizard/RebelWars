@@ -111,7 +111,6 @@ void ACombatCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ACombatCharacter, CurrentHealth);
 	DOREPLIFETIME(ACombatCharacter, MovementType);
 	DOREPLIFETIME(ACombatCharacter, HeadRotation);
-	// DOREPLIFETIME(ACombatCharacter, BodyRotation);
 }
 
 void ACombatCharacter::AttachWeaponMesh(AFirearm* InFirearm)
@@ -165,71 +164,8 @@ void ACombatCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateViewModelTransform();
-
-	if (GetLocalRole() == ENetRole::ROLE_Authority)
-	{
-		HeadRotation = GetControlRotation();
-		// BodyRotation = GetActorRotation();
-
-		FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(HeadRotation, GetActorRotation());
-
-		if (GetVelocity() != FVector::ZeroVector)
-		{
-			FRotator ControlRotator = HeadRotation;
-			FRotator ActorRotator = GetActorRotation();
-
-			ActorRotator.Yaw = ControlRotator.Yaw;
-
-			TargetRotation = ActorRotator;
-		}
-		else if (Delta.Yaw < -90.0f || Delta.Yaw > 90.0f)
-		{
-			FRotator ControlRotator = HeadRotation;
-			FRotator ActorRotator = GetActorRotation();
-
-			ActorRotator.Yaw = ControlRotator.Yaw;
-			TargetRotation = ActorRotator;
-		}
-
-		FRotator ActorRotator = GetActorRotation();
-		if (ActorRotator != TargetRotation)
-		{
-			FRotator CurrentRotation = FMath::RInterpTo(ActorRotator, TargetRotation, DeltaTime, 10.0f);
-			SetActorRotation(CurrentRotation);
-		}
-	}
-
-	UWorld* World = GetWorld();
-	if (!World)
-	{
-		return;
-	}
-
-	FVector EyesLocation;
-	FRotator EyesRotation;
-	GetActorEyesViewPoint(EyesLocation, EyesRotation);
-
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this);
-
-	const float MaxTraceDistance = 300.0f;
-
-	TArray<FHitResult> Hits;
-	FVector TraceDestination = EyesLocation + EyesRotation.Vector() * MaxTraceDistance;
-	World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_GameTraceChannel1, QueryParams);
-
-	FocusedInteractable = nullptr;
-
-	for (const FHitResult& Hit : Hits)
-	{
-		if (Hit.Actor.IsValid())
-		{
-			if (UInteractableComponent* Interactable = Hit.Actor->FindComponentByClass<UInteractableComponent>())
-			{
-				FocusedInteractable = Interactable;
-			}
-		}
-	}
+	UpdateBodyRotation(DeltaTime);
+	TraceInteractables();
 }
 
 void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -406,6 +342,78 @@ void ACombatCharacter::UpdateViewModelTransform()
 	FRotator NewRotation = FRotator(FQuat(EyesRotation) * FQuat(FRotator::ZeroRotator) * FQuat(FRotator(0.0f, 90.0f, 0.0f)));
 
 	WeaponMesh1P->SetWorldLocationAndRotationNoPhysics(NewPosition, NewRotation);
+}
+
+void ACombatCharacter::UpdateBodyRotation(float DeltaTime)
+{
+	if (GetLocalRole() != ENetRole::ROLE_Authority)
+	{
+		return;
+	}
+
+	HeadRotation = GetControlRotation();
+
+	FRotator HeadVsBodyDelta = UKismetMathLibrary::NormalizedDeltaRotator(HeadRotation, GetActorRotation());
+
+	if (GetVelocity() != FVector::ZeroVector)
+	{
+		FRotator ControlRotator = HeadRotation;
+		FRotator ActorRotator = GetActorRotation();
+
+		ActorRotator.Yaw = ControlRotator.Yaw;
+
+		TargetRotation = ActorRotator;
+	}
+	else if (HeadVsBodyDelta.Yaw < -90.0f || HeadVsBodyDelta.Yaw > 90.0f)
+	{
+		FRotator ControlRotator = HeadRotation;
+		FRotator ActorRotator = GetActorRotation();
+
+		ActorRotator.Yaw = ControlRotator.Yaw;
+		TargetRotation = ActorRotator;
+	}
+
+	FRotator ActorRotator = GetActorRotation();
+	if (ActorRotator != TargetRotation)
+	{
+		FRotator CurrentRotation = FMath::RInterpTo(ActorRotator, TargetRotation, DeltaTime, 10.0f);
+		SetActorRotation(CurrentRotation);
+	}
+}
+
+void ACombatCharacter::TraceInteractables()
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	FVector EyesLocation;
+	FRotator EyesRotation;
+	GetActorEyesViewPoint(EyesLocation, EyesRotation);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	const float MaxTraceDistance = 300.0f;
+
+	TArray<FHitResult> Hits;
+	FVector TraceDestination = EyesLocation + EyesRotation.Vector() * MaxTraceDistance;
+	World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_GameTraceChannel1, QueryParams);
+
+	FocusedInteractable = nullptr;
+
+	for (const FHitResult& Hit : Hits)
+	{
+		if (Hit.Actor.IsValid())
+		{
+			if (UInteractableComponent* Interactable = Hit.Actor->FindComponentByClass<UInteractableComponent>())
+			{
+				FocusedInteractable = Interactable;
+			}
+		}
+	}
 }
 
 void ACombatCharacter::FirearmPickup(AFirearm* InFirearm)

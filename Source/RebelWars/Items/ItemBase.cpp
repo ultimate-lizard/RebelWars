@@ -59,7 +59,12 @@ UStaticMeshComponent* AItemBase::GetPickupMesh()
 
 void AItemBase::OnInteract(AActor* Initiator)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("The player has interacted with an item, but nothing happened"));
+	if (CachedOwner)
+	{
+		return;
+	}
+
+	InteractableComponent->bShowPrompt = false;
 }
 
 void AItemBase::Pickup(class UInventoryComponent* InInventory)
@@ -91,8 +96,6 @@ void AItemBase::Drop()
 		PickupMesh->SetSimulatePhysics(true);
 
 		AIPerceptionStimuliSource->RegisterWithPerceptionSystem();
-
-		
 	}
 
 	DropOnGround();
@@ -103,6 +106,8 @@ void AItemBase::Drop()
 	}
 
 	PickupMesh->SetVisibility(true);
+
+	InteractableComponent->bShowPrompt = true;
 }
 
 void AItemBase::DropOnGround()

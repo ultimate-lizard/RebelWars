@@ -5,6 +5,8 @@ UInteractableComponent::UInteractableComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Prompt = FString(TEXT("Use"));
+
+	bShowPrompt = true;
 }
 
 void UInteractableComponent::Interact(AActor* Initiator)

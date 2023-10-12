@@ -88,6 +88,8 @@ protected:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	void UpdateViewModelTransform();
+	void UpdateBodyRotation(float DeltaTime);
+	void TraceInteractables();
 
 	virtual void Kill();
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -142,7 +144,4 @@ protected:
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Movement")
 	FRotator HeadRotation;
-
-	/*UPROPERTY(Replicated, BlueprintReadOnly, Category = "Movement")
-	FRotator BodyRotation;*/
 };

@@ -135,6 +135,13 @@ void AFirearm::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void AFirearm::OnInteract(AActor* Initiator)
 {
+	if (CachedOwner)
+	{
+		return;
+	}
+
+	Super::OnInteract(Initiator);
+
 	if (UInventoryComponent* InitiatorInventory = Initiator->FindComponentByClass<UInventoryComponent>())
 	{
 		InitiatorInventory->PickupFirearm(this);

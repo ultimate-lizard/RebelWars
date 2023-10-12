@@ -23,6 +23,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Prompt;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bShowPrompt;
+
 protected:
 	virtual void BeginPlay() override;
 };

@@ -25,8 +25,12 @@ EBTNodeResult::Type UBTTask_Interact::ExecuteTask(UBehaviorTreeComponent& OwnerC
 				{
 					Interactable->Interact(AIOwner->GetPawn());
 
+					AIOwner->ClearFocus(EAIFocusPriority::Gameplay);
+
 					return EBTNodeResult::Succeeded;
 				}
+
+				AIOwner->ClearFocus(EAIFocusPriority::Gameplay);
 			}
 		}
 	}
