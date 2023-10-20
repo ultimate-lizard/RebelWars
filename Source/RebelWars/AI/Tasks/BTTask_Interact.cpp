@@ -19,18 +19,12 @@ EBTNodeResult::Type UBTTask_Interact::ExecuteTask(UBehaviorTreeComponent& OwnerC
 			UBlackboardKeyType_Object::FDataType AAA = BB->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID());
 			if (AActor* InteractableActor = Cast<AActor>(BB->GetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID())))
 			{
-				AIOwner->SetFocus(InteractableActor);
-
 				if (UInteractableComponent* Interactable = InteractableActor->FindComponentByClass<UInteractableComponent>())
 				{
 					Interactable->Interact(AIOwner->GetPawn());
 
-					AIOwner->ClearFocus(EAIFocusPriority::Gameplay);
-
 					return EBTNodeResult::Succeeded;
 				}
-
-				AIOwner->ClearFocus(EAIFocusPriority::Gameplay);
 			}
 		}
 	}

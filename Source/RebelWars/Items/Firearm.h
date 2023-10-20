@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Items/ItemBase.h"
 #include "Sound/SoundCue.h"
+#include "Components/InventoryComponent.h"
 
 #include "Firearm.generated.h"
 
@@ -95,8 +96,8 @@ class REBELWARS_API AFirearm : public AItemBase
 public:
 	AFirearm();
 
-	virtual void Pickup(class UInventoryComponent* InInventory) override;
-	virtual void Drop() override;
+	virtual void Equip();
+	virtual void Unequip();
 
 	virtual void StartPrimaryFire();
 	virtual void StopPrimaryFire();
@@ -107,9 +108,15 @@ public:
 	virtual bool CanReload() const;
 	bool IsReloading() const;
 
+	bool IsDeployed() const;
+	bool IsDeploying() const;
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EFirearmGripType GripType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EInventorySlot Slot;
 
 	// TODO: Implement proper switching
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

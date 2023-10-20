@@ -9,9 +9,11 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Items/Firearm.h"
-#include "Items/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Characters/CombatCharacter.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
+#include "Perception/AIPerceptionComponent.h"
 
 ACombatAIController::ACombatAIController()
 {
@@ -38,36 +40,54 @@ ACombatAIController::ACombatAIController()
 void ACombatAIController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	IsArmedKey = Blackboard->GetKeyID(FName(TEXT("IsArmed")));
 }
 
 void ACombatAIController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	check(PerceptionComponent);
-	PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::OnTargetPerceptionUpdated);
 }
 
 void ACombatAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// TODO: Implement reaction time
 	if (bIsFiring)
 	{
 		if (ACombatCharacter* CombatPawn = Cast<ACombatCharacter>(GetPawn()))
 		{
 			if (UInventoryComponent* PawnInventory = CombatPawn->FindComponentByClass<UInventoryComponent>())
 			{
-				if (AFirearm* PrimaryFirearm = PawnInventory->GetPrimaryFirearm())
+				if (AFirearm* PrimaryFirearm = PawnInventory->GetEquippedFirearm())
 				{
+					if (!PrimaryFirearm->IsReloading() && !PrimaryFirearm->IsFiring())
+					{
+						CombatPawn->StartPrimaryFire();
+					}
+
 					if (PrimaryFirearm->CurrentMagAmmo <= 0)
 					{
-						// TODO: Implement reaction time
+						CombatPawn->StopPrimaryFire();
 						CombatPawn->Reload();
 					}
 				}
 			}
 		}
 	}
+
+	// Update weapon status for blackboard
+	if (APawn* CurrentPawn = GetPawn())
+	{
+		if (UInventoryComponent* PawnInventory = CurrentPawn->FindComponentByClass<UInventoryComponent>())
+		{
+			Blackboard->SetValue<UBlackboardKeyType_Bool>(IsArmedKey, PawnInventory->GetEquippedFirearm() != nullptr);
+		}
+	}
+
+	PerceptionComponent->GetPerceptualDataConstIterator();
 }
 
 void ACombatAIController::OnPossess(APawn* InPawn)
@@ -121,39 +141,6 @@ void ACombatAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePaw
 	}
 }
 
-void ACombatAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
-{
-	if (!Actor)
-	{
-		return;
-	}
-
-	if (Actor->GetClass()->IsChildOf(AFirearm::StaticClass()))
-	{
-		if (Stimulus.WasSuccessfullySensed())
-		{
-			FirearmsInSight.Add(Actor);
-		}
-		else
-		{
-			FirearmsInSight.Remove(Actor);
-		}
-	}
-	else if (Actor->GetClass()->IsChildOf(APawn::StaticClass()))
-	{
-		if (Stimulus.WasSuccessfullySensed())
-		{
-			PawnsInSight.Add(Actor);
-		}
-		else
-		{
-			PawnsInSight.Remove(Actor);
-		}
-
-		SetNewTargetEnemy(EvaluateTargetEnemy());
-	}
-}
-
 bool ACombatAIController::IsCharacterArmed() const
 {
 	if (ACombatCharacter* CombatCharacter = Cast<ACombatCharacter>(GetCharacter()))
@@ -190,6 +177,8 @@ void ACombatAIController::SetNewTargetEnemy(APawn* InPawn)
 			World->GetTimerManager().SetTimer(MemoryTimer, this, &ACombatAIController::ForgetTargetEnemy, TargetMemoryLength, false);
 		}
 	}
+
+	// PerceptionComponent->ForgetActor
 }
 
 APawn* ACombatAIController::GetTargetEnemy()
@@ -205,26 +194,71 @@ APawn* ACombatAIController::GetRememberedTargetEnemy()
 APawn* ACombatAIController::EvaluateTargetEnemy() const
 {
 	TArray<TSoftObjectPtr<APawn>> EnemiesInSight;
-	for (const TSoftObjectPtr<APawn>& PawnInSight : PawnsInSight)
-	{
-		if (const IGenericTeamAgentInterface* TeamInterface = Cast<const IGenericTeamAgentInterface>(PawnInSight.Get()))
-		{
-			if (APawn* CurrentPawn = GetPawn())
-			{
-				if (TeamInterface->GetTeamAttitudeTowards(*CurrentPawn) == ETeamAttitude::Hostile)
-				{
-					EnemiesInSight.Add(PawnInSight.Get());
-					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, FString::Printf(TEXT("Adding: %s"), *PawnInSight.Get()->GetName()));
-					// TODO: Implement evaluation from the array of enemies
-				}
-			}
-		}
-	}
+	//for (const TSoftObjectPtr<APawn>& PawnInSight : PawnsInSight)
+	//{
+	//	if (const IGenericTeamAgentInterface* TeamInterface = Cast<const IGenericTeamAgentInterface>(PawnInSight.Get()))
+	//	{
+	//		if (APawn* CurrentPawn = GetPawn())
+	//		{
+	//			if (TeamInterface->GetTeamAttitudeTowards(*CurrentPawn) == ETeamAttitude::Hostile)
+	//			{
+	//				EnemiesInSight.Add(PawnInSight.Get());
+	//				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, FString::Printf(TEXT("Adding: %s"), *PawnInSight.Get()->GetName()));
+	//				// TODO: Implement evaluation from the array of enemies
+	//			}
+	//		}
+	//	}
+	//}
 
 	if (EnemiesInSight.Num() > 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("Evaluated a target"));
 		return EnemiesInSight[0].Get();
+	}
+
+	return nullptr;
+}
+
+AActor* ACombatAIController::FindClosestEnemy() const
+{
+	check(PerceptionComponent);
+
+	TArray<AActor*> EnemiesInSight;
+
+	// Iterate over all VISIBLE percepted actors
+	for (auto Iter = PerceptionComponent->GetPerceptualDataConstIterator(); Iter; ++Iter)
+	{
+		AActor* PerceptedActor = Iter.Key().ResolveObjectPtr();
+		const FActorPerceptionInfo& PerceptionInfo = Iter.Value();
+
+		if (PerceptedActor && PerceptionInfo.HasAnyCurrentStimulus())
+		{
+			// Check if the actor has any affiliation info
+			if (const IGenericTeamAgentInterface* TeamInterface = Cast<const IGenericTeamAgentInterface>(PerceptedActor))
+			{
+				if (TeamInterface->GetTeamAttitudeTowards(*GetPawn()) == ETeamAttitude::Hostile)
+				{
+					EnemiesInSight.Add(PerceptedActor);
+				}
+			}
+		}
+	}
+
+	FVector PawnLocation;
+
+	if (APawn* AIPawn = GetPawn())
+	{
+		PawnLocation = AIPawn->GetActorLocation();
+	}
+
+	// Sort over distance
+	EnemiesInSight.Sort([PawnLocation](AActor& ActorA, AActor& ActorB) {
+		return FVector::Distance(ActorA.GetActorLocation(), PawnLocation) < FVector::Distance(ActorB.GetActorLocation(), PawnLocation);
+	});
+
+	if (EnemiesInSight.Num() > 0)
+	{
+		return EnemiesInSight[0];
 	}
 
 	return nullptr;
@@ -241,16 +275,6 @@ void ACombatAIController::ForgetTargetEnemy()
 		World->GetTimerManager().ClearTimer(MemoryTimer);
 		MemoryTimer.Invalidate();
 	}
-}
-
-const TArray<TSoftObjectPtr<AFirearm>>& ACombatAIController::GetFirearmsInSight() const
-{
-	return FirearmsInSight;
-}
-
-const TArray<TSoftObjectPtr<APawn>>& ACombatAIController::GetPawnsInSight() const
-{
-	return PawnsInSight;
 }
 
 void ACombatAIController::StartFireAt(AActor* InActor)
@@ -277,9 +301,4 @@ void ACombatAIController::StopFire()
 	{
 		CombatPawn->StopPrimaryFire();
 	}
-}
-
-bool ACombatAIController::CanSeeTarget(AActor* InActor) const
-{
-	return PawnsInSight.Find(InActor) != INDEX_NONE;
 }

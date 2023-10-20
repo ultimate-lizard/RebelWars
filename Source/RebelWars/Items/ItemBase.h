@@ -22,7 +22,8 @@ public:
 	UFUNCTION(BlueprintPure)
 	UInventoryComponent* GetInventory();
 
-	virtual void Drop();
+	virtual void OnPickup(class UInventoryComponent* InInventory);
+	virtual void OnDrop();
 
 	UStaticMeshComponent* GetPickupMesh();
 
@@ -37,12 +38,10 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void Pickup(class UInventoryComponent* InInventory);
-
 	void DropOnGround();
 
 	UFUNCTION()
-	virtual void OnInteract(AActor* Initiator);
+	virtual void OnInteract(AActor* Initiator) {};
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Mesh")

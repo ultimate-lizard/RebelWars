@@ -2,7 +2,7 @@
 
 #include "Components/SphereComponent.h"
 #include "Components/InteractableComponent.h"
-#include "Items/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
@@ -57,17 +57,7 @@ UStaticMeshComponent* AItemBase::GetPickupMesh()
 	return PickupMesh;
 }
 
-void AItemBase::OnInteract(AActor* Initiator)
-{
-	if (CachedOwner)
-	{
-		return;
-	}
-
-	InteractableComponent->bShowPrompt = false;
-}
-
-void AItemBase::Pickup(class UInventoryComponent* InInventory)
+void AItemBase::OnPickup(class UInventoryComponent* InInventory)
 {
 	SetOwner(InInventory->GetOwner());
 
@@ -82,9 +72,11 @@ void AItemBase::Pickup(class UInventoryComponent* InInventory)
 	AIPerceptionStimuliSource->UnregisterFromPerceptionSystem();
 
 	CachedOwner = Cast<ACombatCharacter>(GetOwner());
+
+	InteractableComponent->bShowPrompt = false;
 }
 
-void AItemBase::Drop()
+void AItemBase::OnDrop()
 {
 	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{

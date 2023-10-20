@@ -20,7 +20,7 @@ void UBTService_CheckItemInSight::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 	{
 		if (ACombatAIController* OwnerAIController = Cast<ACombatAIController>(OwnerComp.GetAIOwner()))
 		{
-			const TArray<TSoftObjectPtr<AFirearm>>& Firearms = OwnerAIController->GetFirearmsInSight();
+			/*const TArray<TSoftObjectPtr<AFirearm>>& Firearms = OwnerAIController->GetFirearmsInSight();
 			for (const TSoftObjectPtr<AFirearm>& FirearmPtr : Firearms)
 			{
 				if (const AFirearm* Firearm = FirearmPtr.Get())
@@ -31,7 +31,7 @@ void UBTService_CheckItemInSight::TickNode(UBehaviorTreeComponent& OwnerComp, ui
 						bItemInSight = true;
 					}
 				}
-			}
+			}*/
 		}
 
 		BB->SetValue<UBlackboardKeyType_Bool>(BlackboardKey.GetSelectedKeyID(), bItemInSight);

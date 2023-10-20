@@ -16,7 +16,7 @@ EBTNodeResult::Type UBTTask_FindClosestItem::ExecuteTask(UBehaviorTreeComponent&
 	{
 		if (ACombatAIController* AIOwner = Cast<ACombatAIController>(OwnerComp.GetAIOwner()))
 		{
-			const TArray<TSoftObjectPtr<AFirearm>>& Firearms = AIOwner->GetFirearmsInSight();
+			/*const TArray<TSoftObjectPtr<AFirearm>>& Firearms = AIOwner->GetFirearmsInSight();
 			
 			TSoftObjectPtr<AFirearm> ClosestActor;
 			float ClosestDistance = TNumericLimits<float>::Max();
@@ -43,7 +43,7 @@ EBTNodeResult::Type UBTTask_FindClosestItem::ExecuteTask(UBehaviorTreeComponent&
 					BB->SetValue<UBlackboardKeyType_Object>(BlackboardKey.GetSelectedKeyID(), ClosestActor.Get());
 					return EBTNodeResult::Succeeded;
 				}
-			}
+			}*/
 		}
 	}
 

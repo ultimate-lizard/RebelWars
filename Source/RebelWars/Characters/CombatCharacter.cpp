@@ -2,7 +2,7 @@
 
 #include "GameFramework/PawnMovementComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Items/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Items/Firearm.h"
 #include "Particles/ParticleSystem.h"
 #include "Kismet/GameplayStatics.h"
@@ -66,8 +66,8 @@ void ACombatCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	ensure(InventoryComponent);
 
-	InventoryComponent->OnFirearmPickupDelegate.RemoveAll(this);
-	InventoryComponent->OnFirearmDropDelegate.RemoveAll(this);
+	InventoryComponent->OnFirearmEquipDelegate.RemoveAll(this);
+	InventoryComponent->OnFirearmUnequipDelegate.RemoveAll(this);
 }
 
 void ACombatCharacter::PossessedBy(AController* NewController)
@@ -83,11 +83,6 @@ void ACombatCharacter::PossessedBy(AController* NewController)
 	{
 		Affiliation = ActorStartSpot->PlayerStartAffiliation;
 	}
-
-	FGenericTeamId Team(UTeamStatics::GetTeamIdFromAffiliation(Affiliation));
-	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
-
-	SetGenericTeamId(Team);
 }
 
 void ACombatCharacter::PostInitializeComponents()
@@ -95,13 +90,18 @@ void ACombatCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	ensure(InventoryComponent);
-	InventoryComponent->OnFirearmPickupDelegate.AddDynamic(this, &ThisClass::FirearmPickup);
-	InventoryComponent->OnFirearmDropDelegate.AddDynamic(this, &ThisClass::FirearmDrop);
+	InventoryComponent->OnFirearmEquipDelegate.AddDynamic(this, &ThisClass::FirearmEquip);
+	InventoryComponent->OnFirearmUnequipDelegate.AddDynamic(this, &ThisClass::FirearmUnequip);
 }
 
 void ACombatCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FGenericTeamId Team(UTeamStatics::GetTeamIdFromAffiliation(Affiliation));
+	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
+
+	SetGenericTeamId(Team);
 }
 
 void ACombatCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -139,7 +139,7 @@ UStaticMeshComponent* ACombatCharacter::GetWeaponMesh3P()
 bool ACombatCharacter::IsArmed() const
 {
 	check(InventoryComponent);
-	return InventoryComponent->GetPrimaryFirearm() != nullptr;
+	return InventoryComponent->GetFirearm(EInventorySlot::Primary) || InventoryComponent->GetFirearm(EInventorySlot::Sidearm);
 }
 
 void ACombatCharacter::SetMovementType_Implementation(ECharacterMovementType InMovementType)
@@ -185,6 +185,11 @@ void ACombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("DropWeapon"), EInputEvent::IE_Pressed, this, &ThisClass::DropFirearm);
 
 	PlayerInputComponent->BindAction(TEXT("Use"), EInputEvent::IE_Pressed, this, &ThisClass::Use);
+
+	PlayerInputComponent->BindAction(TEXT("SelectWeaponSlot0"), EInputEvent::IE_Pressed, this, &ThisClass::SelectWeaponSlot<0>);
+	PlayerInputComponent->BindAction(TEXT("SelectWeaponSlot1"), EInputEvent::IE_Pressed, this, &ThisClass::SelectWeaponSlot<1>);
+	PlayerInputComponent->BindAction(TEXT("SelectWeaponSlot2"), EInputEvent::IE_Pressed, this, &ThisClass::SelectWeaponSlot<2>);
+	PlayerInputComponent->BindAction(TEXT("SelectWeaponSlot3"), EInputEvent::IE_Pressed, this, &ThisClass::SelectWeaponSlot<3>);
 }
 
 void ACombatCharacter::SetGenericTeamId(const FGenericTeamId& InTeamId)
@@ -201,7 +206,7 @@ void ACombatCharacter::StartPrimaryFire()
 {
 	ensure(InventoryComponent);
 
-	if (AFirearm* CurrentFirearm = InventoryComponent->GetPrimaryFirearm())
+	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
 	{
 		CurrentFirearm->StartPrimaryFire();
 	}
@@ -214,7 +219,7 @@ void ACombatCharacter::StopPrimaryFire()
 		return;
 	}
 
-	if (AFirearm* CurrentFirearm = InventoryComponent->GetPrimaryFirearm())
+	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
 	{
 		CurrentFirearm->StopPrimaryFire();
 	}
@@ -223,7 +228,7 @@ void ACombatCharacter::StopPrimaryFire()
 void ACombatCharacter::DropFirearm()
 {
 	ensure(InventoryComponent);
-	if (AFirearm* CurrentFirearm = InventoryComponent->GetPrimaryFirearm())
+	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
 	{
 		InventoryComponent->DropFirearm(CurrentFirearm);
 	}
@@ -246,6 +251,12 @@ void ACombatCharacter::Use()
 	}
 }
 
+void ACombatCharacter::SelectWeaponSlot(int32 Index)
+{
+	ensure(InventoryComponent);
+	InventoryComponent->EquipFirearm(static_cast<EInventorySlot>(Index));
+}
+
 float ACombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	return 0.0f;
@@ -261,13 +272,13 @@ float ACombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 void ACombatCharacter::Kill()
 {
-	if (AFirearm* CurrentFirearm = InventoryComponent->GetPrimaryFirearm())
+	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
 	{
 		InventoryComponent->DropFirearm(CurrentFirearm);
 	}
 
-	InventoryComponent->OnFirearmPickupDelegate.RemoveAll(this);
-	InventoryComponent->OnFirearmDropDelegate.RemoveAll(this);
+	InventoryComponent->OnFirearmEquipDelegate.RemoveAll(this);
+	InventoryComponent->OnFirearmUnequipDelegate.RemoveAll(this);
 
 	SetReplicatingMovement(false);
 	SetActorTickEnabled(false);
@@ -324,7 +335,7 @@ void ACombatCharacter::Turn(float InRate)
 
 void ACombatCharacter::Reload()
 {
-	if (AFirearm* CurrentFirearm = InventoryComponent->GetPrimaryFirearm())
+	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
 	{
 		CurrentFirearm->Reload();
 	}
@@ -416,7 +427,7 @@ void ACombatCharacter::TraceInteractables()
 	}
 }
 
-void ACombatCharacter::FirearmPickup(AFirearm* InFirearm)
+void ACombatCharacter::FirearmEquip(AFirearm* InFirearm)
 {
 	if (!InFirearm)
 	{
@@ -440,7 +451,7 @@ void ACombatCharacter::FirearmPickup(AFirearm* InFirearm)
 	}
 }
 
-void ACombatCharacter::FirearmDrop(AFirearm* InFirearm)
+void ACombatCharacter::FirearmUnequip(AFirearm* InFirearm)
 {
 	ensure(HandsMesh1P);
 	ensure(WeaponMesh1P);
@@ -449,11 +460,6 @@ void ACombatCharacter::FirearmDrop(AFirearm* InFirearm)
 	HandsMesh1P->SetVisibility(false);
 	WeaponMesh1P->SetVisibility(false);
 	WeaponMesh3P->SetVisibility(false);
-
-	if (!InFirearm)
-	{
-		return;
-	}
 }
 
 void ACombatCharacter::OnRep_CurrentHealth()

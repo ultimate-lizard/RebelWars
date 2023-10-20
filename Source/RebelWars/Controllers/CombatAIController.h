@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Perception/AIPerceptionTypes.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 #include "CombatAIController.generated.h"
 
@@ -26,14 +27,10 @@ public:
 	void ForgetTargetEnemy();
 
 	APawn* EvaluateTargetEnemy() const;
-
-	const TArray<TSoftObjectPtr<AFirearm>>& GetFirearmsInSight() const;
-	const TArray<TSoftObjectPtr<APawn>>& GetPawnsInSight() const;
+	AActor* FindClosestEnemy() const;
 
 	void StartFireAt(AActor* InActor);
 	void StopFire();
-
-	bool CanSeeTarget(AActor* InActor) const;
 
 public:
 	UPROPERTY(EditDefaultsOnly)
@@ -43,8 +40,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Memory", Meta = (ClampMin = "0.0"))
 	float TargetMemoryLength;
 
-	// TODO: TargetMemoryLengthDeviation
-
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
@@ -52,17 +47,11 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;
 
-	UFUNCTION()
-	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
-
 protected:
 	UPROPERTY()
 	class UAISenseConfig_Sight* AIItemSightConfig;
 
 	bool bCanSeeAWeapon;
-
-	TArray<TSoftObjectPtr<AFirearm>> FirearmsInSight;
-	TArray<TSoftObjectPtr<APawn>> PawnsInSight;
 
 	APawn* TargetEnemy;
 	APawn* RememberedTargetEnemy;
@@ -70,4 +59,6 @@ protected:
 
 	AActor* FireTarget;
 	bool bIsFiring;
+
+	FBlackboard::FKey IsArmedKey;
 };

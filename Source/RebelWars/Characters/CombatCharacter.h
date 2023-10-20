@@ -59,6 +59,14 @@ public:
 	void DropFirearm();
 	void Use();
 
+	template<int32 Index>
+	inline void SelectWeaponSlot()
+	{
+		SelectWeaponSlot(Index);
+	}
+
+	void SelectWeaponSlot(int32 InIndex);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector ViewModelOffset = FVector(-10.0f, 5.0f, -15.0f);
@@ -99,10 +107,10 @@ protected:
 	void OnRep_CurrentHealth();
 
 	UFUNCTION()
-	void FirearmPickup(class AFirearm* InFirearm);
+	void FirearmEquip(class AFirearm* InFirearm);
 
 	UFUNCTION()
-	void FirearmDrop(class AFirearm* InFirearm);
+	void FirearmUnequip(class AFirearm* InFirearm);
 
 	UFUNCTION(Server, Reliable)
 	void ServerPrimaryFire(AFirearm* InFirearm);

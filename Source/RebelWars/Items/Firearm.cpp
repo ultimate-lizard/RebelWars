@@ -2,7 +2,7 @@
 
 #include "Components/SphereComponent.h"
 #include "Components/InteractableComponent.h"
-#include "Items/InventoryComponent.h"
+#include "Components/InventoryComponent.h"
 #include "Characters/CombatCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -112,9 +112,14 @@ void AFirearm::BeginPlay()
 
 void AFirearm::Tick(float DeltaTime)
 {
-	if (CurrentFireMode == EFirearmFireMode::Auto && FirearmState == EFirearmState::Firing && IsReadyForNextShot() && CanFire())
+	switch (CurrentFireMode)
 	{
-		PrimaryFire();
+	case EFirearmFireMode::Auto:
+		if (FirearmState == EFirearmState::Firing && IsReadyForNextShot() && CanFire())
+		{
+			PrimaryFire();
+		}
+		break;
 	}
 }
 
@@ -148,20 +153,14 @@ void AFirearm::OnInteract(AActor* Initiator)
 	}
 }
 
-void AFirearm::Pickup(UInventoryComponent* InInventory)
+void AFirearm::Equip()
 {
-	Super::Pickup(InInventory);
-
-	if (!GetWorldTimerManager().IsTimerActive(DeployTimer))
-	{
-		GetWorldTimerManager().SetTimer(DeployTimer, this, &AFirearm::OnFinishDeploy, DeployLength);
-	}
+	GetWorldTimerManager().ClearTimer(DeployTimer);
+	GetWorldTimerManager().SetTimer(DeployTimer, this, &AFirearm::OnFinishDeploy, DeployLength);
 }
 
-void AFirearm::Drop()
+void AFirearm::Unequip()
 {
-	Super::Drop();
-
 	bIsDeployed = false;
 }
 
@@ -390,12 +389,12 @@ void AFirearm::BroadcastDebugEffects_Implementation(FVector Location)
 
 bool AFirearm::CanFire() const
 {
-	return CurrentMagAmmo > 0 && !IsReloading() && bIsDeployed;
+	return CurrentMagAmmo > 0 && !IsReloading() && IsDeployed();
 }
 
 bool AFirearm::IsFiring() const
 {
-	return FirearmState == EFirearmState::Firing;
+	return FirearmState == EFirearmState::Firing || !IsReadyForNextShot();
 }
 
 void AFirearm::ServerReload_Implementation()
@@ -421,12 +420,22 @@ void AFirearm::OnRep_FirearmState()
 
 bool AFirearm::CanReload() const
 {
-	return !IsFiring() && !IsReloading() && CurrentMagAmmo < MagAmmoCapacity&& CurrentReserveAmmo > 0;
+	return !IsFiring() && !IsReloading() && CurrentMagAmmo < MagAmmoCapacity && CurrentReserveAmmo > 0 && IsDeployed();
 }
 
 bool AFirearm::IsReloading() const
 {
 	return FirearmState == EFirearmState::Reloading;
+}
+
+bool AFirearm::IsDeployed() const
+{
+	return bIsDeployed;
+}
+
+bool AFirearm::IsDeploying() const
+{
+	return !IsDeployed() && GetWorldTimerManager().IsTimerActive(DeployTimer);
 }
 
 void AFirearm::OnFinishDeploy()
