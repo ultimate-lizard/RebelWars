@@ -1,48 +1,64 @@
 #include "Controllers/HumanPlayerController.h"
 
 #include <Characters/CombatCharacter.h>
+#include <Kismet/KismetMathLibrary.h>
+#include <Player/RWPlayerCameraManager.h>
+
+AHumanPlayerController::AHumanPlayerController(const FObjectInitializer& ObjectInitializer) :
+	Super(ObjectInitializer)
+{
+	PlayerCameraManagerClass = ARWPlayerCameraManager::StaticClass();
+
+	DeathCameraOffsetLocation = FVector(0.0f, 0.0f, -80.0f);
+	DeathCameraOffsetRotation = FRotator::MakeFromEuler(FVector(0.0f, 90.0f, 0.0f));
+
+	SetCameraMode(CameraMode::Default);
+}
 
 void AHumanPlayerController::AddViewPunch(FRotator InAngles)
 {
-	ViewPunchAngle += InAngles;
-	SetControlRotation(GetControlRotation() + ViewPunchAngle);
+	if (ARWPlayerCameraManager* CameraManager = GetRWPlayerCameraManager())
+	{
+		CameraManager->AddViewPunch(InAngles);
+	}
+}
+
+FRotator AHumanPlayerController::GetCurrentViewPunchAngle() const
+{
+	if (ARWPlayerCameraManager* CameraManager = GetRWPlayerCameraManager())
+	{
+		return CameraManager->GetCurrentViewPunchAngle();
+	}
+
+	return FRotator();
+}
+
+ARWPlayerCameraManager* AHumanPlayerController::GetRWPlayerCameraManager() const
+{
+	return Cast<ARWPlayerCameraManager>(PlayerCameraManager);
 }
 
 void AHumanPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//float Old = ViewPunchAngle.Pitch;
-	//ViewPunchAngle.Pitch -= 10 * DeltaTime;
-	//if (ViewPunchAngle.Pitch < 0.0f)
-	//{
-	//	ViewPunchAngle.Pitch = 0.0f;
-	//}
-
-	//float Diff = Old - ViewPunchAngle.Pitch;
-
-	//UE_LOG(LogTemp, Log, TEXT("%f"), Diff);
-
-	//SetControlRotation(GetControlRotation() - FRotator(Diff, 0.0f, 0.0f));
-
-	float Length = ViewPunchAngle.Vector().Size();
-	Length -= 5.0f * DeltaTime;
-
-	if (Length < 0.0f)
+	if (PlayerCameraManager)
 	{
-		Length = 0.0f;
+		if (ACombatCharacter* CombatPawn = GetPawn<ACombatCharacter>())
+		{
+			if (PlayerCameraManager->CameraStyle == CameraMode::Default && CombatPawn->IsDead())
+			{
+				SetCameraMode(CameraMode::FreeCam);
+			}
+			else if (PlayerCameraManager->CameraStyle == CameraMode::FreeCam && !CombatPawn->IsDead())
+			{
+				SetCameraMode(CameraMode::Default);
+			}
+		}
 	}
-
-	FRotator Old = ViewPunchAngle;
-	ViewPunchAngle *= Length;
-
-	FRotator Diff = Old - ViewPunchAngle;
-
-	SetControlRotation(GetControlRotation() - Diff);
 }
 
 void AHumanPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
 }

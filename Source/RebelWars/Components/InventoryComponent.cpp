@@ -123,11 +123,6 @@ void UInventoryComponent::PickupFirearm(AFirearm* InFirearm, bool bFromReplicati
 
 void UInventoryComponent::DropFirearm(AFirearm* InFirearm, bool bAutoEquip, bool bFromReplication)
 {
-	if (!InFirearm || InFirearm->IsFiring() || InFirearm->IsReloading() || InFirearm->IsDeploying())
-	{
-		return;
-	}
-
 	if (!bFromReplication)
 	{
 		if (GetOwnerRole() < ENetRole::ROLE_Authority)
@@ -139,22 +134,27 @@ void UInventoryComponent::DropFirearm(AFirearm* InFirearm, bool bAutoEquip, bool
 		{
 			Inventory.Remove(InFirearm);
 
-			if (bAutoEquip)
+			if (Inventory.Num() && bAutoEquip)
 			{
-				if (Inventory.Num())
-				{
-					EquipFirearm(Inventory[0]->Slot);
-				}
-				else
-				{
-					HolsterWeapon();
-				}
+				EquipFirearm(Inventory[0]->Slot);
+			}
+			else
+			{
+				HolsterWeapon();
 			}
 		}
 	}
 	
 	InFirearm->OnDrop();
 	OnFirearmDropDelegate.Broadcast(InFirearm);
+}
+
+void UInventoryComponent::DropAll()
+{
+	while (Inventory.Num())
+	{
+		DropFirearm(Inventory[0], false);
+	}
 }
 
 AFirearm* UInventoryComponent::GetFirearm(EInventorySlot Slot) const

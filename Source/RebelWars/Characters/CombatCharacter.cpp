@@ -18,6 +18,8 @@
 
 ACombatCharacter::ACombatCharacter()
 {
+	// TODO: Research on pointer checks
+
 	PrimaryActorTick.bCanEverTick = true;
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(FName(TEXT("Inventory")));
@@ -49,17 +51,44 @@ ACombatCharacter::ACombatCharacter()
 
 	MaxHealth = 100.0f;
 	CurrentHealth = MaxHealth;
+	bIsDead = false;
+	AccumulatedDamage = 0.0f;
 	MaxRunSpeed = 600.0f;
 	MaxWalkSpeed = 150.0f;
 
 	bReplicates = true;
 	SetReplicateMovement(true);
+	SetActorTickEnabled(true);
 
 	Tags.Add(FName(TEXT("character")));
 
 	Affiliation = EAffiliation::Neutrals;
+	MovementType = ECharacterMovementType::Run;
 
 	TargetRotation = GetActorRotation();
+}
+
+void ACombatCharacter::SetPlayerDefaults()
+{
+	Super::SetPlayerDefaults();
+
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	{
+		SetHealth(MaxHealth);
+		MovementType = ECharacterMovementType::Run;
+	}
+}
+
+void ACombatCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	float VelocityZ = GetVelocity().Z / 2.0f;
+
+	if (AHumanPlayerController* HumanController = GetController<AHumanPlayerController>())
+	{
+		HumanController->AddViewPunch(FRotator(0.0f, 0.0f, VelocityZ));
+	}
 }
 
 void ACombatCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -111,6 +140,8 @@ void ACombatCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ACombatCharacter, CurrentHealth);
 	DOREPLIFETIME(ACombatCharacter, MovementType);
 	DOREPLIFETIME(ACombatCharacter, HeadRotation);
+	DOREPLIFETIME(ACombatCharacter, TargetRotation);
+	DOREPLIFETIME(ACombatCharacter, LastDamageCauser);
 }
 
 void ACombatCharacter::AttachWeaponMesh(AFirearm* InFirearm)
@@ -146,7 +177,7 @@ void ACombatCharacter::SetMovementType_Implementation(ECharacterMovementType InM
 {
 	MovementType = InMovementType;
 
-	BroadcastUpdateMovement();
+	// BroadcastUpdateMovement();
 }
 
 ECharacterMovementType ACombatCharacter::GetMovementType() const
@@ -157,6 +188,11 @@ ECharacterMovementType ACombatCharacter::GetMovementType() const
 float ACombatCharacter::GetCurrentHealth() const
 {
 	return CurrentHealth;
+}
+
+bool ACombatCharacter::IsDead() const
+{
+	return bIsDead;
 }
 
 void ACombatCharacter::Tick(float DeltaTime)
@@ -259,54 +295,76 @@ void ACombatCharacter::SelectWeaponSlot(int32 Index)
 
 float ACombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return 0.0f;
-
-	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	if (GetWorldTimerManager().IsTimerActive(DamageAccumulationTimer))
 	{
-		CurrentHealth -= DamageAmount;
-		OnHealthUpdate();
+		AccumulatedDamage += DamageAmount;
+		FString AccumulatedDamageStr = FString::Printf(TEXT("Accumulated damage: %f"), AccumulatedDamage);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *AccumulatedDamageStr);
+	}
+	else
+	{
+		GetWorldTimerManager().SetTimer(DamageAccumulationTimer, 0.1f, false);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("The timer has been reset"));
+		AccumulatedDamage = DamageAmount;
 	}
 
-	return DamageAmount;
+	SetHealth(GetCurrentHealth() - DamageAmount);
+	if (IsDead())
+	{
+		FHitResult HitResult;
+
+		FVector ImpulseDirection;
+		DamageEvent.GetBestHitInfo(this, EventInstigator ? EventInstigator->GetPawn() : nullptr, HitResult, ImpulseDirection);
+
+		static const float BaseForce = 1000.0f;
+
+		BroadcastBecomeRagdoll(ImpulseDirection * AccumulatedDamage * BaseForce, HitResult.Location);
+	}
+
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
+void ACombatCharacter::BroadcastBecomeRagdoll_Implementation(FVector ImpulseDirection, FVector ImpulseLocation)
+{
+	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
+	{
+		if (!IsRagdoll())
+		{
+			SetRagdollEnabled(true);
+		}
+	}
+
+	if (USkeletalMeshComponent* RagdollMesh = GetMesh())
+	{
+		FName ImpactBone = RagdollMesh->FindClosestBone(ImpulseLocation, nullptr, 0.0f, true);
+		RagdollMesh->AddImpulseAtLocation(ImpulseDirection, ImpulseLocation, ImpactBone); // TODO: PHSYCICS
+
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *ImpactBone.ToString());
+	}
 }
 
 void ACombatCharacter::Kill()
 {
-	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{
-		InventoryComponent->DropFirearm(CurrentFirearm);
+		InventoryComponent->DropAll();
 	}
 
-	InventoryComponent->OnFirearmEquipDelegate.RemoveAll(this);
-	InventoryComponent->OnFirearmUnequipDelegate.RemoveAll(this);
+	bIsDead = true;
 
-	SetReplicatingMovement(false);
-	SetActorTickEnabled(false);
+	// TODO: Play animation
+	// SetRagdollEnabled(true);
 
-	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
-	{
-		CharacterMesh->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-		CharacterMesh->SetCollisionProfileName(FName(TEXT("Ragdoll")));
-		CharacterMesh->SetSimulatePhysics(true);
-		CharacterMesh->SetAllBodiesSimulatePhysics(true);
-		CharacterMesh->WakeAllRigidBodies();
-		CharacterMesh->SetOwnerNoSee(false);
-	}
-
-	if (UCapsuleComponent* Capsule = GetCapsuleComponent())
-	{
-		Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
-
-	if (AController* CurrentController = GetController())
-	{
-		CurrentController->SetIgnoreMoveInput(true);
-	}
+	OnKillDelegate.Broadcast(nullptr, this);
 }
 
-void ACombatCharacter::DebugDropWeapon()
+void ACombatCharacter::Resurrect()
 {
-	DropFirearm();
+	bIsDead = false;
+
+	SetRagdollEnabled(false);
+
+	OnResurrectDelegate.Broadcast(this);
 }
 
 void ACombatCharacter::MoveForward(float InRate)
@@ -357,31 +415,29 @@ void ACombatCharacter::UpdateViewModelTransform()
 
 void ACombatCharacter::UpdateBodyRotation(float DeltaTime)
 {
-	if (GetLocalRole() != ENetRole::ROLE_Authority)
+	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{
-		return;
-	}
+		HeadRotation = GetControlRotation();
 
-	HeadRotation = GetControlRotation();
+		FRotator HeadVsBodyDelta = UKismetMathLibrary::NormalizedDeltaRotator(HeadRotation, GetActorRotation());
 
-	FRotator HeadVsBodyDelta = UKismetMathLibrary::NormalizedDeltaRotator(HeadRotation, GetActorRotation());
+		if (GetVelocity() != FVector::ZeroVector)
+		{
+			FRotator ControlRotator = HeadRotation;
+			FRotator ActorRotator = GetActorRotation();
 
-	if (GetVelocity() != FVector::ZeroVector)
-	{
-		FRotator ControlRotator = HeadRotation;
-		FRotator ActorRotator = GetActorRotation();
+			ActorRotator.Yaw = ControlRotator.Yaw;
 
-		ActorRotator.Yaw = ControlRotator.Yaw;
+			TargetRotation = ActorRotator;
+		}
+		else if (HeadVsBodyDelta.Yaw < -90.0f || HeadVsBodyDelta.Yaw > 90.0f)
+		{
+			FRotator ControlRotator = HeadRotation;
+			FRotator ActorRotator = GetActorRotation();
 
-		TargetRotation = ActorRotator;
-	}
-	else if (HeadVsBodyDelta.Yaw < -90.0f || HeadVsBodyDelta.Yaw > 90.0f)
-	{
-		FRotator ControlRotator = HeadRotation;
-		FRotator ActorRotator = GetActorRotation();
-
-		ActorRotator.Yaw = ControlRotator.Yaw;
-		TargetRotation = ActorRotator;
+			ActorRotator.Yaw = ControlRotator.Yaw;
+			TargetRotation = ActorRotator;
+		}
 	}
 
 	FRotator ActorRotator = GetActorRotation();
@@ -469,66 +525,122 @@ void ACombatCharacter::OnRep_CurrentHealth()
 
 void ACombatCharacter::OnHealthUpdate()
 {
-	if (CurrentHealth <= 0.0f)
+	if (CurrentHealth <= 0.0f && !IsDead())
 	{
 		Kill();
 	}
+	else if (CurrentHealth > 0.0f && IsDead())
+	{
+		Resurrect();
+	}
 }
 
-void ACombatCharacter::BroadcastUpdateMovement_Implementation()
+void ACombatCharacter::SetHealth(float NewHealth)
 {
-	if (UCharacterMovementComponent* CombatCharacterMovement = GetCharacterMovement())
+	CurrentHealth = NewHealth;
+	OnHealthUpdate();
+}
+
+void ACombatCharacter::SetRagdollEnabled(bool bEnableRagdoll)
+{
+	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
 	{
-		switch (MovementType)
+		CharacterMesh->SetCollisionEnabled(bEnableRagdoll ? ECollisionEnabled::PhysicsOnly : ECollisionEnabled::NoCollision);
+		CharacterMesh->SetAllBodiesSimulatePhysics(bEnableRagdoll ? true : false);
+
+		if (bEnableRagdoll)
 		{
-		case ECharacterMovementType::Walk:
-			CombatCharacterMovement->MaxWalkSpeed = MaxWalkSpeed;
-			break;
-		case ECharacterMovementType::Run:
-			CombatCharacterMovement->MaxWalkSpeed = MaxRunSpeed;
-			break;
-		default:
-			CombatCharacterMovement->MaxWalkSpeed = MaxRunSpeed;
-			break;
+			CharacterMesh->WakeAllRigidBodies();
 		}
-	}
-}
-
-void ACombatCharacter::ServerPrimaryFire_Implementation(AFirearm* InFirearm)
-{
-	if (!InFirearm)
-	{
-		return;
-	}
-
-	if (UWorld* World = GetWorld())
-	{
-		FVector ViewLocation;
-		FRotator ViewRotation;
-		GetActorEyesViewPoint(ViewLocation, ViewRotation);
-
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(this);
-
-		TArray<FHitResult> HitResults;
-		if (World->LineTraceMultiByChannel(HitResults, ViewLocation, ViewLocation + ViewRotation.Vector() * 30'000.0f, ECollisionChannel::ECC_WorldStatic, QueryParams))
+		else
 		{
-			for (const FHitResult& HitResult : HitResults)
-			{
-				if (HitResult.Actor.Get() != this)
-				{
-					if (HitResult.Actor.IsValid() && HitResult.Actor.Get() && HitResult.Actor->GetClass()->IsChildOf<APawn>())
-					{
-						const float BaseDamage = 30.0f;
+			CharacterMesh->PutAllRigidBodiesToSleep();
+		}
 
-						UGameplayStatics::ApplyDamage(HitResult.Actor.Get(), BaseDamage, GetController(), this, UDamageType::StaticClass());
-						break;
-					}
-				}
+		CharacterMesh->SetOwnerNoSee(bEnableRagdoll ? false : true);
+
+		if (UCapsuleComponent* Capsule = GetCapsuleComponent())
+		{
+			Capsule->SetCollisionEnabled(bEnableRagdoll ? ECollisionEnabled::NoCollision : ECollisionEnabled::QueryAndPhysics);
+
+			if (!bEnableRagdoll)
+			{
+				CharacterMesh->AttachTo(Capsule);
+				CharacterMesh->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 25.0f), FQuat::MakeFromEuler(FVector(0.0f, 0.0f, -90.0f)));
 			}
 		}
 	}
+
+	if (AController* CurrentController = GetController())
+	{
+		CurrentController->SetIgnoreMoveInput(bEnableRagdoll ? true : false);
+	}
 }
+
+bool ACombatCharacter::IsRagdoll() const
+{
+	if (USkeletalMeshComponent* CharacterMesh = GetMesh())
+	{
+		return CharacterMesh->IsSimulatingPhysics();
+	}
+
+	return false;
+}
+
+//void ACombatCharacter::BroadcastUpdateMovement_Implementation()
+//{
+//	if (UCharacterMovementComponent* CombatCharacterMovement = GetCharacterMovement())
+//	{
+//		switch (MovementType)
+//		{
+//		case ECharacterMovementType::Walk:
+//			CombatCharacterMovement->MaxWalkSpeed = MaxWalkSpeed;
+//			break;
+//		case ECharacterMovementType::Run:
+//			CombatCharacterMovement->MaxWalkSpeed = MaxRunSpeed;
+//			break;
+//		default:
+//			CombatCharacterMovement->MaxWalkSpeed = MaxRunSpeed;
+//			break;
+//		}
+//	}
+//}
+
+//void ACombatCharacter::ServerPrimaryFire_Implementation(AFirearm* InFirearm)
+//{
+//	if (!InFirearm)
+//	{
+//		return;
+//	}
+//
+//	if (UWorld* World = GetWorld())
+//	{
+//		FVector ViewLocation;
+//		FRotator ViewRotation;
+//		GetActorEyesViewPoint(ViewLocation, ViewRotation);
+//
+//		FCollisionQueryParams QueryParams;
+//		QueryParams.AddIgnoredActor(this);
+//
+//		TArray<FHitResult> HitResults;
+//		if (World->LineTraceMultiByChannel(HitResults, ViewLocation, ViewLocation + ViewRotation.Vector() * 30'000.0f, ECollisionChannel::ECC_WorldStatic, QueryParams))
+//		{
+//			for (const FHitResult& HitResult : HitResults)
+//			{
+//				if (HitResult.Actor.Get() != this)
+//				{
+//					if (HitResult.Actor.IsValid() && HitResult.Actor.Get() && HitResult.Actor->GetClass()->IsChildOf<APawn>())
+//					{
+//						const float BaseDamage = 30.0f;
+//
+//						UGameplayStatics::ApplyDamage(HitResult.Actor.Get(), BaseDamage, GetController(), this, UDamageType::StaticClass());
+//						break;
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
 
 void ACombatCharacter::ServerUse_Implementation()
 {

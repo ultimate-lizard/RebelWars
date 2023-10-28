@@ -19,6 +19,8 @@ void AFirearmSequential::Reload(bool bFromReplication)
 		{
 			return;
 		}
+
+		bLastShotDry = CurrentMagAmmo <= 0;
 	}
 
 	StartSequentialReload();

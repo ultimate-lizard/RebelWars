@@ -35,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void DropFirearm(AFirearm* InFirearm, bool bAutoEquip = true, bool bFromReplication = false);
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void DropAll();
+
 	UFUNCTION(BlueprintPure, Category = "Inventory")
 	AFirearm* GetFirearm(EInventorySlot Slot) const;
 

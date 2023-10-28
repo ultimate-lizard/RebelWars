@@ -9,6 +9,10 @@
 
 class AItemBase;
 class UInteractableComponent;
+class ACombatCharacter;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnKill, AActor*, Killer, ACombatCharacter*, Victim);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResurrect, ACombatCharacter*, ResurrectedActor);
 
 UENUM(BlueprintType)
 enum class ECharacterMovementType : uint8
@@ -27,8 +31,8 @@ class REBELWARS_API ACombatCharacter : public ACharacter, public IGenericTeamAge
 public:
 	ACombatCharacter();
 
-	UFUNCTION(Exec)
-	void DebugDropWeapon();
+	virtual void SetPlayerDefaults() override;
+	virtual void Landed(const FHitResult& Hit) override;
 
 	UFUNCTION(BlueprintPure)
 	bool IsArmed() const;
@@ -40,7 +44,11 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Movement")
 	ECharacterMovementType GetMovementType() const;
 
+	UFUNCTION(BlueprintPure)
 	float GetCurrentHealth() const;
+
+	UFUNCTION(BlueprintPure)
+	bool IsDead() const;
 
 	virtual void AttachWeaponMesh(class AFirearm* InFirearm);
 	USkeletalMeshComponent* GetHandsMesh1P();
@@ -83,6 +91,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Team")
 	EAffiliation Affiliation;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnKill OnKillDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnResurrect OnResurrectDelegate;
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
@@ -100,8 +114,17 @@ protected:
 	void TraceInteractables();
 
 	virtual void Kill();
+	virtual void Resurrect();
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void OnHealthUpdate();
+	void SetHealth(float NewHealth);
+
+	void SetRagdollEnabled(bool bEnableRagdoll);
+	bool IsRagdoll() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadcastBecomeRagdoll(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
+	void BroadcastBecomeRagdoll_Implementation(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
 
 	UFUNCTION()
 	void OnRep_CurrentHealth();
@@ -112,17 +135,13 @@ protected:
 	UFUNCTION()
 	void FirearmUnequip(class AFirearm* InFirearm);
 
-	UFUNCTION(Server, Reliable)
-	void ServerPrimaryFire(AFirearm* InFirearm);
-	void ServerPrimaryFire_Implementation(AFirearm* InFirearm);
+	//UFUNCTION(Server, Reliable)
+	//void ServerPrimaryFire(AFirearm* InFirearm);
+	//void ServerPrimaryFire_Implementation(AFirearm* InFirearm);
 
 	UFUNCTION(Server, Reliable)
 	void ServerUse();
 	void ServerUse_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable, Category = "Movement")
-	void BroadcastUpdateMovement();
-	void BroadcastUpdateMovement_Implementation();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -140,6 +159,15 @@ protected:
 	UPROPERTY(ReplicatedUsing=OnRep_CurrentHealth)
 	float CurrentHealth;
 
+	bool bIsDead;
+
+	FTimerHandle DamageAccumulationTimer;
+
+	float AccumulatedDamage;
+
+	UPROPERTY(Replicated)
+	AActor* LastDamageCauser;
+
 	UPROPERTY(Replicated)
 	ECharacterMovementType MovementType;
 
@@ -148,8 +176,9 @@ protected:
 	UPROPERTY(Transient, BlueprintReadOnly)
 	UInteractableComponent* FocusedInteractable;
 
+	UPROPERTY(Replicated)
 	FRotator TargetRotation;
 
-	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Movement")
+	UPROPERTY(Replicated)
 	FRotator HeadRotation;
 };

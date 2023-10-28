@@ -75,18 +75,6 @@ struct FFirearmAnimations
 	UAnimSequence* DefaultDry;
 };
 
-USTRUCT(BlueprintType)
-struct FFirearmViewPunchConfig
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FVector2D PitchSpread;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FVector2D YawSpread;
-};
-
 /* A simple automatic or semi-automatic weapon */
 UCLASS()
 class REBELWARS_API AFirearm : public AItemBase
@@ -126,7 +114,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bHasSlideLock;
 
-	// Rate of fire of the firearm in shots per second
+	// Rate of fire of the firearm in shots per minute
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
 	int32 FireRate;
 
@@ -149,15 +137,34 @@ public:
 	float DeployLength;
 
 	// How many bullets comes out from the gun during one shot. Useful for shotguns
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float Damage;
+
+	// How many bullets comes out from the gun during one shot. Useful for shotguns
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
 	int32 BulletsPerShot;
 
-	// How much the bullets from the shot spread. 0.0f - no spread
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0.0"))
-	float Spread;
+	/* How much the bullets spread in a cone half angle(in degrees).
+		X: minimum spread angle. Y: maximum spread angle */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0.0"), Category = "Recoil")
+	FVector2D SpreadAngleRange;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FFirearmViewPunchConfig ViewPunchConfig;
+	/* Time: shots made in a burst. Value: the strength of a spread angle from 0.0f to 1.0f.
+		If no curve specified, the strength of the spread is the minimum value of SpreadAngleRange */ 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Recoil")
+	UCurveFloat* SpreadStrengthCurve;
+
+	// How much in Y degrees the view is punched per shot. Does not affect spread and control rotation
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Recoil")
+	float ViewPunch;
+
+	// Time in seconds before the amount of shots in the current burst resets to 0
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Recoil")
+	float BurstResetTime;
+
+	// The maximum angle deviation (in degrees) that movement causes
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Recoil")
+	float MovementSpreadPenalty;
 
 	// How many shells fit into the magazine
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo", Meta = (ClampMin = "0"))
@@ -237,4 +244,7 @@ protected:
 	bool bIsDeployed;
 
 	bool bLastShotDry;
+
+	// Resets to 0 after BurstResetTime passes
+	uint32 ShotsInCurrentBurst;
 };

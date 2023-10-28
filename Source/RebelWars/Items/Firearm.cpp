@@ -8,6 +8,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Controllers/HumanPlayerController.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AFirearm::AFirearm()
 {
@@ -22,10 +23,12 @@ AFirearm::AFirearm()
 	ReloadLength = 2.0f;
 	ReloadDryLength = 3.0f;
 	DeployLength = 0.5f;
+	Damage = 20.0f;
 	BulletsPerShot = 1;
-	Spread = 0.0f;
-	ViewPunchConfig.PitchSpread = FVector2D(-1.0f, 2.5f);
-	ViewPunchConfig.YawSpread = FVector2D(-1.0f, 1.0f);
+	SpreadAngleRange = FVector2D(0.0f, 15.0f);
+	ViewPunch = 50.0f;
+	BurstResetTime = 1.0f;
+	MovementSpreadPenalty = 15.0f;
 
 	MagAmmoCapacity = 30;
 	ReserveAmmoCapacity = 120;
@@ -36,6 +39,8 @@ AFirearm::AFirearm()
 	bIsDeployed = false;
 
 	bLastShotDry = false;
+
+	ShotsInCurrentBurst = 0;
 }
 
 void AFirearm::PlayPrimaryShotEffects()
@@ -121,6 +126,12 @@ void AFirearm::Tick(float DeltaTime)
 		}
 		break;
 	}
+
+	if (ShotsInCurrentBurst && GetWorld()->GetTimeSeconds() - TimeSinceLastShot >= BurstResetTime)
+	{
+		ShotsInCurrentBurst = 0;
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("Burst has been reset"));
+	}
 }
 
 void AFirearm::PostInitializeComponents()
@@ -162,6 +173,9 @@ void AFirearm::Equip()
 void AFirearm::Unequip()
 {
 	bIsDeployed = false;
+	GetWorldTimerManager().ClearTimer(DeployTimer);
+	GetWorldTimerManager().ClearTimer(ReloadTimer);
+	FirearmState = EFirearmState::Idle;
 }
 
 void AFirearm::StartPrimaryFire()
@@ -235,11 +249,16 @@ void AFirearm::PrimaryFire()
 	{
 		if (AHumanPlayerController* PlayerController = Cast<AHumanPlayerController>(OwnerCharacter->GetController()))
 		{
-			PlayerController->AddViewPunch(FRotator(FMath::RandRange(ViewPunchConfig.PitchSpread.X, ViewPunchConfig.PitchSpread.Y), FMath::RandRange(ViewPunchConfig.YawSpread.X, ViewPunchConfig.YawSpread.Y), 0.0f));
+			PlayerController->AddViewPunch(FRotator::MakeFromEuler(FVector(0.0f, -ViewPunch, 0.0f)));
 		}
 	}
 
 	PlayPrimaryShotEffects();
+
+	ShotsInCurrentBurst++;
+
+	FString ShotsCountStr = FString::Printf(TEXT("Burst: %i"), ShotsInCurrentBurst);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, *ShotsCountStr);
 }
 
 bool AFirearm::IsReadyForNextShot() const
@@ -349,28 +368,59 @@ void AFirearm::TraceBullet()
 
 				FCollisionQueryParams QueryParams;
 				QueryParams.AddIgnoredActor(this);
+				QueryParams.AddIgnoredActor(CachedOwner);
+
+				TMap<AActor*, TArray<FHitResult>> UniqueActorsHits;
+
+				float SpreadAngle = SpreadAngleRange.X;
+
+				if (SpreadStrengthCurve)
+				{
+					float RecoilModifier = SpreadStrengthCurve->GetFloatValue(static_cast<float>(ShotsInCurrentBurst));
+					FString RecoilStr = FString::Printf(TEXT("Recoil: %f"), RecoilModifier);
+					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, *RecoilStr);
+					const FVector2D CurveRange(0.0f, 1.0f);
+					SpreadAngle = FMath::GetMappedRangeValueUnclamped(CurveRange, SpreadAngleRange, RecoilModifier);
+				}
+
+				// Movement penalt
+				if (CachedOwner && CachedOwner->GetVelocity().Size())
+				{
+					const FVector2D VelocityRange(0.0f, CachedOwner->MaxRunSpeed);
+					const FVector2D VelocityModifierDegreesRange(0.0f, MovementSpreadPenalty);
+					const float Penalty = FMath::GetMappedRangeValueUnclamped(VelocityRange, VelocityModifierDegreesRange, CachedOwner->GetVelocity().Size());
+					FString PenaltyStr = FString::Printf(TEXT("Penalty: %f"), Penalty);
+					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, *PenaltyStr);
+					SpreadAngle += Penalty;
+				}
 
 				for (int32 i = 0; i < BulletsPerShot; ++i)
 				{
-					float SpreadSqrt = FMath::Sqrt(Spread);
-
-					FVector RandomizedSpread;
-					RandomizedSpread.X = FMath::RandRange(-SpreadSqrt, SpreadSqrt);
-					RandomizedSpread.Y = FMath::RandRange(-SpreadSqrt, SpreadSqrt);
-					RandomizedSpread.Z = FMath::RandRange(-SpreadSqrt, SpreadSqrt);
-
+					// TODO: Max bullet distance
 					static const float MaxTraceDistance = 1'000'000.0f;
-					static const float RandomizedSpreadScale = 0.01f;
+
+					FVector RandDir = FMath::VRandCone(UKismetMathLibrary::GetForwardVector(EyesRotation), FMath::DegreesToRadians(SpreadAngle));
 
 					TArray<FHitResult> Hits;
-					FVector TraceDestination = EyesLocation + (EyesRotation.Vector() + RandomizedSpread * RandomizedSpreadScale) * MaxTraceDistance;
+					FVector TraceDestination = EyesLocation + RandDir * MaxTraceDistance;
 					World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_Visibility, QueryParams);
 
 					for (FHitResult& Hit : Hits)
 					{
-						if (Hit.Actor != this)
+						DrawDebugPoint(GetWorld(), Hit.Location, 10.0f, FColor::Red, true);
+
+						if (AActor* HitActor = Hit.Actor.Get())
 						{
-							BroadcastDebugEffects(Hit.Location);
+							if (HitActor->CanBeDamaged())
+							{
+								if (CachedOwner)
+								{
+									FVector Direction = Hit.TraceEnd - Hit.TraceStart;
+									Direction.Normalize();
+
+									UGameplayStatics::ApplyPointDamage(HitActor, Damage, Direction, Hit, CachedOwner->GetController(), this, UDamageType::StaticClass());
+								}
+							}
 						}
 					}
 				}
@@ -437,6 +487,16 @@ bool AFirearm::IsDeploying() const
 {
 	return !IsDeployed() && GetWorldTimerManager().IsTimerActive(DeployTimer);
 }
+
+//float AFirearm::GetShotsPerSecond() const
+//{
+//	float ShotsPerSecond = 1 / (FPlatformTime::Seconds() - LastShotSeconds);
+//
+//	FString ShotsPerSecondStr = FString::Printf(TEXT("%f"), ShotsPerSecond);
+//	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, *ShotsPerSecondStr);
+//
+//	return ShotsPerSecond;
+//}
 
 void AFirearm::OnFinishDeploy()
 {
