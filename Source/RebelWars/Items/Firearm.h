@@ -144,6 +144,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0"))
 	int32 BulletsPerShot;
 
+	// How far does the bullet trace
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0.0"))
+	float BulletRange;
+
 	/* How much the bullets spread in a cone half angle(in degrees).
 		X: minimum spread angle. Y: maximum spread angle */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (ClampMin = "0.0"), Category = "Recoil")

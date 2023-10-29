@@ -25,6 +25,7 @@ AFirearm::AFirearm()
 	DeployLength = 0.5f;
 	Damage = 20.0f;
 	BulletsPerShot = 1;
+	BulletRange = 50'000;
 	SpreadAngleRange = FVector2D(0.0f, 15.0f);
 	ViewPunch = 50.0f;
 	BurstResetTime = 1.0f;
@@ -397,12 +398,10 @@ void AFirearm::TraceBullet()
 				for (int32 i = 0; i < BulletsPerShot; ++i)
 				{
 					// TODO: Max bullet distance
-					static const float MaxTraceDistance = 1'000'000.0f;
-
 					FVector RandDir = FMath::VRandCone(UKismetMathLibrary::GetForwardVector(EyesRotation), FMath::DegreesToRadians(SpreadAngle));
 
 					TArray<FHitResult> Hits;
-					FVector TraceDestination = EyesLocation + RandDir * MaxTraceDistance;
+					FVector TraceDestination = EyesLocation + RandDir * BulletRange;
 					World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_Visibility, QueryParams);
 
 					for (FHitResult& Hit : Hits)
