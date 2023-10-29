@@ -182,5 +182,6 @@ protected:
 	UPROPERTY(Replicated)
 	FRotator HeadRotation;
 
-	float ViewModelSwayCycle = 0.0f;
+	float ViewModelSwayCycle = -3.0f;
+	float ViewModelSway = 0.0f;
 };

@@ -199,15 +199,27 @@ void ACombatCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ViewModelSwayCycle = GetVelocity().Size();
+	// ViewModelSwayCycle = GetVelocity().Size();
 
-	/*if (ViewModelSwayCycle >= 3.0f)
+	ViewModelSwayCycle += DeltaTime * 7.5f;
+	//if (ViewModelSwayCycle >= 3.0f)
+	//{
+	//	ViewModelSwayCycle = -3.0f;
+	//}
+
+	if (!GetVelocity().Size())
 	{
-		ViewModelSwayCycle = 0.0f;
-	}*/
+		ViewModelSwayCycle = -3.0f;
+	}
 
-	FString ViewModelSwayCycleStr = FString::Printf(TEXT("%f"), ViewModelSwayCycle);
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *ViewModelSwayCycleStr);
+	FVector2D VelRange(0.0f, MaxRunSpeed);
+	FVector2D CycleRange(0, 1.0f);
+	float VelModifier = FMath::GetMappedRangeValueClamped(VelRange, CycleRange, GetVelocity().Size());
+
+	/*FString ViewModelSwayCycleStr = FString::Printf(TEXT("%f"), );
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *ViewModelSwayCycleStr);*/
+
+	ViewModelSway = VelModifier * FMath::Sin(ViewModelSwayCycle);
 
 	UpdateBodyRotation(DeltaTime);
 	UpdateViewModelTransform(DeltaTime);
@@ -420,7 +432,11 @@ void ACombatCharacter::UpdateViewModelTransform(float DeltaTime)
 	FVector NewPosition = EyesLocation + EyesRotation.RotateVector(ViewModelOffset);
 	FRotator NewRotation = FRotator(FQuat(EyesRotation) * FQuat(FRotator::ZeroRotator) * FQuat(FRotator(0.0f, 90.0f, 0.0f)));
 
-	WeaponMesh1P->SetWorldLocationAndRotationNoPhysics(NewPosition, NewRotation);
+	// FVector SwayOffset(0.0f, ViewModelSway * 10.0f, 0.0f);
+
+	FVector ForwardVector = UKismetMathLibrary::GetForwardVector(EyesRotation) * ViewModelSway * 3.5f;
+
+	WeaponMesh1P->SetWorldLocationAndRotationNoPhysics(NewPosition + ForwardVector, NewRotation);
 }
 
 void ACombatCharacter::UpdateBodyRotation(float DeltaTime)
