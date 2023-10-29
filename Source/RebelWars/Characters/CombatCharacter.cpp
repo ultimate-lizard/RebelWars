@@ -18,7 +18,7 @@
 
 ACombatCharacter::ACombatCharacter()
 {
-	// TODO: Research on pointer checks
+	// TODO: Research on constructor pointer checks
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -65,7 +65,7 @@ ACombatCharacter::ACombatCharacter()
 	Affiliation = EAffiliation::Neutrals;
 	MovementType = ECharacterMovementType::Run;
 
-	TargetRotation = GetActorRotation();
+	TargetActorRotation = GetActorRotation();
 }
 
 void ACombatCharacter::SetPlayerDefaults()
@@ -140,7 +140,7 @@ void ACombatCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(ACombatCharacter, CurrentHealth);
 	DOREPLIFETIME(ACombatCharacter, MovementType);
 	DOREPLIFETIME(ACombatCharacter, HeadRotation);
-	DOREPLIFETIME(ACombatCharacter, TargetRotation);
+	DOREPLIFETIME(ACombatCharacter, TargetActorRotation);
 	DOREPLIFETIME(ACombatCharacter, LastDamageCauser);
 }
 
@@ -199,8 +199,18 @@ void ACombatCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UpdateViewModelTransform();
+	ViewModelSwayCycle = GetVelocity().Size();
+
+	/*if (ViewModelSwayCycle >= 3.0f)
+	{
+		ViewModelSwayCycle = 0.0f;
+	}*/
+
+	FString ViewModelSwayCycleStr = FString::Printf(TEXT("%f"), ViewModelSwayCycle);
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *ViewModelSwayCycleStr);
+
 	UpdateBodyRotation(DeltaTime);
+	UpdateViewModelTransform(DeltaTime);
 	TraceInteractables();
 }
 
@@ -399,7 +409,7 @@ void ACombatCharacter::Reload()
 	}
 }
 
-void ACombatCharacter::UpdateViewModelTransform()
+void ACombatCharacter::UpdateViewModelTransform(float DeltaTime)
 {
 	ensure(WeaponMesh1P);
 
@@ -428,7 +438,7 @@ void ACombatCharacter::UpdateBodyRotation(float DeltaTime)
 
 			ActorRotator.Yaw = ControlRotator.Yaw;
 
-			TargetRotation = ActorRotator;
+			TargetActorRotation = ActorRotator;
 		}
 		else if (HeadVsBodyDelta.Yaw < -90.0f || HeadVsBodyDelta.Yaw > 90.0f)
 		{
@@ -436,14 +446,16 @@ void ACombatCharacter::UpdateBodyRotation(float DeltaTime)
 			FRotator ActorRotator = GetActorRotation();
 
 			ActorRotator.Yaw = ControlRotator.Yaw;
-			TargetRotation = ActorRotator;
+			TargetActorRotation = ActorRotator;
 		}
 	}
 
 	FRotator ActorRotator = GetActorRotation();
-	if (ActorRotator != TargetRotation)
+	if (ActorRotator != TargetActorRotation)
 	{
-		FRotator CurrentRotation = FMath::RInterpTo(ActorRotator, TargetRotation, DeltaTime, 10.0f);
+		FRotator CurrentRotation = FMath::RInterpTo(ActorRotator, TargetActorRotation, DeltaTime, 10.0f);
+		FRotator PreviousRotation = GetActorRotation();
+
 		SetActorRotation(CurrentRotation);
 	}
 }
@@ -602,42 +614,6 @@ bool ACombatCharacter::IsRagdoll() const
 //		default:
 //			CombatCharacterMovement->MaxWalkSpeed = MaxRunSpeed;
 //			break;
-//		}
-//	}
-//}
-
-//void ACombatCharacter::ServerPrimaryFire_Implementation(AFirearm* InFirearm)
-//{
-//	if (!InFirearm)
-//	{
-//		return;
-//	}
-//
-//	if (UWorld* World = GetWorld())
-//	{
-//		FVector ViewLocation;
-//		FRotator ViewRotation;
-//		GetActorEyesViewPoint(ViewLocation, ViewRotation);
-//
-//		FCollisionQueryParams QueryParams;
-//		QueryParams.AddIgnoredActor(this);
-//
-//		TArray<FHitResult> HitResults;
-//		if (World->LineTraceMultiByChannel(HitResults, ViewLocation, ViewLocation + ViewRotation.Vector() * 30'000.0f, ECollisionChannel::ECC_WorldStatic, QueryParams))
-//		{
-//			for (const FHitResult& HitResult : HitResults)
-//			{
-//				if (HitResult.Actor.Get() != this)
-//				{
-//					if (HitResult.Actor.IsValid() && HitResult.Actor.Get() && HitResult.Actor->GetClass()->IsChildOf<APawn>())
-//					{
-//						const float BaseDamage = 30.0f;
-//
-//						UGameplayStatics::ApplyDamage(HitResult.Actor.Get(), BaseDamage, GetController(), this, UDamageType::StaticClass());
-//						break;
-//					}
-//				}
-//			}
 //		}
 //	}
 //}

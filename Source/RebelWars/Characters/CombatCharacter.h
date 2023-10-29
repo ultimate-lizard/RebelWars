@@ -109,7 +109,7 @@ protected:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamId) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
-	void UpdateViewModelTransform();
+	void UpdateViewModelTransform(float DeltaTime);
 	void UpdateBodyRotation(float DeltaTime);
 	void TraceInteractables();
 
@@ -177,8 +177,10 @@ protected:
 	UInteractableComponent* FocusedInteractable;
 
 	UPROPERTY(Replicated)
-	FRotator TargetRotation;
+	FRotator TargetActorRotation;
 
 	UPROPERTY(Replicated)
 	FRotator HeadRotation;
+
+	float ViewModelSwayCycle = 0.0f;
 };

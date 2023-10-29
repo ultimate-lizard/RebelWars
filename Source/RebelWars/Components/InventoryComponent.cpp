@@ -134,13 +134,16 @@ void UInventoryComponent::DropFirearm(AFirearm* InFirearm, bool bAutoEquip, bool
 		{
 			Inventory.Remove(InFirearm);
 
-			if (Inventory.Num() && bAutoEquip)
+			if (bAutoEquip)
 			{
-				EquipFirearm(Inventory[0]->Slot);
-			}
-			else
-			{
-				HolsterWeapon();
+				if (Inventory.Num())
+				{
+					EquipFirearm(Inventory[0]->Slot);
+				}
+				else
+				{
+					HolsterWeapon();
+				}
 			}
 		}
 	}
