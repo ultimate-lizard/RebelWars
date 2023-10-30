@@ -213,6 +213,8 @@ protected:
 	float GetTimePerShot() const;
 	bool IsReadyForNextShot() const;
 
+	void UpdateSpreadAngle();
+
 	UFUNCTION()
 	void OnRep_FirearmState();
 
@@ -241,6 +243,12 @@ protected:
 
 	float TimeSinceLastShot;
 
+	// Resets to 0 after BurstResetTime passes
+	uint32 ShotsInCurrentBurst;
+	// Useful for crosshairs
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentSpreadAngle;
+
 	UPROPERTY(ReplicatedUsing=OnRep_FirearmState)
 	EFirearmState FirearmState;
 
@@ -248,7 +256,4 @@ protected:
 	bool bIsDeployed;
 
 	bool bLastShotDry;
-
-	// Resets to 0 after BurstResetTime passes
-	uint32 ShotsInCurrentBurst;
 };

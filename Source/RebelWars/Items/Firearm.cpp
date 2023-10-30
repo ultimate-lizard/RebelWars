@@ -15,10 +15,13 @@ AFirearm::AFirearm()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
+	// Weapon config
 	GripType = EFirearmGripType::Rifle;
+	Slot = EInventorySlot::Primary;
+
+	// Firearm config
 	CurrentFireMode = EFirearmFireMode::SemiAuto;
 	bHasSlideLock = false;
-
 	FireRate = 600;
 	ReloadLength = 2.0f;
 	ReloadDryLength = 3.0f;
@@ -31,17 +34,18 @@ AFirearm::AFirearm()
 	BurstResetTime = 1.0f;
 	MovementSpreadPenalty = 15.0f;
 
+	// Ammo
 	MagAmmoCapacity = 30;
 	ReserveAmmoCapacity = 120;
 
+	// Shooting logic
 	TimeSinceLastShot = 0.0f;
+	ShotsInCurrentBurst = 0;
+	CurrentSpreadAngle = SpreadAngleRange.X;
 
 	FirearmState = EFirearmState::Idle;
 	bIsDeployed = false;
-
 	bLastShotDry = false;
-
-	ShotsInCurrentBurst = 0;
 }
 
 void AFirearm::PlayPrimaryShotEffects()
@@ -118,6 +122,8 @@ void AFirearm::BeginPlay()
 
 void AFirearm::Tick(float DeltaTime)
 {
+	UpdateSpreadAngle();
+	
 	switch (CurrentFireMode)
 	{
 	case EFirearmFireMode::Auto:
@@ -131,7 +137,7 @@ void AFirearm::Tick(float DeltaTime)
 	if (ShotsInCurrentBurst && GetWorld()->GetTimeSeconds() - TimeSinceLastShot >= BurstResetTime)
 	{
 		ShotsInCurrentBurst = 0;
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("Burst has been reset"));
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("Burst has been reset"));
 	}
 }
 
@@ -222,6 +228,31 @@ void AFirearm::StopPrimaryFire()
 void AFirearm::ServerStartPrimaryFire_Implementation()
 {
 	StartPrimaryFire();
+}
+
+void AFirearm::UpdateSpreadAngle()
+{
+	if (bIsDeployed)
+	{
+		CurrentSpreadAngle = SpreadAngleRange.X;
+
+		// Shooting accuracy penalty
+		if (SpreadStrengthCurve)
+		{
+			float RecoilModifier = SpreadStrengthCurve->GetFloatValue(static_cast<float>(ShotsInCurrentBurst));
+			const FVector2D CurveRange(0.0f, 1.0f);
+			CurrentSpreadAngle = FMath::GetMappedRangeValueUnclamped(CurveRange, SpreadAngleRange, RecoilModifier);
+		}
+
+		// Movement accuracy penalty
+		if (CachedOwner && CachedOwner->GetVelocity().Size())
+		{
+			const FVector2D VelocityRange(0.0f, CachedOwner->MaxRunSpeed);
+			const FVector2D VelocityModifierDegreesRange(0.0f, MovementSpreadPenalty);
+			const float Penalty = FMath::GetMappedRangeValueUnclamped(VelocityRange, VelocityModifierDegreesRange, CachedOwner->GetVelocity().Size());
+			CurrentSpreadAngle += Penalty;
+		}
+	}
 }
 
 void AFirearm::ServerStopPrimaryFire_Implementation()
@@ -373,32 +404,10 @@ void AFirearm::TraceBullet()
 
 				TMap<AActor*, TArray<FHitResult>> UniqueActorsHits;
 
-				float SpreadAngle = SpreadAngleRange.X;
-
-				if (SpreadStrengthCurve)
-				{
-					float RecoilModifier = SpreadStrengthCurve->GetFloatValue(static_cast<float>(ShotsInCurrentBurst));
-					FString RecoilStr = FString::Printf(TEXT("Recoil: %f"), RecoilModifier);
-					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, *RecoilStr);
-					const FVector2D CurveRange(0.0f, 1.0f);
-					SpreadAngle = FMath::GetMappedRangeValueUnclamped(CurveRange, SpreadAngleRange, RecoilModifier);
-				}
-
-				// Movement penalt
-				if (CachedOwner && CachedOwner->GetVelocity().Size())
-				{
-					const FVector2D VelocityRange(0.0f, CachedOwner->MaxRunSpeed);
-					const FVector2D VelocityModifierDegreesRange(0.0f, MovementSpreadPenalty);
-					const float Penalty = FMath::GetMappedRangeValueUnclamped(VelocityRange, VelocityModifierDegreesRange, CachedOwner->GetVelocity().Size());
-					FString PenaltyStr = FString::Printf(TEXT("Penalty: %f"), Penalty);
-					GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Cyan, *PenaltyStr);
-					SpreadAngle += Penalty;
-				}
-
 				for (int32 i = 0; i < BulletsPerShot; ++i)
 				{
 					// TODO: Max bullet distance
-					FVector RandDir = FMath::VRandCone(UKismetMathLibrary::GetForwardVector(EyesRotation), FMath::DegreesToRadians(SpreadAngle));
+					FVector RandDir = FMath::VRandCone(UKismetMathLibrary::GetForwardVector(EyesRotation), FMath::DegreesToRadians(CurrentSpreadAngle));
 
 					TArray<FHitResult> Hits;
 					FVector TraceDestination = EyesLocation + RandDir * BulletRange;
