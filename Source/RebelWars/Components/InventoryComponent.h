@@ -50,6 +50,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void HolsterWeapon();
 
+	const TArray<AFirearm*>& GetWeapons() const;
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnFirearmEquip OnFirearmEquipDelegate;

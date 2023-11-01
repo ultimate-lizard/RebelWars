@@ -49,6 +49,8 @@ ACombatCharacter::ACombatCharacter()
 
 	GetMesh()->bOwnerNoSee = true;
 
+	// AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 	MaxHealth = 100.0f;
 	CurrentHealth = MaxHealth;
 	bIsDead = false;
@@ -112,6 +114,11 @@ void ACombatCharacter::PossessedBy(AController* NewController)
 	{
 		Affiliation = ActorStartSpot->PlayerStartAffiliation;
 	}
+
+	FGenericTeamId Team(UTeamStatics::GetTeamIdFromAffiliation(Affiliation));
+	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
+
+	SetGenericTeamId(Team);
 }
 
 void ACombatCharacter::PostInitializeComponents()
@@ -126,11 +133,6 @@ void ACombatCharacter::PostInitializeComponents()
 void ACombatCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	FGenericTeamId Team(UTeamStatics::GetTeamIdFromAffiliation(Affiliation));
-	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
-
-	SetGenericTeamId(Team);
 }
 
 void ACombatCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -264,6 +266,11 @@ void ACombatCharacter::StartPrimaryFire()
 {
 	ensure(InventoryComponent);
 
+	if (IsDead())
+	{
+		return;
+	}
+
 	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
 	{
 		CurrentFirearm->StartPrimaryFire();
@@ -367,6 +374,8 @@ void ACombatCharacter::BroadcastBecomeRagdoll_Implementation(FVector ImpulseDire
 
 void ACombatCharacter::Kill()
 {
+	StopPrimaryFire();
+
 	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{
 		InventoryComponent->DropAll();
@@ -377,6 +386,8 @@ void ACombatCharacter::Kill()
 	// TODO: Play animation
 	// SetRagdollEnabled(true);
 
+	SetGenericTeamId(TeamId.NoTeam);
+
 	OnKillDelegate.Broadcast(nullptr, this);
 }
 
@@ -385,6 +396,11 @@ void ACombatCharacter::Resurrect()
 	bIsDead = false;
 
 	SetRagdollEnabled(false);
+
+	FGenericTeamId Team(UTeamStatics::GetTeamIdFromAffiliation(Affiliation));
+	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
+
+	SetGenericTeamId(Team);
 
 	OnResurrectDelegate.Broadcast(this);
 }

@@ -10,16 +10,13 @@
 class AFirearm;
 class UInventoryComponent;
 
-UENUM(BlueprintType)
-enum class EAIActiveState : uint8
-{
-	AS_Idle				UMETA(DisplayName="Idle"),
-	AS_MeleeAttack		UMETA(DisplayName = "Melee Attack"),
-	AS_Shoot			UMETA(DisplayName = "Shoot"),
-	AS_Reload			UMETA(DisplayName = "Reload"),
-	AS_ThrowGrenade		UMETA(DisplayName = "Throw Greande"),
-	AS_PickupItem		UMETA(DisplayName = "Pickup Item")
-};
+//UENUM(BlueprintType)
+//enum class EAIActiveState : uint8
+//{
+//	AS_Idle				UMETA(DisplayName="Idle"),
+//	AS_MeleeAttack		UMETA(DisplayName = "Melee Attack"),
+//	AS_Shoot			UMETA(DisplayName = "Shoot")
+//};
 
 UENUM(BlueprintType)
 enum class EAIPassiveState : uint8
@@ -60,9 +57,6 @@ public:
 	void StartFireAt(AActor* InActor);
 	void StopFire();
 
-	UPROPERTY(EditDefaultsOnly)
-	class UBehaviorTree* BehaviorTree;
-
 	// Amount of time in seconds until the AI Controller forgets the last seen target
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Memory", Meta = (ClampMin = "0.0"))
 	float TargetMemoryLength;
@@ -72,32 +66,39 @@ protected:
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;
 
 	void Think();
-	void CheckInventory();
-	bool IsAmmoLow(const UInventoryComponent& Inventory);
+	void UpdateInventoryManaging();
+	void UpdateAttacking();
 
+	bool IsAmmoLow(const UInventoryComponent& Inventory);
+	void EquipBestWeapon(UInventoryComponent& Inventory);
+
+	void SetTarget(AActor* NewTarget);
 	void SetMovementTarget(AActor* NewTarget);
+	//void UpdateActiveState(EAIActiveState NewState);
 	void UpdatePassiveState(EAIPassiveState NewState);
 
 protected:
 	UPROPERTY()
 	class UAISenseConfig_Sight* AIItemSightConfig;
 
-	bool bCanSeeAWeapon;
+	UInventoryComponent* PawnInventory;
+	// bool bCanSeeAWeapon;
 
-	APawn* TargetEnemy;
-	APawn* RememberedTargetEnemy;
-	FTimerHandle MemoryTimer;
+	// APawn* TargetEnemy;
+	// APawn* RememberedTargetEnemy;
+	// FTimerHandle MemoryTimer;
 
-	AActor* FireTarget;
 	bool bIsFiring;
 
-	FBlackboard::FKey IsArmedKey;
+	// FBlackboard::FKey IsArmedKey;
 
-	EAIActiveState CurrentActiveState;
+	// EAIActiveState CurrentActiveState;
 	EAIPassiveState CurrentPassiveState;
+	AActor* Target;
 	AActor* MovementTarget;
 };
 
@@ -112,7 +113,7 @@ inline ActorClass* ACombatAIController::GetClosestSensedActor()
 			AActor* PerceptedActor = Iter.Key().ResolveObjectPtr();
 			const FActorPerceptionInfo& PerceptionInfo = Iter.Value();
 
-			if (PerceptedActor && PerceptionInfo.HasAnyCurrentStimulus())
+			if (PerceptedActor && PerceptionInfo.HasAnyKnownStimulus())
 			{
 				if (ActorClass* CastedPerceptedActor = Cast<ActorClass>(PerceptedActor))
 				{
@@ -132,13 +133,13 @@ inline ActorClass* ACombatAIController::GetClosestSensedActor()
 
 	float MinDistance = TNumericLimits<float>::Max();
 	ActorClass* ClosestActor = nullptr;
-	for (ActorClass* Target : PerceptedTargets)
+	for (ActorClass* PerceptedTarget : PerceptedTargets)
 	{
-		float TargetToPawnDistance = FVector::Distance(Target->GetActorLocation(), PawnLocation);
+		float TargetToPawnDistance = FVector::Distance(PerceptedTarget->GetActorLocation(), PawnLocation);
 		if (TargetToPawnDistance < MinDistance)
 		{
 			MinDistance = TargetToPawnDistance;
-			ClosestActor = Target;
+			ClosestActor = PerceptedTarget;
 		}
 	}
 

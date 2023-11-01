@@ -18,9 +18,13 @@ public:
 
 	virtual void Logout(AController* Exiting) override;
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
+	virtual void RestartPlayer(AController* NewPlayer) override;
 	virtual void RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot) override;
 
 protected:
+	virtual void HandleMatchIsWaitingToStart() override;
+	virtual void HandleMatchHasStarted() override;
+
 	UFUNCTION()
 	virtual void OnCombatCharacterKilled(AActor* Killer, ACombatCharacter* Victim);
 

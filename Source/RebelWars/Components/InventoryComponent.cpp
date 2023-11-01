@@ -140,10 +140,11 @@ void UInventoryComponent::DropFirearm(AFirearm* InFirearm, bool bAutoEquip, bool
 				{
 					EquipFirearm(Inventory[0]->Slot);
 				}
-				else
-				{
-					HolsterWeapon();
-				}
+			}
+
+			if (!Inventory.Num())
+			{
+				HolsterWeapon();
 			}
 		}
 	}
@@ -229,4 +230,9 @@ void UInventoryComponent::HolsterWeapon()
 			EquippedFirearm = nullptr;
 		}
 	}
+}
+
+const TArray<AFirearm*>& UInventoryComponent::GetWeapons() const
+{
+	return Inventory;
 }

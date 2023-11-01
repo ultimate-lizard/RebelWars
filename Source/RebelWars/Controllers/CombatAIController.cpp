@@ -10,6 +10,7 @@
 #include "Perception/AISenseConfig_Sight.h"
 #include "Items/Firearm.h"
 #include "Components/InventoryComponent.h"
+#include "Components/InteractableComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Characters/CombatCharacter.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
@@ -29,11 +30,12 @@ ACombatAIController::ACombatAIController()
 
 	TargetMemoryLength = 5.0f;
 
-	bCanSeeAWeapon = false;
-	TargetEnemy = nullptr;
-	RememberedTargetEnemy = nullptr;
+	bWantsPlayerState = true;
 
-	FireTarget = nullptr;
+	//bCanSeeAWeapon = false;
+	//TargetEnemy = nullptr;
+	//RememberedTargetEnemy = nullptr;
+
 	bIsFiring = false;
 }
 
@@ -41,7 +43,7 @@ void ACombatAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	IsArmedKey = Blackboard->GetKeyID(FName(TEXT("IsArmed")));
+	// IsArmedKey = Blackboard->GetKeyID(FName(TEXT("IsArmed")));
 }
 
 void ACombatAIController::PostInitializeComponents()
@@ -54,67 +56,68 @@ void ACombatAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// TODO: If alive
-	Think();
-
-	if (bIsFiring)
+	ACombatCharacter* CombatPawn = GetPawn<ACombatCharacter>();
+	if (!CombatPawn)
 	{
-		if (ACombatCharacter* CombatPawn = Cast<ACombatCharacter>(GetPawn()))
-		{
-			if (UInventoryComponent* PawnInventory = CombatPawn->FindComponentByClass<UInventoryComponent>())
-			{
-				if (AFirearm* PrimaryFirearm = PawnInventory->GetEquippedFirearm())
-				{
-					if (!PrimaryFirearm->IsReloading() && !PrimaryFirearm->IsFiring())
-					{
-						CombatPawn->StartPrimaryFire();
-					}
+		return;
+	}
 
-					if (PrimaryFirearm->CurrentMagAmmo <= 0)
-					{
-						CombatPawn->StopPrimaryFire();
-						CombatPawn->Reload();
-					}
-				}
-			}
-		}
+	// Think
+	if (!CombatPawn->IsDead())
+	{
+		Think();
 	}
 
 	// Update weapon status for blackboard
-	if (APawn* CurrentPawn = GetPawn())
-	{
-		if (UInventoryComponent* PawnInventory = CurrentPawn->FindComponentByClass<UInventoryComponent>())
-		{
-			Blackboard->SetValue<UBlackboardKeyType_Bool>(IsArmedKey, PawnInventory->GetEquippedFirearm() != nullptr);
-		}
-	}
-
-	PerceptionComponent->GetPerceptualDataConstIterator();
+	//if (APawn* CurrentPawn = GetPawn())
+	//{
+	//	if (UInventoryComponent* PawnInventory = CurrentPawn->FindComponentByClass<UInventoryComponent>())
+	//	{
+	//		Blackboard->SetValue<UBlackboardKeyType_Bool>(IsArmedKey, PawnInventory->GetEquippedFirearm() != nullptr);
+	//	}
+	//}
 }
 
 void ACombatAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	if (!BehaviorTree)
+	if (ACombatCharacter* PossessedPawn = GetPawn<ACombatCharacter>())
 	{
-		return;
+		PawnInventory = PossessedPawn->FindComponentByClass<UInventoryComponent>();
+
+		if (UBehaviorTree* BehaviorTree = PossessedPawn->BehaviorTree)
+		{
+			check(Blackboard);
+			Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+
+			check(BrainComponent);
+			if (UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent))
+			{
+				BTComponent->StartTree(*BehaviorTree);
+			}
+		}
 	}
 
-	check(Blackboard);
-	Blackboard->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	// CachedInventory
+}
+
+void ACombatAIController::OnUnPossess()
+{
+	PawnInventory = nullptr;
 
 	check(BrainComponent);
 	if (UBehaviorTreeComponent* BTComponent = Cast<UBehaviorTreeComponent>(BrainComponent))
 	{
-		BTComponent->StartTree(*BehaviorTree);
+		BTComponent->StopTree();
 	}
+
+	Super::OnUnPossess();
 }
 
 void ACombatAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePawn)
 {
-	APawn* const MyPawn = GetPawn();
-	if (MyPawn)
+	if (APawn* const MyPawn = GetPawn())
 	{
 		FRotator NewControlRotation = GetControlRotation();
 
@@ -145,26 +148,124 @@ void ACombatAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePaw
 
 void ACombatAIController::Think()
 {
-	CheckInventory();
+	UpdateAttacking();
+	UpdateInventoryManaging();
 }
 
-void ACombatAIController::CheckInventory()
+void ACombatAIController::UpdateInventoryManaging()
 {
-	if (APawn* PossessedPawn = GetPawn())
+	if (!PawnInventory)
 	{
-		if (UInventoryComponent* Inventory = PossessedPawn->FindComponentByClass<UInventoryComponent>())
-		{
-			if (IsAmmoLow(*Inventory))
-			{
-				// if (has weapons in range)
-				// else
+		return;
+	}
 
-				if (CurrentPassiveState != EAIPassiveState::PS_MoveToTarget)
+	APawn* PossessedPawn = GetPawn();
+	if (!PossessedPawn)
+	{
+		return;
+	}
+
+	EquipBestWeapon(*PawnInventory);
+
+	if (IsAmmoLow(*PawnInventory))
+	{
+		if (AFirearm* WeaponInSight = GetClosestSensedActor<AFirearm>())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *WeaponInSight->GetName());
+			bool bIsCloseEnoughToWeapon = FVector::Distance(PossessedPawn->GetActorLocation(), WeaponInSight->GetActorLocation()) <= 200.0f;
+			if (bIsCloseEnoughToWeapon)
+			{
+				//SetTarget(WeaponInSight);
+				//UpdateActiveState(EAIActiveState::AS_PickupItem);
+				if (UInteractableComponent* Interactable = WeaponInSight->FindComponentByClass<UInteractableComponent>())
 				{
-					if (AFirearm* FoundWeapon = GetClosestSensedActor<AFirearm>())
+					Interactable->Interact(PossessedPawn);
+				}
+			}
+			else
+			{
+				SetMovementTarget(WeaponInSight);
+				UpdatePassiveState(EAIPassiveState::PS_MoveToTarget);
+			}
+		}
+		else
+		{
+			UpdatePassiveState(EAIPassiveState::PS_Patrol);
+		}
+	}
+}
+
+void ACombatAIController::UpdateAttacking()
+{
+	if (!PawnInventory)
+	{
+		return;
+	}
+
+	if (PawnInventory->GetEquippedFirearm())
+	{
+		// Update reloading state
+		if (AFirearm* EquippedFirearm = PawnInventory->GetEquippedFirearm())
+		{
+			if (EquippedFirearm->IsReloading())
+			{
+				// TODO: EVALUATE SKILL
+				UpdatePassiveState(EAIPassiveState::PS_TakeCover);
+				return;
+			}
+		}
+
+		// Find target
+		if (AActor* Enemy = FindClosestEnemy())
+		{
+			// TODO: Evaluate items and aggression
+			SetTarget(Enemy);
+			// UpdateActiveState(EAIActiveState::AS_Shoot);
+
+			// TODO: Evaluate skill, agression
+			UpdatePassiveState(EAIPassiveState::PS_Push);
+		}
+		else
+		{
+			SetTarget(nullptr);
+			// UpdateActiveState(EAIActiveState::AS_Idle);
+			UpdatePassiveState(EAIPassiveState::PS_Patrol);
+			if (PawnInventory)
+			{
+				if (AFirearm* EquippedWeapon = PawnInventory->GetEquippedFirearm())
+				{
+					EquippedWeapon->Reload();
+				}
+			}
+		}
+
+		// Toggle state
+		if (Target && LineOfSightTo(Target) && !bIsFiring)
+		{
+			StartFireAt(Target);
+		}
+		else
+		{
+			StopFire();
+		}
+
+		// Update state
+		if (ACombatCharacter* CombatPawn = GetPawn<ACombatCharacter>())
+		{
+			// Update attack state
+			if (bIsFiring)
+			{
+				if (AFirearm* PrimaryFirearm = PawnInventory->GetEquippedFirearm())
+				{
+					if (!PrimaryFirearm->IsReloading() && !PrimaryFirearm->IsFiring())
 					{
-						SetMovementTarget(FoundWeapon);
-						UpdatePassiveState(EAIPassiveState::PS_MoveToTarget);
+						CombatPawn->StartPrimaryFire();
+					}
+
+					if (PrimaryFirearm->CurrentMagAmmo <= 0)
+					{
+						CombatPawn->StopPrimaryFire();
+						CombatPawn->Reload();
 					}
 				}
 			}
@@ -188,28 +289,83 @@ bool ACombatAIController::IsAmmoLow(const UInventoryComponent& Inventory)
 			continue;
 		}
 
-		TotalAmmo += Firearm->CurrentMagAmmo + Firearm->ReserveAmmoCapacity;
+		TotalAmmo += Firearm->CurrentMagAmmo + Firearm->CurrentReserveAmmo;
 		if (Firearm->Slot == EInventorySlot::Primary)
 		{
-			PrimaryAmmo += Firearm->CurrentMagAmmo + Firearm->ReserveAmmoCapacity;
+			PrimaryAmmo += Firearm->CurrentMagAmmo + Firearm->CurrentReserveAmmo;
 		}
 	}
 
+	if (TotalAmmo < 30)
+	{
+		return true;
+	}
 	// TODO: CHECK TOTAL AMMO FOR LOW SKILLS
 
 	// TODO: CHECK PRIMARY FOR HIGH SKILLS
 
-	return true;
+	return false;
+}
+
+void ACombatAIController::EquipBestWeapon(UInventoryComponent& Inventory)
+{
+	EInventorySlot ChosenSlot = EInventorySlot::Melee;
+
+	for (int8 i = static_cast<int8>(EInventorySlot::Sidearm); i >= 0; --i)
+	{
+		if (AFirearm* Weapon = Inventory.GetFirearm(static_cast<EInventorySlot>(i)))
+		{
+			if (Weapon->CurrentMagAmmo + Weapon->CurrentReserveAmmo >= Weapon->MagAmmoCapacity)
+			{
+				ChosenSlot = Weapon->Slot;
+			}
+		}
+	}
+
+	Inventory.EquipFirearm(ChosenSlot);
+}
+
+void ACombatAIController::SetTarget(AActor* NewTarget)
+{
+	if (Target == NewTarget)
+	{
+		return;
+	}
+
+	Target = NewTarget;
+	SetFocus(Target);
+	Blackboard->SetValueAsObject(FName(TEXT("Target")), Target);
 }
 
 void ACombatAIController::SetMovementTarget(AActor* NewTarget)
 {
+	if (MovementTarget == NewTarget)
+	{
+		return;
+	}
+
 	MovementTarget = NewTarget;
 	Blackboard->SetValueAsObject(FName(TEXT("MovementTarget")), MovementTarget);
 }
 
+//void ACombatAIController::UpdateActiveState(EAIActiveState NewState)
+//{
+//	if (CurrentActiveState == NewState)
+//	{
+//		return;
+//	}
+//
+//	CurrentActiveState = NewState;
+//	Blackboard->SetValueAsEnum(FName(TEXT("ActiveState")), static_cast<uint8>(CurrentActiveState));
+//}
+
 void ACombatAIController::UpdatePassiveState(EAIPassiveState NewState)
 {
+	if (CurrentPassiveState == NewState)
+	{
+		return;
+	}
+
 	// TODO: Find place for names
 	CurrentPassiveState = NewState;
 	Blackboard->SetValueAsEnum(FName(TEXT("PassiveState")), static_cast<uint8>(CurrentPassiveState));
@@ -305,7 +461,7 @@ AActor* ACombatAIController::FindClosestEnemy() const
 		AActor* PerceptedActor = Iter.Key().ResolveObjectPtr();
 		const FActorPerceptionInfo& PerceptionInfo = Iter.Value();
 
-		if (PerceptedActor && PerceptionInfo.HasAnyCurrentStimulus())
+		if (PerceptedActor && PerceptionInfo.HasAnyKnownStimulus())
 		{
 			// Check if the actor has any affiliation info
 			if (const IGenericTeamAgentInterface* TeamInterface = Cast<const IGenericTeamAgentInterface>(PerceptedActor))
@@ -353,9 +509,8 @@ AActor* ACombatAIController::FindClosestEnemy() const
 
 void ACombatAIController::StartFireAt(AActor* InActor)
 {
-	SetFocus(InActor);
+	//SetFocus(InActor);
 
-	FireTarget = InActor;
 	bIsFiring = true;
 
 	if (ACombatCharacter* CombatPawn = Cast<ACombatCharacter>(GetPawn()))
@@ -366,9 +521,8 @@ void ACombatAIController::StartFireAt(AActor* InActor)
 
 void ACombatAIController::StopFire()
 {
-	SetFocus(nullptr);
+	//SetFocus(nullptr);
 
-	FireTarget = nullptr;
 	bIsFiring = false;
 
 	if (ACombatCharacter* CombatPawn = Cast<ACombatCharacter>(GetPawn()))

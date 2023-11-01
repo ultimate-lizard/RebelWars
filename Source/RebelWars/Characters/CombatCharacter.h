@@ -50,6 +50,9 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
 
+	UPROPERTY(EditDefaultsOnly)
+	class UBehaviorTree* BehaviorTree;
+
 	virtual void AttachWeaponMesh(class AFirearm* InFirearm);
 	USkeletalMeshComponent* GetHandsMesh1P();
 	USkeletalMeshComponent* GetWeaponMesh1P();

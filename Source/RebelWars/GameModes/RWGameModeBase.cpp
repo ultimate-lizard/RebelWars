@@ -3,6 +3,8 @@
 #include <GameFramework/PlayerState.h>
 #include <Characters/CombatCharacter.h>
 #include <GameModes/RWGameStateBase.h>
+#include <Controllers/CombatAIController.h>
+#include "Kismet/GameplayStatics.h"
 
 APawn* ARWGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
@@ -13,6 +15,16 @@ APawn* ARWGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlaye
 	}
 
 	return SpawnedPawn;
+}
+
+void ARWGameModeBase::RestartPlayer(AController* NewPlayer)
+{
+	if (NewPlayer && NewPlayer->StartSpot == nullptr)
+	{
+		NewPlayer->StartSpot = FindPlayerStart(NewPlayer);
+	}
+
+	Super::RestartPlayer(NewPlayer);
 }
 
 ARWGameModeBase::ARWGameModeBase(const FObjectInitializer& ObjectInitializer) :
@@ -50,6 +62,37 @@ void ARWGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor*
 	{
 		Super::RestartPlayerAtPlayerStart(NewPlayer, StartSpot);
 	}
+}
+
+void ARWGameModeBase::HandleMatchIsWaitingToStart()
+{
+	Super::HandleMatchIsWaitingToStart();
+	
+	if (UWorld* World = GetWorld())
+	{
+		if (auto DefaultPawnObject = DefaultPawnClass.GetDefaultObject())
+		{
+			if (auto DefaultAIControllerObject = DefaultPawnObject->AIControllerClass.GetDefaultObject())
+			{
+				auto SpawnedAIController = World->SpawnActor(DefaultAIControllerObject->GetClass());
+			}
+		}
+		
+	}
+}
+
+void ARWGameModeBase::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
+
+	for (FConstControllerIterator Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
+	{
+		if (ACombatAIController* AI = Cast<ACombatAIController>(*Iter))
+		{
+			RestartPlayer(AI);
+		}
+	}
+	// for ( ())
 }
 
 void ARWGameModeBase::OnCombatCharacterKilled(AActor* Killer, ACombatCharacter* Victim)
