@@ -17,7 +17,7 @@ EBTNodeResult::Type UBTTask_SetFireState::ExecuteTask(UBehaviorTreeComponent& Ow
 	{
 		if (!bIsFireActive)
 		{
-			AIOwner->StopFire();
+			//AIOwner->StopFire();
 			return EBTNodeResult::Succeeded;
 		}
 
@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTTask_SetFireState::ExecuteTask(UBehaviorTreeComponent& Ow
 			{
 				if (bIsFireActive)
 				{
-					AIOwner->StartFireAt(TargetActor);
+					//AIOwner->StartFireAt(TargetActor);
 					return EBTNodeResult::Succeeded;
 				}
 			}

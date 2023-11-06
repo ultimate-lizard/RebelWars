@@ -49,8 +49,6 @@ ACombatCharacter::ACombatCharacter()
 
 	GetMesh()->bOwnerNoSee = true;
 
-	// AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
 	MaxHealth = 100.0f;
 	CurrentHealth = MaxHealth;
 	bIsDead = false;
@@ -292,6 +290,11 @@ void ACombatCharacter::StopPrimaryFire()
 
 void ACombatCharacter::DropFirearm()
 {
+	if (IsDead())
+	{
+		return;
+	}
+
 	ensure(InventoryComponent);
 	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
 	{
@@ -301,6 +304,11 @@ void ACombatCharacter::DropFirearm()
 
 void ACombatCharacter::Use()
 {
+	if (IsDead())
+	{
+		return;
+	}
+
 	if (GetLocalRole() < ENetRole::ROLE_Authority)
 	{
 		ServerUse();
@@ -318,22 +326,32 @@ void ACombatCharacter::Use()
 
 void ACombatCharacter::SelectWeaponSlot(int32 Index)
 {
+	if (IsDead())
+	{
+		return;
+	}
+
 	ensure(InventoryComponent);
 	InventoryComponent->EquipFirearm(static_cast<EInventorySlot>(Index));
 }
 
 float ACombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+	if (!IsBotControlled())
+	{
+		return 0.0f;
+	}
+
 	if (GetWorldTimerManager().IsTimerActive(DamageAccumulationTimer))
 	{
 		AccumulatedDamage += DamageAmount;
-		FString AccumulatedDamageStr = FString::Printf(TEXT("Accumulated damage: %f"), AccumulatedDamage);
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *AccumulatedDamageStr);
+		/*FString AccumulatedDamageStr = FString::Printf(TEXT("Accumulated damage: %f"), AccumulatedDamage);
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *AccumulatedDamageStr);*/
 	}
 	else
 	{
 		GetWorldTimerManager().SetTimer(DamageAccumulationTimer, 0.1f, false);
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("The timer has been reset"));
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("The timer has been reset"));
 		AccumulatedDamage = DamageAmount;
 	}
 
@@ -431,6 +449,11 @@ void ACombatCharacter::Turn(float InRate)
 
 void ACombatCharacter::Reload()
 {
+	if (IsDead())
+	{
+		return;
+	}
+
 	if (AFirearm* CurrentFirearm = InventoryComponent->GetEquippedFirearm())
 	{
 		CurrentFirearm->Reload();

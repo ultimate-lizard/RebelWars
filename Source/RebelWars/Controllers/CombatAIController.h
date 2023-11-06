@@ -4,31 +4,60 @@
 #include "AIController.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "AI/Tactics/AITacticsBase.h"
 
 #include "CombatAIController.generated.h"
 
 class AFirearm;
 class UInventoryComponent;
-
-//UENUM(BlueprintType)
-//enum class EAIActiveState : uint8
-//{
-//	AS_Idle				UMETA(DisplayName="Idle"),
-//	AS_MeleeAttack		UMETA(DisplayName = "Melee Attack"),
-//	AS_Shoot			UMETA(DisplayName = "Shoot")
-//};
+class UAITacticsBase;
 
 UENUM(BlueprintType)
 enum class EAIPassiveState : uint8
 {
 	PS_None				UMETA(DisplayName = "None"),
 	PS_Patrol			UMETA(DisplayName = "Patrol"),
-	PS_Flee				UMETA(DisplayName = "Flee"),
 	PS_TakeCover		UMETA(DisplayName = "Take Cover"),
 	PS_Push				UMETA(DisplayName = "Push"),
 	PS_KeepDistance		UMETA(DisplayName = "Keep Distance"),
 	PS_TakeHight		UMETA(DisplayName = "Take Hight"),
 	PS_MoveToTarget		UMETA(DisplayName = "Move To Target")
+};
+
+UENUM()
+enum class EBotDifficulty : uint8
+{
+	Difficulty_Easy,
+	Difficulty_Medium,
+	Difficulty_Hard
+};
+
+USTRUCT()
+struct FReactionResponse
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	EAIPassiveState MovementBehavior;
+
+	UPROPERTY(EditAnywhere)
+	int32 SkillRequired = 0;
+
+	UPROPERTY(EditAnywhere)
+	int32 AggressionRequired = 0;
+};
+
+USTRUCT(BlueprintType)
+struct FReactionInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	EReaction Reaction;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FReactionResponse> Responses;
 };
 
 UCLASS()
@@ -39,27 +68,41 @@ class REBELWARS_API ACombatAIController : public AAIController
 public:
 	ACombatAIController();
 
-	//UFUNCTION(BlueprintPure)
-	//bool IsCharacterArmed() const;
+	void ApplyDifficulty(EBotDifficulty InDifficulty);
+	void InitReactionTime();
 
-	//void SetNewTargetEnemy(APawn* InPawn);
-	//APawn* GetTargetEnemy();
-
-	//APawn* GetRememberedTargetEnemy();
-	//void ForgetTargetEnemy();
-
-	//APawn* EvaluateTargetEnemy() const;
 	AActor* FindClosestEnemy() const;
 
 	template <typename ActorClass>
-	ActorClass* GetClosestSensedActor();
+	ActorClass* FindClosestSensedActor();
 
-	void StartFireAt(AActor* InActor);
-	void StopFire();
+	bool IsArmed() const;
 
-	// Amount of time in seconds until the AI Controller forgets the last seen target
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Memory", Meta = (ClampMin = "0.0"))
-	float TargetMemoryLength;
+	void SetFiringEnabled(bool bEnabled);
+
+	void SetTarget(AActor* NewTarget);
+	AActor* GetTarget() const;
+
+	AActor* GetMovementTarget() const;
+
+	bool IsAmmoLow() const;
+
+	UInventoryComponent* GetPawnInventory() const;
+
+	void SetMovementBehavior(EAIPassiveState NewState);
+	void SetMovementTarget(AActor* NewTarget);
+
+	void EquipBestWeapon();
+
+	bool IsReloading() const;
+
+	void React(EReaction InReaction);
+
+	UPROPERTY(EditDefaultsOnly)
+	class UBehaviorTree* BehaviorTree;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FReactionInfo> Reactions;
 
 protected:
 	virtual void BeginPlay() override;
@@ -69,41 +112,36 @@ protected:
 	virtual void OnUnPossess() override;
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;
 
-	void Think();
-	void UpdateInventoryManaging();
-	void UpdateAttacking();
-
-	bool IsAmmoLow(const UInventoryComponent& Inventory);
-	void EquipBestWeapon(UInventoryComponent& Inventory);
-
-	void SetTarget(AActor* NewTarget);
-	void SetMovementTarget(AActor* NewTarget);
-	//void UpdateActiveState(EAIActiveState NewState);
-	void UpdatePassiveState(EAIPassiveState NewState);
+	void TickShootingTechnique();
 
 protected:
 	UPROPERTY()
 	class UAISenseConfig_Sight* AIItemSightConfig;
 
 	UInventoryComponent* PawnInventory;
-	// bool bCanSeeAWeapon;
-
-	// APawn* TargetEnemy;
-	// APawn* RememberedTargetEnemy;
-	// FTimerHandle MemoryTimer;
 
 	bool bIsFiring;
 
-	// FBlackboard::FKey IsArmedKey;
-
-	// EAIActiveState CurrentActiveState;
-	EAIPassiveState CurrentPassiveState;
+	EAIPassiveState MovementBehavior;
 	AActor* Target;
 	AActor* MovementTarget;
+
+	FTimerHandle ReactionTimer;
+
+	UPROPERTY()
+	TArray<UAITacticsBase*> Tactics;
+
+	UPROPERTY()
+	int32 Skill = 0;
+
+	UPROPERTY()
+	int32 Aggression = 0;
+
+	float ReactionTime;
 };
 
 template<typename ActorClass>
-inline ActorClass* ACombatAIController::GetClosestSensedActor()
+inline ActorClass* ACombatAIController::FindClosestSensedActor()
 {
 	TArray<ActorClass*> PerceptedTargets;
 	if (UAIPerceptionComponent* AIPerception = GetPerceptionComponent())

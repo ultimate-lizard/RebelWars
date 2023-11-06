@@ -290,7 +290,7 @@ void AFirearm::PrimaryFire()
 	ShotsInCurrentBurst++;
 
 	FString ShotsCountStr = FString::Printf(TEXT("Burst: %i"), ShotsInCurrentBurst);
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, *ShotsCountStr);
+	// GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, *ShotsCountStr);
 }
 
 bool AFirearm::IsReadyForNextShot() const

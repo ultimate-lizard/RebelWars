@@ -14,14 +14,15 @@ EBTNodeResult::Type UBTTask_SetFocus::ExecuteTask(UBehaviorTreeComponent& OwnerC
     {
         if (UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent())
         {
-            if (AActor* TargetActor = Cast<AActor>(BB->GetValueAsObject(BlackboardKey.SelectedKeyName)))
-            {
-                AIController->SetFocus(TargetActor);
-            }
-            else
-            {
-                AIController->ClearFocus(EAIFocusPriority::Gameplay);
-            }
+            AIController->ClearFocus(EAIFocusPriority::Gameplay);
+            //if (AActor* TargetActor = Cast<AActor>(BB->GetValueAsObject(BlackboardKey.SelectedKeyName)))
+            //{
+            //    AIController->SetFocus(TargetActor);
+            //}
+            //else
+            //{
+            //    AIController->ClearFocus(EAIFocusPriority::Gameplay);
+            //}
 
             return EBTNodeResult::Succeeded;
         }
