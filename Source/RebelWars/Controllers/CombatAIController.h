@@ -68,8 +68,7 @@ class REBELWARS_API ACombatAIController : public AAIController
 public:
 	ACombatAIController();
 
-	void ApplyDifficulty(EBotDifficulty InDifficulty);
-	void InitReactionTime();
+	void InitDifficulty(EBotDifficulty InDifficulty);
 
 	AActor* FindClosestEnemy() const;
 

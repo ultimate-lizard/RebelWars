@@ -31,6 +31,7 @@ protected:
 	UFUNCTION()
 	virtual void RespawnCombatCharacter(ACombatCharacter* CharacterToRespawn);
 
-
-	FTimerHandle RespawnTimer;
+	int32 BotsSpawned;
+	
+	TMap<int32, FTimerHandle> RespawnTimers;
 };

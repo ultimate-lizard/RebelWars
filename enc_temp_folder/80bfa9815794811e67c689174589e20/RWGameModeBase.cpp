@@ -97,26 +97,11 @@ void ARWGameModeBase::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
 
-	for (auto Iter = RespawnTimers.CreateIterator(); Iter; ++Iter)
-	{
-		GetWorldTimerManager().ClearTimer(Iter.Value());
-	}
-
-	RespawnTimers.Empty();
-
 	for (FConstControllerIterator Iter = GetWorld()->GetControllerIterator(); Iter; ++Iter)
 	{
 		if (ACombatAIController* AI = Cast<ACombatAIController>(*Iter))
 		{
 			RestartPlayer(AI);
-		}
-
-		if (AController* Controller = Iter->Get())
-		{
-			if (APlayerState* PlayerState = Controller->GetPlayerState<APlayerState>())
-			{
-				RespawnTimers.Add(PlayerState->GetPlayerId(), FTimerHandle());
-			}
 		}
 	}
 }

@@ -40,7 +40,7 @@ ACombatAIController::ACombatAIController()
 	ReactionTime = 1.0f;
 }
 
-void ACombatAIController::ApplyDifficulty(EBotDifficulty InDifficulty)
+void ACombatAIController::InitDifficulty(EBotDifficulty InDifficulty)
 {
 	switch (InDifficulty)
 	{
@@ -58,11 +58,6 @@ void ACombatAIController::ApplyDifficulty(EBotDifficulty InDifficulty)
 		break;
 	}
 
-	InitReactionTime();
-}
-
-void ACombatAIController::InitReactionTime()
-{
 	ReactionTime = 1.0f - Skill / 10.0f;
 }
 
@@ -95,6 +90,7 @@ void ACombatAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Probably best to prioritize based on the skill, but so far no need
 	Tactics.Add(NewObject<UOffensiveAITactics>(this));
 	Tactics.Add(NewObject<UDefensiveAITactics>(this));
 	Tactics.Add(NewObject<UObjectiveAITactics>(this));
@@ -123,7 +119,6 @@ void ACombatAIController::Tick(float DeltaTime)
 
 	if (!GetWorldTimerManager().IsTimerActive(ReactionTimer))
 	{
-		// Update senses
 		SetTarget(FindClosestEnemy());
 
 		for (UAITacticsBase* Tactic : Tactics)
@@ -176,7 +171,7 @@ void ACombatAIController::OnPossess(APawn* InPawn)
 		}
 
 		EBotDifficulty Difficulty = static_cast<EBotDifficulty>(FMath::RandRange(0, 3));
-		ApplyDifficulty(Difficulty);
+		InitDifficulty(Difficulty);
 
 		FString DifficultyStr = FString::Printf(TEXT("Applied a difficulty. Skill: %i, Aggression: %i"), Skill, Aggression);
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, *DifficultyStr);
