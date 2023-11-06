@@ -337,10 +337,10 @@ void ACombatCharacter::SelectWeaponSlot(int32 Index)
 
 float ACombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (!IsBotControlled())
-	{
-		return 0.0f;
-	}
+	//if (!IsBotControlled())
+	//{
+	//	return 0.0f;
+	//}
 
 	if (GetWorldTimerManager().IsTimerActive(DamageAccumulationTimer))
 	{

@@ -229,6 +229,10 @@ void ACombatAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePaw
 
 void ACombatAIController::TickShootingTechnique()
 {
+	bool bUseBurst = Skill >= 5;
+	int32 ShotsPerBurst = 3;
+	float Accuracy = 10.0f; // Worst accuracy
+
 	ACombatCharacter* CombatPawn = GetPawn<ACombatCharacter>();
 	AFirearm* PrimaryFirearm = PawnInventory->GetEquippedFirearm();
 
@@ -265,6 +269,17 @@ void ACombatAIController::TickShootingTechnique()
 	else
 	{
 		CombatPawn->StopPrimaryFire();
+	}
+
+	if (!GetTarget())
+	{
+		if (UAIPerceptionComponent* Perception = GetPerceptionComponent())
+		{
+			if (CombatPawn)
+			{
+				CombatPawn->Reload();
+			}
+		}
 	}
 }
 
@@ -374,6 +389,16 @@ void ACombatAIController::React(EReaction InReaction)
 	}
 
 	SetMovementBehavior(EAIPassiveState::PS_None);
+}
+
+AFirearm* ACombatAIController::GetPawnWeapon() const
+{
+	if (PawnInventory)
+	{
+		return PawnInventory->GetEquippedFirearm();
+	}
+
+	return nullptr;
 }
 
 void ACombatAIController::SetTarget(AActor* NewTarget)

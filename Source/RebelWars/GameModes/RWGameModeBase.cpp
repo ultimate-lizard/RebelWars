@@ -69,7 +69,8 @@ void ARWGameModeBase::HandleMatchIsWaitingToStart()
 {
 	Super::HandleMatchIsWaitingToStart();
 
-	NumBots = 5;
+	// TODO: Move somewhere reasonable
+	NumBots = 1;
 
 	if (UWorld* World = GetWorld())
 	{

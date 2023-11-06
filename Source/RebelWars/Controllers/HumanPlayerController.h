@@ -21,6 +21,7 @@ class REBELWARS_API AHumanPlayerController : public APlayerController
 	
 public:
 	AHumanPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	virtual void BeginPlay() override;
 
 	void AddViewPunch(FRotator InRotator);
 	FRotator GetCurrentViewPunchAngle() const;

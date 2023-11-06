@@ -1,8 +1,10 @@
 #include "Controllers/HumanPlayerController.h"
 
-#include <Characters/CombatCharacter.h>
-#include <Kismet/KismetMathLibrary.h>
-#include <Player/RWPlayerCameraManager.h>
+#include "Characters/CombatCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Player/RWPlayerCameraManager.h"
+#include "GameFramework/SpectatorPawn.h"
+#include "GameFramework/PlayerState.h"
 
 AHumanPlayerController::AHumanPlayerController(const FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
@@ -13,6 +15,15 @@ AHumanPlayerController::AHumanPlayerController(const FObjectInitializer& ObjectI
 	DeathCameraOffsetRotation = FRotator::MakeFromEuler(FVector(0.0f, 90.0f, 0.0f));
 
 	SetCameraMode(CameraMode::Default);
+}
+
+void AHumanPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ChangeState(NAME_Spectating);
+	PlayerState->bIsSpectator = true;
+	PlayerState->bOnlySpectator = true;
 }
 
 void AHumanPlayerController::AddViewPunch(FRotator InAngles)
@@ -41,7 +52,7 @@ ARWPlayerCameraManager* AHumanPlayerController::GetRWPlayerCameraManager() const
 void AHumanPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 	if (PlayerCameraManager)
 	{
 		if (ACombatCharacter* CombatPawn = GetPawn<ACombatCharacter>())
@@ -56,9 +67,16 @@ void AHumanPlayerController::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	ServerViewNextPlayer();
 }
 
 void AHumanPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	//if (ASpectatorPawn* Spec = SpawnSpectatorPawn())
+	//{
+	//	ServerViewNextPlayer();
+	//}
 }

@@ -97,6 +97,8 @@ public:
 
 	void React(EReaction InReaction);
 
+	AFirearm* GetPawnWeapon() const;
+
 	UPROPERTY(EditDefaultsOnly)
 	class UBehaviorTree* BehaviorTree;
 
