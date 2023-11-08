@@ -68,6 +68,10 @@ class REBELWARS_API ACombatAIController : public AAIController
 public:
 	ACombatAIController();
 
+	FVector CalcFocalPointAccuracyModifier();
+
+	bool IsAimedAtTarget() const;
+
 	void InitDifficulty(EBotDifficulty InDifficulty);
 
 	AActor* FindClosestEnemy() const;
@@ -126,19 +130,43 @@ protected:
 	EAIPassiveState MovementBehavior;
 	AActor* Target;
 	AActor* MovementTarget;
-
-	FTimerHandle ReactionTimer;
+	// Rotation target for smooth AI rotating
+	FRotator TargetControlRotation;
 
 	UPROPERTY()
 	TArray<UAITacticsBase*> Tactics;
 
+	// The higher the skill - the faster the AI thinks and the better decisions it makes. Max 10
 	UPROPERTY()
-	int32 Skill = 0;
+	int32 Skill;
 
+	// How aggressive the AI decisions are. Max 10
 	UPROPERTY()
-	int32 Aggression = 0;
+	int32 Aggression;
 
+	FTimerHandle ReactionTimer;
+
+	// How frequent the AI makes decisions. Counted in seconds. Calculates based on Skill
 	float ReactionTime;
+
+	// How many times the AI tries to adjust the aim until it reaches max accuracy
+	int32 MaxAimAttemps;
+	int32 AimAttemptsLeft;
+
+	// How frequent should the AI adjust its aim in milliseconds
+	float AimAttemptFrequency;
+
+	// The time stamp in milliseconds when the last aim attempt happened
+	float LastAimAttemptTime;
+
+	// The last used aim modifier. Should be remembered to prevent making aim modifiers every tick
+	FVector LastAimModifier;
+
+	// The starting point for the AI aiming. It gets better every Aim Attempt
+	float AimAccuracyStartingPoint;
+
+	int32 BurstStartAmmo = 0;
+	int32 BurstShotsMade = 0;
 };
 
 template<typename ActorClass>

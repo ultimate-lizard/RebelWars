@@ -3,23 +3,27 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Perception/AIPerceptionComponent.h"
 #include "Items/Firearm.h"
 #include "Components/InventoryComponent.h"
 #include "Components/InteractableComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Characters/CombatCharacter.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
-#include "Perception/AIPerceptionComponent.h"
 #include "AI/Tactics/OffensiveAITactics.h"
 #include "AI/Tactics/DefensiveAITactics.h"
 #include "AI/Tactics/ObjectiveAITactics.h"
+#include "DrawDebugHelpers.h"
 
 ACombatAIController::ACombatAIController()
 {
+	bWantsPlayerState = true;
+
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(FName(TEXT("Blackboard")));
 	BrainComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(FName(TEXT("Behavior Tree")));
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(FName(TEXT("AI Perception")));
@@ -30,14 +34,84 @@ ACombatAIController::ACombatAIController()
 	PerceptionComponent->ConfigureSense(*AIItemSightConfig);
 	PerceptionComponent->SetDominantSense(*AIItemSightConfig->GetSenseImplementation());
 
-	bWantsPlayerState = true;
+	PawnInventory = nullptr;
 
 	bIsFiring = false;
 
+	MovementBehavior = EAIPassiveState::PS_None;
+
 	Target = nullptr;
 	MovementTarget = nullptr;
+	TargetControlRotation = FRotator::ZeroRotator;
 
 	ReactionTime = 1.0f;
+
+
+	MaxAimAttemps = 5;
+	AimAttemptsLeft = MaxAimAttemps;
+	AimAttemptFrequency = 500.0f;
+	LastAimAttemptTime = FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
+	LastAimModifier = FVector::ZeroVector;
+	AimAccuracyStartingPoint = 200.0f;
+}
+
+FVector ACombatAIController::CalcFocalPointAccuracyModifier()
+{
+	const float CurrentTime = FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
+	if (CurrentTime - LastAimAttemptTime >= AimAttemptFrequency && IsAimedAtTarget())
+	{
+		AimAttemptsLeft = FMath::Clamp(AimAttemptsLeft, 0, MaxAimAttemps);
+
+		LastAimAttemptTime = CurrentTime;
+
+		LastAimModifier = FMath::VRand() * ((AimAccuracyStartingPoint / MaxAimAttemps) * AimAttemptsLeft);
+
+		if (!LastAimModifier.Size())
+		{
+			LastAimModifier = FVector::ZeroVector;
+		}
+
+		FString LastAimModifierStr = FString::Printf(TEXT("%i Modifier is now %f %f %f %i"), AimAttemptsLeft, LastAimModifier.X, LastAimModifier.Y, LastAimModifier.Z, LastAimModifier.Size());
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, *LastAimModifierStr);
+
+		AimAttemptsLeft--;
+	}
+
+	if (!IsAimedAtTarget())
+	{
+		AimAttemptsLeft = MaxAimAttemps;
+	}
+
+	return LastAimModifier;
+}
+
+bool ACombatAIController::IsAimedAtTarget() const
+{
+	if (!Target)
+	{
+		return false;
+	}
+
+	if (APawn* CurrentPawn = GetPawn())
+	{
+		FVector EyeLocation;
+		FRotator EyeRotation;
+		CurrentPawn->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+		FVector DirectionToTarget = Target->GetActorLocation() - EyeLocation;
+		FVector EyeForward = UKismetMathLibrary::GetForwardVector(EyeRotation);
+		EyeForward.Normalize();
+		DirectionToTarget.Normalize();
+
+		FVector Difference = EyeForward - DirectionToTarget;
+
+		// The angular distance between the look direction and the direction to a target at which the target considered to be aimed on
+		static const float AimAngularDistance = 0.5f;
+
+		return Difference.Size() <= AimAngularDistance && LineOfSightTo(GetTarget());
+	}
+
+	return false;
 }
 
 void ACombatAIController::InitDifficulty(EBotDifficulty InDifficulty)
@@ -57,6 +131,8 @@ void ACombatAIController::InitDifficulty(EBotDifficulty InDifficulty)
 		Aggression = FMath::RandRange(4, 10);
 		break;
 	}
+
+	Skill = 10;
 
 	ReactionTime = 1.0f - Skill / 10.0f;
 }
@@ -129,7 +205,7 @@ void ACombatAIController::Tick(float DeltaTime)
 			}
 		}
 
-		if (!LineOfSightTo(GetTarget()))
+		if (!IsAimedAtTarget())
 		{
 			SetFiringEnabled(false);
 		}
@@ -200,38 +276,53 @@ void ACombatAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePaw
 {
 	if (APawn* const MyPawn = GetPawn())
 	{
-		FRotator NewControlRotation = GetControlRotation();
+		TargetControlRotation = GetControlRotation();
 
 		// Look toward focus
-		const FVector FocalPoint = GetFocalPoint();
+		const FVector FocalPoint = GetFocalPoint() + CalcFocalPointAccuracyModifier();
+		DrawDebugPoint(GetWorld(), FocalPoint, 20.0f, FColor::Blue, true);
+
 		if (FAISystem::IsValidLocation(FocalPoint))
 		{
-			NewControlRotation = (FocalPoint - MyPawn->GetPawnViewLocation()).Rotation();
+			TargetControlRotation = (FocalPoint - MyPawn->GetPawnViewLocation()).Rotation();
 		}
 		else if (bSetControlRotationFromPawnOrientation)
 		{
-			NewControlRotation = MyPawn->GetActorRotation();
+			TargetControlRotation = MyPawn->GetActorRotation();
 		}
 
-		SetControlRotation(NewControlRotation);
+		static const float BotRotationSpeed = 5.0f;
+
+		FRotator RotationDelta = UKismetMathLibrary::NormalizedDeltaRotator(GetControlRotation(), TargetControlRotation);
+		FRotator LerpedRotation = FMath::RInterpTo(GetControlRotation(), TargetControlRotation, RotationDelta.Vector().Size() * BotRotationSpeed * DeltaTime, 1.0f);
+
+		SetControlRotation(LerpedRotation);
 
 		if (bUpdatePawn)
 		{
 			const FRotator CurrentPawnRotation = MyPawn->GetActorRotation();
 
-			if (CurrentPawnRotation.Equals(NewControlRotation, 1e-3f) == false)
+			if (CurrentPawnRotation.Equals(LerpedRotation, 1e-3f) == false)
 			{
-				MyPawn->FaceRotation(NewControlRotation, DeltaTime);
+				MyPawn->FaceRotation(LerpedRotation, DeltaTime);
 			}
 		}
 	}
 }
 
+static float LastFireTime = FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
+
 void ACombatAIController::TickShootingTechnique()
 {
-	bool bUseBurst = Skill >= 5;
-	int32 ShotsPerBurst = 3;
-	float Accuracy = 10.0f; // Worst accuracy
+	// Set parameters
+	MaxAimAttemps = 10 - Skill;
+	AimAttemptFrequency = 1100.0f - Skill * 100.0f;
+	AimAccuracyStartingPoint = 200 - 20.0f * Skill;
+
+	int32 Burst = 6;
+	int32 CurrentBurst = 0;
+
+	float FireFrequency = 600.0f;
 
 	ACombatCharacter* CombatPawn = GetPawn<ACombatCharacter>();
 	AFirearm* PrimaryFirearm = PawnInventory->GetEquippedFirearm();
@@ -241,21 +332,52 @@ void ACombatAIController::TickShootingTechnique()
 		return;
 	}
 
+	if (PrimaryFirearm->IsReloading())
+	{
+		BurstShotsMade = 0;
+	}
+
+	// Tick firing
 	if (bIsFiring)
 	{
 		switch (PrimaryFirearm->CurrentFireMode)
 		{
 		case EFirearmFireMode::Auto:
-			if (!PrimaryFirearm->IsReloading() && !PrimaryFirearm->IsFiring())
 			{
-				CombatPawn->StartPrimaryFire();
-			}
-			break;
+				float CurrentTime = FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
+				if (CurrentTime - LastFireTime >= FireFrequency)
+				{
+					if (!PrimaryFirearm->IsReloading() && !PrimaryFirearm->IsFiring())
+					{
+						BurstStartAmmo = PrimaryFirearm->CurrentMagAmmo;
+						CombatPawn->StartPrimaryFire();
+					}
+				}
+
+				BurstShotsMade = BurstStartAmmo - PrimaryFirearm->CurrentMagAmmo;
+				/*FString BurstShotsMadeStr = FString::Printf(TEXT("%i"), BurstShotsMade);
+				GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, *BurstShotsMadeStr);*/
+
+				if (BurstShotsMade >= Burst)
+				{
+					CombatPawn->StopPrimaryFire();
+					LastFireTime = CurrentTime;
+					BurstShotsMade = 0;
+					BurstStartAmmo = PrimaryFirearm->CurrentMagAmmo;
+				}
+
+				break;
+			}	
 		case EFirearmFireMode::SemiAuto:
 			if (!PrimaryFirearm->IsReloading())
 			{
-				CombatPawn->StopPrimaryFire();
-				CombatPawn->StartPrimaryFire();
+				float CurrentTime = FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
+				if (CurrentTime - LastFireTime >= FireFrequency)
+				{
+					CombatPawn->StopPrimaryFire();
+					CombatPawn->StartPrimaryFire();
+					LastFireTime = CurrentTime;
+				}
 			}
 			break;
 		}
@@ -271,6 +393,7 @@ void ACombatAIController::TickShootingTechnique()
 		CombatPawn->StopPrimaryFire();
 	}
 
+	// Reload when no targets
 	if (!GetTarget())
 	{
 		if (UAIPerceptionComponent* Perception = GetPerceptionComponent())

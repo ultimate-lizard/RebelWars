@@ -74,9 +74,4 @@ void AHumanPlayerController::Tick(float DeltaTime)
 void AHumanPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
-	//if (ASpectatorPawn* Spec = SpawnSpectatorPawn())
-	//{
-	//	ServerViewNextPlayer();
-	//}
 }

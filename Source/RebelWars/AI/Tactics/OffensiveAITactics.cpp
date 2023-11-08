@@ -34,7 +34,7 @@ void UOffensiveAITactics::Execute()
         AIController->React(EReaction::Reaction_HasTarget);
     }
 
-    if (AIController->LineOfSightTo(AIController->GetTarget()))
+    if (AIController->IsAimedAtTarget())
     {
         AIController->SetFiringEnabled(true);
     }
