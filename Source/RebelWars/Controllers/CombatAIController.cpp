@@ -283,7 +283,7 @@ void ACombatAIController::UpdateControlRotation(float DeltaTime, bool bUpdatePaw
 
 		// Look toward focus
 		const FVector FocalPoint = GetFocalPoint();
-		DrawDebugPoint(GetWorld(), FocalPoint, 20.0f, FColor::Blue, true);
+		//DrawDebugPoint(GetWorld(), FocalPoint, 20.0f, FColor::Blue, true);
 
 		if (FAISystem::IsValidLocation(FocalPoint))
 		{

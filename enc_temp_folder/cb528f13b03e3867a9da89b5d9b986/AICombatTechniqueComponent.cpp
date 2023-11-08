@@ -59,7 +59,7 @@ FVector UAICombatTechniqueComponent::CalcFocalPointAccuracyModifier()
 	}
 
 	const float CurrentTime = FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
-	if (CurrentTime - LastAimAttemptTime >= AimAttemptFrequency)
+	if (CurrentTime - LastAimAttemptTime >= AimAttemptFrequency && AIOwner->IsAimedAtTarget())
 	{
 		AimAttemptsLeft = FMath::Clamp(AimAttemptsLeft, 0, MaxAimAttemps);
 		LastAimAttemptTime = CurrentTime;
@@ -102,6 +102,8 @@ void UAICombatTechniqueComponent::TickShootingTechnique()
 
 	if (AIOwner->IsFiring())
 	{
+		LastFireTime = FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
+
 		switch (PrimaryFirearm->CurrentFireMode)
 		{
 		case EFirearmFireMode::Auto:
