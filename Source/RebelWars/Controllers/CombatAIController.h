@@ -11,6 +11,7 @@
 
 class AFirearm;
 class UInventoryComponent;
+class UAICombatTechniqueComponent;
 class UAITacticsBase;
 
 UENUM(BlueprintType)
@@ -46,6 +47,10 @@ struct FReactionResponse
 
 	UPROPERTY(EditAnywhere)
 	int32 AggressionRequired = 0;
+
+	// This reaction response will be specific to this optional weapon class
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AFirearm> WeaponOverrideClass;
 };
 
 USTRUCT(BlueprintType)
@@ -67,8 +72,6 @@ class REBELWARS_API ACombatAIController : public AAIController
 
 public:
 	ACombatAIController();
-
-	FVector CalcFocalPointAccuracyModifier();
 
 	bool IsAimedAtTarget() const;
 
@@ -98,16 +101,34 @@ public:
 	void EquipBestWeapon();
 
 	bool IsReloading() const;
+	bool IsFiring() const;
 
 	void React(EReaction InReaction);
 
 	AFirearm* GetPawnWeapon() const;
+
+	FRotator GetTargetControlRotation() const;
+	void SetTargetControlRotation(FRotator InRotation);
 
 	UPROPERTY(EditDefaultsOnly)
 	class UBehaviorTree* BehaviorTree;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FReactionInfo> Reactions;
+
+	UFUNCTION(BlueprintPure)
+	int32 GetSkill() const;
+
+	UFUNCTION(BlueprintPure)
+	int32 GetAggression() const;
+
+	UFUNCTION(BlueprintPure)
+	int32 GetMaxSkill() const;
+
+	UFUNCTION(BlueprintPure)
+	int32 GetMaxAggression() const;
+
+	AFirearm* GetEquippedFirearm() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -116,10 +137,12 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;
-
-	void TickShootingTechnique();
+	virtual FVector GetFocalPointOnActor(const AActor* Actor) const override;
 
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	UAICombatTechniqueComponent* AICombatTechniqueComponent;
+
 	UPROPERTY()
 	class UAISenseConfig_Sight* AIItemSightConfig;
 
@@ -148,25 +171,6 @@ protected:
 
 	// How frequent the AI makes decisions. Counted in seconds. Calculates based on Skill
 	float ReactionTime;
-
-	// How many times the AI tries to adjust the aim until it reaches max accuracy
-	int32 MaxAimAttemps;
-	int32 AimAttemptsLeft;
-
-	// How frequent should the AI adjust its aim in milliseconds
-	float AimAttemptFrequency;
-
-	// The time stamp in milliseconds when the last aim attempt happened
-	float LastAimAttemptTime;
-
-	// The last used aim modifier. Should be remembered to prevent making aim modifiers every tick
-	FVector LastAimModifier;
-
-	// The starting point for the AI aiming. It gets better every Aim Attempt
-	float AimAccuracyStartingPoint;
-
-	int32 BurstStartAmmo = 0;
-	int32 BurstShotsMade = 0;
 };
 
 template<typename ActorClass>
