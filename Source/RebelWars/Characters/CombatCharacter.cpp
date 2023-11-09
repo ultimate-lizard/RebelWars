@@ -439,12 +439,24 @@ void ACombatCharacter::MoveRight(float InRate)
 
 void ACombatCharacter::LookUp(float InRate)
 {
-	AddControllerPitchInput(InRate);
+	float Rate = InRate;
+	//if (AHumanPlayerController* HumanController = GetController<AHumanPlayerController>())
+	//{
+	//	Rate *= HumanController->GetMouseSensitivity();
+	//}
+
+	AddControllerPitchInput(Rate);
 }
 
 void ACombatCharacter::Turn(float InRate)
 {
-	AddControllerYawInput(InRate);
+	float Rate = InRate;
+	//if (AHumanPlayerController* HumanController = GetController<AHumanPlayerController>())
+	//{
+	//	Rate *= HumanController->GetMouseSensitivity();
+	//}
+
+	AddControllerYawInput(Rate);
 }
 
 void ACombatCharacter::Reload()

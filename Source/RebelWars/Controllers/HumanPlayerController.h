@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+#include "Controllers/RWHumanControllerBase.h"
 
 #include "HumanPlayerController.generated.h"
 
@@ -15,7 +15,7 @@ namespace CameraMode
 }
 
 UCLASS()
-class REBELWARS_API AHumanPlayerController : public APlayerController
+class REBELWARS_API AHumanPlayerController : public ARWHumanControllerBase
 {
 	GENERATED_BODY()
 	
