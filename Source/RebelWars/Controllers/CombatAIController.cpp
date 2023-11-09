@@ -431,17 +431,20 @@ void ACombatAIController::React(EReaction InReaction)
 	{
 		const int32 CurrentSkill = Skill;
 		const int32 CurrentAggression = Aggression;
-		AFirearm* EquippedFirearm = GetEquippedFirearm();
 
-		if (FReactionResponse* ReactionResponseWithWeapon = ReactionInfo->Responses.FindByPredicate([CurrentSkill, CurrentAggression, EquippedFirearm](const FReactionResponse& ReactionResponse)
+		if (AFirearm* EquippedFirearm = GetEquippedFirearm())
 		{
-			return ReactionResponse.SkillRequired <= CurrentSkill &&
-			ReactionResponse.AggressionRequired <= CurrentAggression &&
-			EquippedFirearm && EquippedFirearm->IsA(ReactionResponse.WeaponOverrideClass);
-		}))
-		{
-			SetMovementBehavior(ReactionResponseWithWeapon->MovementBehavior);
-			return;
+			if (FReactionResponse* ReactionResponseWithWeapon = ReactionInfo->Responses.FindByPredicate([CurrentSkill, CurrentAggression, EquippedFirearm](const FReactionResponse& ReactionResponse)
+			{
+				return ReactionResponse.SkillRequired <= CurrentSkill &&
+					ReactionResponse.AggressionRequired <= CurrentAggression &&
+					ReactionResponse.WeaponOverrideClass &&
+					EquippedFirearm->IsA(ReactionResponse.WeaponOverrideClass);
+			}))
+			{
+				SetMovementBehavior(ReactionResponseWithWeapon->MovementBehavior);
+				return;
+			}
 		}
 
 		if (FReactionResponse* ReactionResponse = ReactionInfo->Responses.FindByPredicate([CurrentSkill, CurrentAggression](const FReactionResponse& ReactionResponse)

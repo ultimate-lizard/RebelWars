@@ -89,6 +89,10 @@ void UDefensiveAITactics::Execute()
 					AIController->SetMovementBehavior(EAIPassiveState::PS_MoveToTarget);
 				}
 			}
+			else
+			{
+				AIController->React(EReaction::Reaction_NoAmmoInSight);
+			}
 		}
 	}
 }

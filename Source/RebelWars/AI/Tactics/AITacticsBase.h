@@ -14,6 +14,7 @@ enum class EReaction : uint8
 	Reaction_LowHealth,
 	Reaction_HasTarget,
 	Reaction_Reload,
+	Reaction_NoAmmoInSight,
 };
 
 USTRUCT()

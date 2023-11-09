@@ -16,6 +16,7 @@ class REBELWARS_API ARWGameModeBase : public AGameMode
 public:
 	ARWGameModeBase(const FObjectInitializer& ObjectInitializer);
 
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void Logout(AController* Exiting) override;
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 	virtual void RestartPlayer(AController* NewPlayer) override;
@@ -34,4 +35,7 @@ protected:
 	int32 BotsSpawned;
 	
 	TMap<int32, FTimerHandle> RespawnTimers;
+
+	bool bBotsEnabled;
+	int32 BotCount;
 };

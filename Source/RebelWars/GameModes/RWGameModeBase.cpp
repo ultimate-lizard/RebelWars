@@ -34,6 +34,19 @@ void ARWGameModeBase::RestartPlayer(AController* NewPlayer)
 	Super::RestartPlayer(NewPlayer);
 }
 
+void ARWGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	bBotsEnabled = UGameplayStatics::GetIntOption(Options, TEXT("bBotsEnabled"), 0) != 0;
+	BotCount = UGameplayStatics::GetIntOption(Options, TEXT("BotCount"), 0);
+
+	if (bBotsEnabled)
+	{
+		NumBots = BotCount;
+	}
+}
+
 void ARWGameModeBase::Logout(AController* Exiting)
 {
 	if (Exiting)
@@ -68,9 +81,6 @@ void ARWGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor*
 void ARWGameModeBase::HandleMatchIsWaitingToStart()
 {
 	Super::HandleMatchIsWaitingToStart();
-
-	// TODO: Move somewhere reasonable
-	NumBots = 1;
 
 	if (UWorld* World = GetWorld())
 	{

@@ -415,7 +415,7 @@ void AFirearm::TraceBullet()
 
 					for (FHitResult& Hit : Hits)
 					{
-						DrawDebugPoint(GetWorld(), Hit.Location, 10.0f, FColor::Red, true);
+						// DrawDebugPoint(GetWorld(), Hit.Location, 10.0f, FColor::Red, true);
 
 						if (AActor* HitActor = Hit.Actor.Get())
 						{

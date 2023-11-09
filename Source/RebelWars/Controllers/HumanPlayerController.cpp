@@ -21,9 +21,9 @@ void AHumanPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ChangeState(NAME_Spectating);
-	PlayerState->bIsSpectator = true;
-	PlayerState->bOnlySpectator = true;
+	//ChangeState(NAME_Spectating);
+	//PlayerState->bIsSpectator = true;
+	//PlayerState->bOnlySpectator = true;
 }
 
 void AHumanPlayerController::AddViewPunch(FRotator InAngles)
@@ -68,7 +68,7 @@ void AHumanPlayerController::Tick(float DeltaTime)
 		}
 	}
 
-	ServerViewNextPlayer();
+	// ServerViewNextPlayer();
 }
 
 void AHumanPlayerController::OnPossess(APawn* InPawn)
