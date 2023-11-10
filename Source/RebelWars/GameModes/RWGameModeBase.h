@@ -17,10 +17,13 @@ public:
 	ARWGameModeBase(const FObjectInitializer& ObjectInitializer);
 
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 	virtual void RestartPlayer(AController* NewPlayer) override;
 	virtual void RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot) override;
+
+	int32 GetBotDifficulty() const;
 
 protected:
 	virtual void HandleMatchIsWaitingToStart() override;
@@ -38,4 +41,5 @@ protected:
 
 	bool bBotsEnabled;
 	int32 BotCount;
+	int32 BotDifficulty;
 };

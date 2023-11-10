@@ -31,8 +31,10 @@ FRotator ARWPlayerCameraManager::GetCurrentViewPunchAngle() const
 
 void ARWPlayerCameraManager::DecayViewPunch(float DeltaTime)
 {
+	const float ViewPunchDecaySpeed = 5.0f;
+
 	float Length = ViewPunchAngle.Vector().Size();
-	Length -= 5.0f * DeltaTime;
+	Length -= ViewPunchDecaySpeed * DeltaTime;
 
 	if (Length < 0.0f)
 	{
@@ -42,9 +44,9 @@ void ARWPlayerCameraManager::DecayViewPunch(float DeltaTime)
 	FRotator Old = ViewPunchAngle;
 	ViewPunchAngle *= Length;
 
-	FRotator Diff = Old - ViewPunchAngle;
+	FRotator Diff = Old - ViewPunchAngle * DeltaTime;
 
 	FMinimalViewInfo POVInfo = GetCameraCachePOV();
-	POVInfo.Rotation -= Diff;
+	POVInfo.Rotation -= Diff * 0.05f;
 	SetCameraCachePOV(POVInfo);
 }

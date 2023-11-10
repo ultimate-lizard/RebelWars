@@ -337,21 +337,13 @@ void ACombatCharacter::SelectWeaponSlot(int32 Index)
 
 float ACombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	//if (!IsBotControlled())
-	//{
-	//	return 0.0f;
-	//}
-
 	if (GetWorldTimerManager().IsTimerActive(DamageAccumulationTimer))
 	{
 		AccumulatedDamage += DamageAmount;
-		/*FString AccumulatedDamageStr = FString::Printf(TEXT("Accumulated damage: %f"), AccumulatedDamage);
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *AccumulatedDamageStr);*/
 	}
 	else
 	{
 		GetWorldTimerManager().SetTimer(DamageAccumulationTimer, 0.1f, false);
-		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, TEXT("The timer has been reset"));
 		AccumulatedDamage = DamageAmount;
 	}
 
@@ -384,9 +376,7 @@ void ACombatCharacter::BroadcastBecomeRagdoll_Implementation(FVector ImpulseDire
 	if (USkeletalMeshComponent* RagdollMesh = GetMesh())
 	{
 		FName ImpactBone = RagdollMesh->FindClosestBone(ImpulseLocation, nullptr, 0.0f, true);
-		RagdollMesh->AddImpulseAtLocation(ImpulseDirection, ImpulseLocation, ImpactBone); // TODO: PHSYCICS
-
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *ImpactBone.ToString());
+		RagdollMesh->AddImpulseAtLocation(ImpulseDirection, ImpulseLocation, ImpactBone);
 	}
 }
 

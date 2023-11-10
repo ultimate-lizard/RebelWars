@@ -29,6 +29,7 @@ enum class EAIPassiveState : uint8
 UENUM()
 enum class EBotDifficulty : uint8
 {
+	Difficulty_Random,
 	Difficulty_Easy,
 	Difficulty_Medium,
 	Difficulty_Hard
@@ -74,8 +75,6 @@ public:
 	ACombatAIController();
 
 	bool IsAimedAtTarget() const;
-
-	void InitDifficulty(EBotDifficulty InDifficulty);
 
 	AActor* FindClosestEnemy() const;
 
@@ -130,6 +129,8 @@ public:
 
 	AFirearm* GetEquippedFirearm() const;
 
+	void SetDifficulty(EBotDifficulty InDifficulty);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
@@ -138,6 +139,8 @@ protected:
 	virtual void OnUnPossess() override;
 	virtual void UpdateControlRotation(float DeltaTime, bool bUpdatePawn = true) override;
 	virtual FVector GetFocalPointOnActor(const AActor* Actor) const override;
+
+	void InitDifficulty(EBotDifficulty InDifficulty);
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -171,6 +174,8 @@ protected:
 
 	// How frequent the AI makes decisions. Counted in seconds. Calculates based on Skill
 	float ReactionTime;
+
+	EBotDifficulty Difficulty;
 };
 
 template<typename ActorClass>

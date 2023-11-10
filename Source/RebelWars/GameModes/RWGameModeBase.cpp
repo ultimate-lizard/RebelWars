@@ -14,10 +14,6 @@ ARWGameModeBase::ARWGameModeBase(const FObjectInitializer& ObjectInitializer) :
 APawn* ARWGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
 {
 	APawn* SpawnedPawn = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
-	if (ACombatCharacter* CombatCharacter = Cast<ACombatCharacter>(SpawnedPawn))
-	{
-		CombatCharacter->OnKillDelegate.AddDynamic(this, &ARWGameModeBase::OnCombatCharacterKilled);
-	}
 
 	BotsSpawned = 0;
 
@@ -32,6 +28,17 @@ void ARWGameModeBase::RestartPlayer(AController* NewPlayer)
 	}
 
 	Super::RestartPlayer(NewPlayer);
+
+	if (APawn* RestartedPawn = NewPlayer->GetPawn())
+	{
+		if (ACombatCharacter* CombatCharacter = Cast<ACombatCharacter>(RestartedPawn))
+		{
+			if (!CombatCharacter->OnKillDelegate.Contains(this, FName(TEXT("OnCombatCharacterKilled"))))
+			{
+				CombatCharacter->OnKillDelegate.AddDynamic(this, &ARWGameModeBase::OnCombatCharacterKilled);
+			}
+		}
+	}
 }
 
 void ARWGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -40,10 +47,24 @@ void ARWGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 
 	bBotsEnabled = UGameplayStatics::GetIntOption(Options, TEXT("bBotsEnabled"), 0) != 0;
 	BotCount = UGameplayStatics::GetIntOption(Options, TEXT("BotCount"), 0);
+	BotDifficulty = UGameplayStatics::GetIntOption(Options, TEXT("BotDifficulty"), 0);
 
 	if (bBotsEnabled)
 	{
 		NumBots = BotCount;
+	}
+}
+
+void ARWGameModeBase::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	if (APlayerState* PlayerState = NewPlayer->GetPlayerState<APlayerState>())
+	{
+		if (!RespawnTimers.Find(PlayerState->GetPlayerId()))
+		{
+			RespawnTimers.Add(PlayerState->GetPlayerId(), FTimerHandle());
+		}
 	}
 }
 
@@ -78,6 +99,11 @@ void ARWGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor*
 	}
 }
 
+int32 ARWGameModeBase::GetBotDifficulty() const
+{
+	return BotDifficulty;
+}
+
 void ARWGameModeBase::HandleMatchIsWaitingToStart()
 {
 	Super::HandleMatchIsWaitingToStart();
@@ -92,10 +118,13 @@ void ARWGameModeBase::HandleMatchIsWaitingToStart()
 				{
 					if (ACombatAIController* SpawnedAIController = Cast<ACombatAIController>(World->SpawnActor(DefaultAIControllerObject->GetClass())))
 					{
+						SpawnedAIController->SetDifficulty(static_cast<EBotDifficulty>(BotDifficulty));
+
 						if (APlayerState* PlayerState = SpawnedAIController->GetPlayerState<APlayerState>())
 						{
 							--BotsSpawned;
 							PlayerState->SetPlayerId(BotsSpawned);
+							PlayerState->SetPlayerName(FString::Printf(TEXT("Bot %i"), FMath::Abs(BotsSpawned)));
 						}
 					}
 				}
@@ -126,7 +155,10 @@ void ARWGameModeBase::HandleMatchHasStarted()
 		{
 			if (APlayerState* PlayerState = Controller->GetPlayerState<APlayerState>())
 			{
-				RespawnTimers.Add(PlayerState->GetPlayerId(), FTimerHandle());
+				if (!RespawnTimers.Find(PlayerState->GetPlayerId()))
+				{
+					RespawnTimers.Add(PlayerState->GetPlayerId(), FTimerHandle());
+				}
 			}
 		}
 	}

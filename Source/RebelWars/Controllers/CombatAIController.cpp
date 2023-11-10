@@ -20,6 +20,7 @@
 #include "AI/Tactics/DefensiveAITactics.h"
 #include "AI/Tactics/ObjectiveAITactics.h"
 #include "DrawDebugHelpers.h"
+#include "GameModes/RWGameModeBase.h"
 
 // Add posibility to override this from .INI
 static const int32 MaxSkill = 10;
@@ -83,6 +84,11 @@ bool ACombatAIController::IsAimedAtTarget() const
 
 void ACombatAIController::InitDifficulty(EBotDifficulty InDifficulty)
 {
+	if (InDifficulty == EBotDifficulty::Difficulty_Random)
+	{
+		InDifficulty = static_cast<EBotDifficulty>(FMath::RandRange(1, 3));
+	}
+
 	switch (InDifficulty)
 	{
 	case EBotDifficulty::Difficulty_Easy:
@@ -160,6 +166,11 @@ AFirearm* ACombatAIController::GetEquippedFirearm() const
 	}
 
 	return PawnInventory->GetEquippedFirearm();
+}
+
+void ACombatAIController::SetDifficulty(EBotDifficulty InDifficulty)
+{
+	Difficulty = InDifficulty;
 }
 
 void ACombatAIController::BeginPlay()
@@ -249,11 +260,8 @@ void ACombatAIController::OnPossess(APawn* InPawn)
 			}
 		}
 
-		EBotDifficulty Difficulty = static_cast<EBotDifficulty>(FMath::RandRange(0, 3));
 		InitDifficulty(Difficulty);
-
-		FString DifficultyStr = FString::Printf(TEXT("Applied a difficulty. Skill: %i, Aggression: %i"), Skill, Aggression);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, *DifficultyStr);
+		GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, *FString::Printf(TEXT("The bot has been possessed. Skill: %i, Aggression: %i"), Skill, Aggression));
 	}
 }
 
