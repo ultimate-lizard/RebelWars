@@ -3,12 +3,14 @@
 #include "Components/SphereComponent.h"
 #include "Components/InteractableComponent.h"
 #include "Components/InventoryComponent.h"
+#include "Components/ActorDespawnComponent.h"
 #include "Characters/CombatCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Controllers/HumanPlayerController.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "EngineUtils.h"
 
 AFirearm::AFirearm()
 {
@@ -37,6 +39,8 @@ AFirearm::AFirearm()
 	// Ammo
 	MagAmmoCapacity = 30;
 	ReserveAmmoCapacity = 120;
+
+	DespawnComponent = CreateDefaultSubobject<UActorDespawnComponent>(FName(TEXT("Despawn Component")));
 
 	// Shooting logic
 	TimeSinceLastShot = 0.0f;
@@ -118,6 +122,8 @@ void AFirearm::BeginPlay()
 
 	CurrentMagAmmo = MagAmmoCapacity;
 	CurrentReserveAmmo = ReserveAmmoCapacity;
+
+	SpawnedWeapons++;
 }
 
 void AFirearm::Tick(float DeltaTime)
@@ -183,6 +189,31 @@ void AFirearm::Unequip()
 	GetWorldTimerManager().ClearTimer(DeployTimer);
 	GetWorldTimerManager().ClearTimer(ReloadTimer);
 	FirearmState = EFirearmState::Idle;
+}
+
+void AFirearm::OnPickup(UInventoryComponent* InInventory)
+{
+	Super::OnPickup(InInventory);
+
+	if (DespawnComponent)
+	{
+		DespawnComponent->FreeDespawnSlot(this);
+	}
+}
+
+void AFirearm::OnDrop()
+{
+	Super::OnDrop();
+
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+	{
+		return;
+	}
+
+	if (DespawnComponent)
+	{
+		DespawnComponent->AddToDespawnQueue(this);
+	}
 }
 
 void AFirearm::StartPrimaryFire()
@@ -388,60 +419,68 @@ void AFirearm::OnFinishReload()
 
 void AFirearm::TraceBullet()
 {
-	if (GetLocalRole() == ENetRole::ROLE_Authority)
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
 	{
-		if (UWorld* World = GetWorld())
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+
+	if (ACombatCharacter* OwnerPawn = Cast<ACombatCharacter>(GetOwner()))
+	{
+		FVector EyesLocation;
+		FRotator EyesRotation;
+		OwnerPawn->GetActorEyesViewPoint(EyesLocation, EyesRotation);
+
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+		QueryParams.AddIgnoredActor(CachedOwner);
+
+		TMap<AActor*, TArray<FHitResult>> UniqueActorsHits;
+
+		for (int32 i = 0; i < BulletsPerShot; ++i)
 		{
-			if (ACombatCharacter* OwnerPawn = Cast<ACombatCharacter>(GetOwner()))
+			FVector RandDir = FMath::VRandCone(UKismetMathLibrary::GetForwardVector(EyesRotation), FMath::DegreesToRadians(CurrentSpreadAngle));
+
+			TArray<FHitResult> Hits;
+			FVector TraceDestination = EyesLocation + RandDir * BulletRange;
+			World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_Visibility, QueryParams);
+
+			for (FHitResult& Hit : Hits)
 			{
-				FVector EyesLocation;
-				FRotator EyesRotation;
-				OwnerPawn->GetActorEyesViewPoint(EyesLocation, EyesRotation);
-
-				FCollisionQueryParams QueryParams;
-				QueryParams.AddIgnoredActor(this);
-				QueryParams.AddIgnoredActor(CachedOwner);
-
-				TMap<AActor*, TArray<FHitResult>> UniqueActorsHits;
-
-				for (int32 i = 0; i < BulletsPerShot; ++i)
+				if (AActor* HitActor = Hit.Actor.Get())
 				{
-					// TODO: Max bullet distance
-					FVector RandDir = FMath::VRandCone(UKismetMathLibrary::GetForwardVector(EyesRotation), FMath::DegreesToRadians(CurrentSpreadAngle));
-
-					TArray<FHitResult> Hits;
-					FVector TraceDestination = EyesLocation + RandDir * BulletRange;
-					World->LineTraceMultiByChannel(Hits, EyesLocation, TraceDestination, ECollisionChannel::ECC_Visibility, QueryParams);
-
-					for (FHitResult& Hit : Hits)
+					if (HitActor->CanBeDamaged())
 					{
-						// DrawDebugPoint(GetWorld(), Hit.Location, 10.0f, FColor::Red, true);
-
-						if (AActor* HitActor = Hit.Actor.Get())
+						if (CachedOwner)
 						{
-							if (HitActor->CanBeDamaged())
-							{
-								if (CachedOwner)
-								{
-									FVector Direction = Hit.TraceEnd - Hit.TraceStart;
-									Direction.Normalize();
+							FVector Direction = Hit.TraceEnd - Hit.TraceStart;
+							Direction.Normalize();
 
-									UGameplayStatics::ApplyPointDamage(HitActor, Damage, Direction, Hit, CachedOwner->GetController(), this, UDamageType::StaticClass());
-								}
-							}
+							UGameplayStatics::ApplyPointDamage(HitActor, Damage, Direction, Hit, CachedOwner->GetController(), this, UDamageType::StaticClass());
 						}
 					}
 				}
+
+				BroadcastDebugEffects(Hit);
 			}
 		}
 	}
 }
 
-void AFirearm::BroadcastDebugEffects_Implementation(FVector Location)
+void AFirearm::BroadcastDebugEffects_Implementation(FHitResult Hit)
 {
-	if (UWorld* World = GetWorld())
+	if (Hit.Actor.IsValid())
 	{
-		DrawDebugPoint(World, Location, 20.0f, FColor::Red, true);
+		DrawDebugPoint(GetWorld(), Hit.Location, 10.0f, FColor::Red, false, 0.5f);
+	}
+	else
+	{
+		DrawDebugPoint(GetWorld(), Hit.Location, 10.0f, FColor::Black, false, 1.0f);
 	}
 }
 
@@ -495,16 +534,6 @@ bool AFirearm::IsDeploying() const
 {
 	return !IsDeployed() && GetWorldTimerManager().IsTimerActive(DeployTimer);
 }
-
-//float AFirearm::GetShotsPerSecond() const
-//{
-//	float ShotsPerSecond = 1 / (FPlatformTime::Seconds() - LastShotSeconds);
-//
-//	FString ShotsPerSecondStr = FString::Printf(TEXT("%f"), ShotsPerSecond);
-//	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, *ShotsPerSecondStr);
-//
-//	return ShotsPerSecond;
-//}
 
 void AFirearm::OnFinishDeploy()
 {

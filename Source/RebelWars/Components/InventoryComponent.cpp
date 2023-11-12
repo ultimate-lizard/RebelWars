@@ -8,12 +8,47 @@ UInventoryComponent::UInventoryComponent()
 	SetIsReplicatedByDefault(true);
 }
 
+void UInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GiveStartingWeapons();
+}
+
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UInventoryComponent, Inventory);
 	DOREPLIFETIME(UInventoryComponent, EquippedFirearm);
+}
+
+void UInventoryComponent::GiveStartingWeapons()
+{
+	if (GetOwnerRole() < ENetRole::ROLE_Authority)
+	{
+		return;
+	}
+
+	for (const TSubclassOf<AFirearm>& WeaponClass : StartingWeapons)
+	{
+		bool bHasWeapon = false;
+		for (const AFirearm* Weapon : Inventory)
+		{
+			if (Weapon && Weapon->IsA(WeaponClass))
+			{
+				bHasWeapon = true;
+			}
+		}
+
+		if (!bHasWeapon)
+		{
+			if (AFirearm* SpawnedWeapon = GetWorld()->SpawnActor<AFirearm>(WeaponClass))
+			{
+				PickupFirearm(SpawnedWeapon, false);
+			}
+		}
+	}
 }
 
 void UInventoryComponent::OnRep_Inventory()
@@ -72,7 +107,7 @@ void UInventoryComponent::ServerEquipFirearm_Implementation(EInventorySlot InSlo
 
 void UInventoryComponent::PickupFirearm(AFirearm* InFirearm, bool bFromReplication)
 {
-	if (!InFirearm)
+	if (!InFirearm || InFirearm->IsPendingKill())
 	{
 		return;
 	}
@@ -123,6 +158,11 @@ void UInventoryComponent::PickupFirearm(AFirearm* InFirearm, bool bFromReplicati
 
 void UInventoryComponent::DropFirearm(AFirearm* InFirearm, bool bAutoEquip, bool bFromReplication)
 {
+	if (!InFirearm)
+	{
+		return;
+	}
+
 	if (!bFromReplication)
 	{
 		if (GetOwnerRole() < ENetRole::ROLE_Authority)

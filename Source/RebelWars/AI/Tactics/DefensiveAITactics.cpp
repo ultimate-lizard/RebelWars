@@ -64,7 +64,7 @@ void UDefensiveAITactics::Execute()
 	{
 		if (AIController->IsAmmoLow())
 		{
-			if (AFirearm* WeaponInSight = AIController->FindClosestSensedActor<AFirearm>())
+			if (AFirearm* WeaponInSight = AIController->FindBestWeaponInSight())
 			{
 				if (AIController->GetTarget() != WeaponInSight)
 				{
@@ -74,7 +74,7 @@ void UDefensiveAITactics::Execute()
 				bool bCloseEnoughToPickup = FVector::Distance(PossessedPawn->GetActorLocation(), WeaponInSight->GetActorLocation()) <= 200.0f;
 				if (bCloseEnoughToPickup)
 				{
-					// Hardcoded interaction logic. No need to be a separate logic for now, for it's only used here
+					// TODO: Hardcoded interaction logic. No need to be a separate logic for now, for it's only used here
 					if (UInteractableComponent* Interactable = WeaponInSight->FindComponentByClass<UInteractableComponent>())
 					{
 						Interactable->Interact(PossessedPawn);
@@ -84,7 +84,6 @@ void UDefensiveAITactics::Execute()
 				}
 				else
 				{
-					// Reaction See Loot
 					AIController->SetMovementTarget(WeaponInSight);
 					AIController->SetMovementBehavior(EAIPassiveState::PS_MoveToTarget);
 				}

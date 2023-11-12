@@ -4,8 +4,11 @@
 #include "Items/ItemBase.h"
 #include "Sound/SoundCue.h"
 #include "Components/InventoryComponent.h"
+// #include "Utils/Despawnable.h"
 
 #include "Firearm.generated.h"
+
+class UActorDespawnComponent;
 
 UENUM(BlueprintType)
 enum class EFirearmState : uint8
@@ -75,6 +78,8 @@ struct FFirearmAnimations
 	UAnimSequence* DefaultDry;
 };
 
+static uint32 SpawnedWeapons = 0;
+
 /* A simple automatic or semi-automatic weapon */
 UCLASS()
 class REBELWARS_API AFirearm : public AItemBase
@@ -86,6 +91,9 @@ public:
 
 	virtual void Equip();
 	virtual void Unequip();
+
+	virtual void OnPickup(class UInventoryComponent* InInventory) override;
+	virtual void OnDrop() override;
 
 	virtual void StartPrimaryFire();
 	virtual void StopPrimaryFire();
@@ -99,7 +107,6 @@ public:
 	bool IsDeployed() const;
 	bool IsDeploying() const;
 
-public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	EFirearmGripType GripType;
 
@@ -234,10 +241,22 @@ protected:
 	virtual void TraceBullet();
 
 	UFUNCTION(NetMulticast, Unreliable)
-	void BroadcastDebugEffects(FVector Location);
-	void BroadcastDebugEffects_Implementation(FVector Location);
+	void BroadcastDebugEffects(FHitResult Hit);
+	void BroadcastDebugEffects_Implementation(FHitResult Hit);
 
-protected:
+	// Useful for crosshairs
+	UPROPERTY(BlueprintReadOnly)
+	float CurrentSpreadAngle;
+
+	UPROPERTY(ReplicatedUsing = OnRep_FirearmState)
+	EFirearmState FirearmState;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	bool bIsDeployed;
+
+	UPROPERTY(EditDefaultsOnly)
+	UActorDespawnComponent* DespawnComponent;
+
 	FTimerHandle ReloadTimer;
 	FTimerHandle DeployTimer;
 
@@ -245,15 +264,6 @@ protected:
 
 	// Resets to 0 after BurstResetTime passes
 	uint32 ShotsInCurrentBurst;
-	// Useful for crosshairs
-	UPROPERTY(BlueprintReadOnly)
-	float CurrentSpreadAngle;
-
-	UPROPERTY(ReplicatedUsing=OnRep_FirearmState)
-	EFirearmState FirearmState;
-
-	UPROPERTY(Replicated, BlueprintReadOnly)
-	bool bIsDeployed;
 
 	bool bLastShotDry;
 };

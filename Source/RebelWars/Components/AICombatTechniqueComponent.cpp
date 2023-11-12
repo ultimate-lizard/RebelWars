@@ -94,7 +94,7 @@ void UAICombatTechniqueComponent::TickShootingTechnique()
 		return;
 	}
 
-	AFirearm* PrimaryFirearm = AIOwner->GetEquippedFirearm();
+	AFirearm* PrimaryFirearm = AIOwner->GetEquippedWeapon();
 	if (!PrimaryFirearm)
 	{
 		return;
@@ -122,6 +122,7 @@ void UAICombatTechniqueComponent::TickShootingTechnique()
 	else
 	{
 		CombatPawn->StopPrimaryFire();
+		LastFireTime = FPlatformTime::ToMilliseconds(FPlatformTime::Cycles());
 	}
 
 	// Reload when no targets

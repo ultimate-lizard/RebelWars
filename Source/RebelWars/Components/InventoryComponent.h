@@ -29,30 +29,36 @@ class REBELWARS_API UInventoryComponent : public UActorComponent
 public:
 	UInventoryComponent();
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
 	void PickupFirearm(AFirearm* InFirearm, bool bFromReplication = false);
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UFUNCTION(BlueprintCallable)
 	void DropFirearm(AFirearm* InFirearm, bool bAutoEquip = true, bool bFromReplication = false);
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UFUNCTION(BlueprintCallable)
 	void DropAll();
 
-	UFUNCTION(BlueprintPure, Category = "Inventory")
+	UFUNCTION(BlueprintPure)
 	AFirearm* GetFirearm(EInventorySlot Slot) const;
 
-	UFUNCTION(BlueprintPure, Category = "Inventory")
+	UFUNCTION(BlueprintPure)
 	AFirearm* GetEquippedFirearm() const;
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UFUNCTION(BlueprintCallable)
 	void EquipFirearm(EInventorySlot InSlot, bool bFromReplication = false);
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UFUNCTION(BlueprintCallable)
 	void HolsterWeapon();
 
 	const TArray<AFirearm*>& GetWeapons() const;
 
-public:
+	void GiveStartingWeapons();
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<AFirearm>> StartingWeapons;
+
 	UPROPERTY(BlueprintAssignable)
 	FOnFirearmEquip OnFirearmEquipDelegate;
 
@@ -86,7 +92,6 @@ private:
 	void ServerEquipFirearm(EInventorySlot InSlot);
 	void ServerEquipFirearm_Implementation(EInventorySlot InSlot);
 
-private:
 	UPROPERTY(ReplicatedUsing=OnRep_Inventory)
 	TArray<AFirearm*> Inventory;
 

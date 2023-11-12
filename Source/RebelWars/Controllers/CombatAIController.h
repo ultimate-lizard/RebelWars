@@ -14,6 +14,7 @@ class UInventoryComponent;
 class UAICombatTechniqueComponent;
 class UAITacticsBase;
 
+// TODO: Rename this to EAIMovementBehavior
 UENUM(BlueprintType)
 enum class EAIPassiveState : uint8
 {
@@ -74,46 +75,36 @@ class REBELWARS_API ACombatAIController : public AAIController
 public:
 	ACombatAIController();
 
-	bool IsAimedAtTarget() const;
-
 	AActor* FindClosestEnemy() const;
+
+	template <typename ActorClass>
+	TArray<ActorClass*> GetAllSensedActorsOfClass();
 
 	template <typename ActorClass>
 	ActorClass* FindClosestSensedActor();
 
-	bool IsArmed() const;
-
-	void SetFiringEnabled(bool bEnabled);
+	AFirearm* FindBestWeaponInSight();
 
 	void SetTarget(AActor* NewTarget);
 	AActor* GetTarget() const;
 
 	AActor* GetMovementTarget() const;
-
-	bool IsAmmoLow() const;
-
-	UInventoryComponent* GetPawnInventory() const;
-
-	void SetMovementBehavior(EAIPassiveState NewState);
 	void SetMovementTarget(AActor* NewTarget);
 
-	void EquipBestWeapon();
+	void SetMovementBehavior(EAIPassiveState NewState);
 
+	bool IsAimedAtTarget() const;
+	bool IsArmed() const;
+	bool IsAmmoLow() const;
 	bool IsReloading() const;
 	bool IsFiring() const;
+	void SetFiringEnabled(bool bEnabled);
+	void EquipBestWeapon();
+	UInventoryComponent* GetPawnInventory() const;
+	AFirearm* GetEquippedWeapon() const;
 
 	void React(EReaction InReaction);
-
-	AFirearm* GetPawnWeapon() const;
-
-	FRotator GetTargetControlRotation() const;
-	void SetTargetControlRotation(FRotator InRotation);
-
-	UPROPERTY(EditDefaultsOnly)
-	class UBehaviorTree* BehaviorTree;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FReactionInfo> Reactions;
+	void SetDifficulty(EBotDifficulty InDifficulty);
 
 	UFUNCTION(BlueprintPure)
 	int32 GetSkill() const;
@@ -127,9 +118,11 @@ public:
 	UFUNCTION(BlueprintPure)
 	int32 GetMaxAggression() const;
 
-	AFirearm* GetEquippedFirearm() const;
+	UPROPERTY(EditDefaultsOnly)
+	class UBehaviorTree* BehaviorTree;
 
-	void SetDifficulty(EBotDifficulty InDifficulty);
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FReactionInfo> Reactions;
 
 protected:
 	virtual void BeginPlay() override;
@@ -142,7 +135,6 @@ protected:
 
 	void InitDifficulty(EBotDifficulty InDifficulty);
 
-protected:
 	UPROPERTY(EditDefaultsOnly)
 	UAICombatTechniqueComponent* AICombatTechniqueComponent;
 
@@ -178,8 +170,8 @@ protected:
 	EBotDifficulty Difficulty;
 };
 
-template<typename ActorClass>
-inline ActorClass* ACombatAIController::FindClosestSensedActor()
+template <typename ActorClass>
+inline TArray<ActorClass*> ACombatAIController::GetAllSensedActorsOfClass()
 {
 	TArray<ActorClass*> PerceptedTargets;
 	if (UAIPerceptionComponent* AIPerception = GetPerceptionComponent())
@@ -198,6 +190,14 @@ inline ActorClass* ACombatAIController::FindClosestSensedActor()
 			}
 		}
 	}
+
+	return PerceptedTargets;
+}
+
+template<typename ActorClass>
+inline ActorClass* ACombatAIController::FindClosestSensedActor()
+{
+	TArray<ActorClass*> PerceptedTargets = GetAllSensedActorsOfClass<ActorClass>();
 
 	// Sort the targets to output the closest one
 	FVector PawnLocation;

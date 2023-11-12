@@ -113,6 +113,25 @@ void ACombatAIController::InitDifficulty(EBotDifficulty InDifficulty)
 	}
 }
 
+AFirearm* ACombatAIController::FindBestWeaponInSight()
+{
+	TArray<AFirearm*> WeaponsInSight = GetAllSensedActorsOfClass<AFirearm>();
+
+	// TODO: Max slot should not be hardcoded. Will be so until weapons of all slots are implemented
+	for (uint8 Slot = 0; Slot <= 1; ++Slot)
+	{
+		for (AFirearm* const Weapon : WeaponsInSight)
+		{
+			if (Weapon->Slot == static_cast<EInventorySlot>(Slot))
+			{
+				return Weapon;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 bool ACombatAIController::IsArmed() const
 {
 	if (PawnInventory)
@@ -158,7 +177,7 @@ int32 ACombatAIController::GetMaxAggression() const
 	return MaxAggression;
 }
 
-AFirearm* ACombatAIController::GetEquippedFirearm() const
+AFirearm* ACombatAIController::GetEquippedWeapon() const
 {
 	if (!PawnInventory)
 	{
@@ -378,6 +397,15 @@ bool ACombatAIController::IsAmmoLow() const
 		return true;
 	}
 
+	// TODO: This is a quick solution. This should be implemented as a Reaction
+	if (UInventoryComponent* Inventory = GetPawnInventory())
+	{
+		if (!Inventory->GetFirearm(EInventorySlot::Primary) && Skill >= 5)
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -440,7 +468,7 @@ void ACombatAIController::React(EReaction InReaction)
 		const int32 CurrentSkill = Skill;
 		const int32 CurrentAggression = Aggression;
 
-		if (AFirearm* EquippedFirearm = GetEquippedFirearm())
+		if (AFirearm* EquippedFirearm = GetEquippedWeapon())
 		{
 			if (FReactionResponse* ReactionResponseWithWeapon = ReactionInfo->Responses.FindByPredicate([CurrentSkill, CurrentAggression, EquippedFirearm](const FReactionResponse& ReactionResponse)
 			{
@@ -466,26 +494,6 @@ void ACombatAIController::React(EReaction InReaction)
 	}
 
 	SetMovementBehavior(EAIPassiveState::PS_None);
-}
-
-AFirearm* ACombatAIController::GetPawnWeapon() const
-{
-	if (PawnInventory)
-	{
-		return PawnInventory->GetEquippedFirearm();
-	}
-
-	return nullptr;
-}
-
-FRotator ACombatAIController::GetTargetControlRotation() const
-{
-	return TargetControlRotation;
-}
-
-void ACombatAIController::SetTargetControlRotation(FRotator InRotation)
-{
-	TargetControlRotation = InRotation;
 }
 
 void ACombatAIController::SetTarget(AActor* NewTarget)

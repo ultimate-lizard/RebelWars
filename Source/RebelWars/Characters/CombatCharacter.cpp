@@ -199,30 +199,9 @@ void ACombatCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// ViewModelSwayCycle = GetVelocity().Size();
-
-	ViewModelSwayCycle += DeltaTime * 7.5f;
-	//if (ViewModelSwayCycle >= 3.0f)
-	//{
-	//	ViewModelSwayCycle = -3.0f;
-	//}
-
-	if (!GetVelocity().Size())
-	{
-		ViewModelSwayCycle = -3.0f;
-	}
-
-	FVector2D VelRange(0.0f, MaxRunSpeed);
-	FVector2D CycleRange(0, 1.0f);
-	float VelModifier = FMath::GetMappedRangeValueClamped(VelRange, CycleRange, GetVelocity().Size());
-
-	/*FString ViewModelSwayCycleStr = FString::Printf(TEXT("%f"), );
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Green, *ViewModelSwayCycleStr);*/
-
-	ViewModelSway = VelModifier * FMath::Sin(ViewModelSwayCycle);
-
-	UpdateBodyRotation(DeltaTime);
-	UpdateViewModelTransform(DeltaTime);
+	TickBodyRotation(DeltaTime);
+	TickViewModelTransform(DeltaTime);
+	TickWeaponSway(DeltaTime);
 	TraceInteractables();
 }
 
@@ -391,8 +370,7 @@ void ACombatCharacter::Kill()
 
 	bIsDead = true;
 
-	// TODO: Play animation
-	// SetRagdollEnabled(true);
+	// TODO: Play death animation
 
 	SetGenericTeamId(TeamId.NoTeam);
 
@@ -409,6 +387,11 @@ void ACombatCharacter::Resurrect()
 	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
 
 	SetGenericTeamId(Team);
+
+	if (InventoryComponent)
+	{
+		InventoryComponent->GiveStartingWeapons();
+	}
 
 	OnResurrectDelegate.Broadcast(this);
 }
@@ -429,24 +412,12 @@ void ACombatCharacter::MoveRight(float InRate)
 
 void ACombatCharacter::LookUp(float InRate)
 {
-	float Rate = InRate;
-	//if (AHumanPlayerController* HumanController = GetController<AHumanPlayerController>())
-	//{
-	//	Rate *= HumanController->GetMouseSensitivity();
-	//}
-
-	AddControllerPitchInput(Rate);
+	AddControllerPitchInput(InRate);
 }
 
 void ACombatCharacter::Turn(float InRate)
 {
-	float Rate = InRate;
-	//if (AHumanPlayerController* HumanController = GetController<AHumanPlayerController>())
-	//{
-	//	Rate *= HumanController->GetMouseSensitivity();
-	//}
-
-	AddControllerYawInput(Rate);
+	AddControllerYawInput(InRate);
 }
 
 void ACombatCharacter::Reload()
@@ -462,7 +433,7 @@ void ACombatCharacter::Reload()
 	}
 }
 
-void ACombatCharacter::UpdateViewModelTransform(float DeltaTime)
+void ACombatCharacter::TickViewModelTransform(float DeltaTime)
 {
 	ensure(WeaponMesh1P);
 
@@ -480,7 +451,7 @@ void ACombatCharacter::UpdateViewModelTransform(float DeltaTime)
 	WeaponMesh1P->SetWorldLocationAndRotationNoPhysics(NewPosition + ForwardVector, NewRotation);
 }
 
-void ACombatCharacter::UpdateBodyRotation(float DeltaTime)
+void ACombatCharacter::TickBodyRotation(float DeltaTime)
 {
 	if (GetLocalRole() == ENetRole::ROLE_Authority)
 	{
@@ -515,6 +486,22 @@ void ACombatCharacter::UpdateBodyRotation(float DeltaTime)
 
 		SetActorRotation(CurrentRotation);
 	}
+}
+
+void ACombatCharacter::TickWeaponSway(float DeltaTime)
+{
+	ViewModelSwayCycle += DeltaTime * 7.5f;
+
+	if (!GetVelocity().Size())
+	{
+		ViewModelSwayCycle = -3.0f;
+	}
+
+	FVector2D VelRange(0.0f, MaxRunSpeed);
+	FVector2D CycleRange(0, 1.0f);
+	float VelModifier = FMath::GetMappedRangeValueClamped(VelRange, CycleRange, GetVelocity().Size());
+
+	ViewModelSway = VelModifier * FMath::Sin(ViewModelSwayCycle);
 }
 
 void ACombatCharacter::TraceInteractables()

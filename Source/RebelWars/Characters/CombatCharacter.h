@@ -58,7 +58,7 @@ public:
 	void StartPrimaryFire();
 	void StopPrimaryFire();
 
-	// INPUT
+	// Input
 	void MoveForward(float InRate);
 	void MoveRight(float InRate);
 	void LookUp(float InRate);
@@ -109,8 +109,9 @@ protected:
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamId) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
-	void UpdateViewModelTransform(float DeltaTime);
-	void UpdateBodyRotation(float DeltaTime);
+	void TickViewModelTransform(float DeltaTime);
+	void TickBodyRotation(float DeltaTime);
+	void TickWeaponSway(float DeltaTime);
 	void TraceInteractables();
 
 	virtual void Kill();
@@ -134,10 +135,6 @@ protected:
 
 	UFUNCTION()
 	void FirearmUnequip(class AFirearm* InFirearm);
-
-	//UFUNCTION(Server, Reliable)
-	//void ServerPrimaryFire(AFirearm* InFirearm);
-	//void ServerPrimaryFire_Implementation(AFirearm* InFirearm);
 
 	UFUNCTION(Server, Reliable)
 	void ServerUse();
