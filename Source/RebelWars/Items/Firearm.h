@@ -4,11 +4,8 @@
 #include "Items/ItemBase.h"
 #include "Sound/SoundCue.h"
 #include "Components/InventoryComponent.h"
-// #include "Utils/Despawnable.h"
 
 #include "Firearm.generated.h"
-
-class UActorDespawnComponent;
 
 UENUM(BlueprintType)
 enum class EFirearmState : uint8
@@ -253,9 +250,6 @@ protected:
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	bool bIsDeployed;
-
-	UPROPERTY(EditDefaultsOnly)
-	UActorDespawnComponent* DespawnComponent;
 
 	FTimerHandle ReloadTimer;
 	FTimerHandle DeployTimer;

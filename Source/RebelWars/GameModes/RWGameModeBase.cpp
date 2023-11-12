@@ -108,6 +108,8 @@ void ARWGameModeBase::HandleMatchIsWaitingToStart()
 {
 	Super::HandleMatchIsWaitingToStart();
 
+
+
 	if (UWorld* World = GetWorld())
 	{
 		if (auto DefaultPawnObject = DefaultPawnClass.GetDefaultObject())

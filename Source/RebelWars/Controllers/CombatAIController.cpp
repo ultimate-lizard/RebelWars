@@ -117,6 +117,8 @@ AFirearm* ACombatAIController::FindBestWeaponInSight()
 {
 	TArray<AFirearm*> WeaponsInSight = GetAllSensedActorsOfClass<AFirearm>();
 
+
+
 	// TODO: Max slot should not be hardcoded. Will be so until weapons of all slots are implemented
 	for (uint8 Slot = 0; Slot <= 1; ++Slot)
 	{
@@ -124,7 +126,17 @@ AFirearm* ACombatAIController::FindBestWeaponInSight()
 		{
 			if (Weapon->Slot == static_cast<EInventorySlot>(Slot))
 			{
-				return Weapon;
+				if (AFirearm* EquippedWeapon = GetEquippedWeapon())
+				{
+					if (EquippedWeapon->Slot > Weapon->Slot)
+					{
+						return Weapon;
+					}
+				}
+				else
+				{
+					return Weapon;
+				}
 			}
 		}
 	}
@@ -226,6 +238,7 @@ void ACombatAIController::Tick(float DeltaTime)
 	if (!GetWorldTimerManager().IsTimerActive(ReactionTimer))
 	{
 		SetTarget(FindClosestEnemy());
+		SetFiringEnabled(IsAimedAtTarget());
 
 		for (UAITacticsBase* Tactic : Tactics)
 		{
@@ -233,11 +246,6 @@ void ACombatAIController::Tick(float DeltaTime)
 			{
 				Tactic->Execute();
 			}
-		}
-
-		if (!IsAimedAtTarget())
-		{
-			SetFiringEnabled(false);
 		}
 
 		// Submit to blackboard
@@ -386,6 +394,7 @@ bool ACombatAIController::IsAmmoLow() const
 		}
 	}
 
+	// TODO: Move this to member variable
 	int32 MinimumAmmo = 30;
 	if (AFirearm* EquippedFirearm = PawnInventory->GetEquippedFirearm())
 	{
@@ -400,7 +409,7 @@ bool ACombatAIController::IsAmmoLow() const
 	// TODO: This is a quick solution. This should be implemented as a Reaction
 	if (UInventoryComponent* Inventory = GetPawnInventory())
 	{
-		if (!Inventory->GetFirearm(EInventorySlot::Primary) && Skill >= 5)
+		if (!Inventory->GetFirearm(EInventorySlot::Primary) && Skill >= 3)
 		{
 			return true;
 		}

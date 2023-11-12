@@ -3,7 +3,6 @@
 #include "Components/SphereComponent.h"
 #include "Components/InteractableComponent.h"
 #include "Components/InventoryComponent.h"
-#include "Components/ActorDespawnComponent.h"
 #include "Characters/CombatCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -39,8 +38,6 @@ AFirearm::AFirearm()
 	// Ammo
 	MagAmmoCapacity = 30;
 	ReserveAmmoCapacity = 120;
-
-	DespawnComponent = CreateDefaultSubobject<UActorDespawnComponent>(FName(TEXT("Despawn Component")));
 
 	// Shooting logic
 	TimeSinceLastShot = 0.0f;
@@ -194,11 +191,6 @@ void AFirearm::Unequip()
 void AFirearm::OnPickup(UInventoryComponent* InInventory)
 {
 	Super::OnPickup(InInventory);
-
-	if (DespawnComponent)
-	{
-		DespawnComponent->FreeDespawnSlot(this);
-	}
 }
 
 void AFirearm::OnDrop()
@@ -208,11 +200,6 @@ void AFirearm::OnDrop()
 	if (GetLocalRole() < ENetRole::ROLE_Authority)
 	{
 		return;
-	}
-
-	if (DespawnComponent)
-	{
-		DespawnComponent->AddToDespawnQueue(this);
 	}
 }
 

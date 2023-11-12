@@ -66,10 +66,10 @@ void UDefensiveAITactics::Execute()
 		{
 			if (AFirearm* WeaponInSight = AIController->FindBestWeaponInSight())
 			{
-				if (AIController->GetTarget() != WeaponInSight)
-				{
-					AIController->SetTarget(WeaponInSight);
-				}
+				//if (AIController->GetTarget() != WeaponInSight)
+				//{
+				//	AIController->SetTarget(WeaponInSight);
+				//}
 
 				bool bCloseEnoughToPickup = FVector::Distance(PossessedPawn->GetActorLocation(), WeaponInSight->GetActorLocation()) <= 200.0f;
 				if (bCloseEnoughToPickup)
