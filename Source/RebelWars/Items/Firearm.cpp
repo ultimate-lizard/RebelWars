@@ -6,7 +6,7 @@
 #include "Characters/CombatCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
-#include "Controllers/HumanPlayerController.h"
+#include "Controllers/GameplayHumanController.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "EngineUtils.h"
@@ -297,7 +297,7 @@ void AFirearm::PrimaryFire()
 
 	if (ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner()))
 	{
-		if (AHumanPlayerController* PlayerController = Cast<AHumanPlayerController>(OwnerCharacter->GetController()))
+		if (AGameplayHumanController* PlayerController = Cast<AGameplayHumanController>(OwnerCharacter->GetController()))
 		{
 			PlayerController->AddViewPunch(FRotator::MakeFromEuler(FVector(0.0f, -ViewPunch, 0.0f)));
 		}

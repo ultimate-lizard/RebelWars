@@ -4,10 +4,14 @@
 #include "Characters/CombatCharacter.h"
 #include "GameModes/RWGameStateBase.h"
 #include "Controllers/CombatAIController.h"
+#include "Controllers/GameplayHumanController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/RWPlayerStart.h"
+#include "Player/RWPlayerState.h"
+#include "EngineUtils.h"
 
-ARWGameModeBase::ARWGameModeBase(const FObjectInitializer& ObjectInitializer) :
-	Super(ObjectInitializer)
+ARWGameModeBase::ARWGameModeBase() :
+	Super()
 {
 }
 
@@ -55,6 +59,16 @@ void ARWGameModeBase::InitGame(const FString& MapName, const FString& Options, F
 	}
 }
 
+void ARWGameModeBase::InitGameState()
+{
+	Super::InitGameState();
+
+	if (ARWGameStateBase* RWGameState = GetGameState<ARWGameStateBase>())
+	{
+		RWGameState->SetNumTeams(AvailableTeams.Num());
+	}
+}
+
 void ARWGameModeBase::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
@@ -65,6 +79,11 @@ void ARWGameModeBase::PostLogin(APlayerController* NewPlayer)
 		{
 			RespawnTimers.Add(PlayerState->GetPlayerId(), FTimerHandle());
 		}
+	}
+
+	if (GetMatchState() != MatchState::InProgress)
+	{
+		StartPlay();
 	}
 }
 
@@ -99,17 +118,55 @@ void ARWGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor*
 	}
 }
 
+bool ARWGameModeBase::ReadyToStartMatch_Implementation()
+{
+	const uint32 MinPlayers = 1;
+	if (NumPlayers < MinPlayers)
+	{
+		return false;
+	}
+
+	return Super::ReadyToStartMatch_Implementation();
+}
+
+bool ARWGameModeBase::MustSpectate_Implementation(APlayerController* NewPlayerController) const
+{
+	// TODO:
+	return false;
+
+	if (ARWPlayerState* PlayerState = NewPlayerController->GetPlayerState<ARWPlayerState>())
+	{
+		return PlayerState->GetTeam() == EAffiliation::None;
+	}
+
+	return true;
+}
+
 int32 ARWGameModeBase::GetBotDifficulty() const
 {
 	return BotDifficulty;
 }
 
+bool ARWGameModeBase::IsTeamSelectAllowed() const
+{
+	return bAllowTeamSelect;
+}
+
+void ARWGameModeBase::StartMatch()
+{
+	Super::StartMatch();
+}
+
 void ARWGameModeBase::HandleMatchIsWaitingToStart()
 {
 	Super::HandleMatchIsWaitingToStart();
+}
 
+void ARWGameModeBase::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
 
-
+	// Spawn bots
 	if (UWorld* World = GetWorld())
 	{
 		if (auto DefaultPawnObject = DefaultPawnClass.GetDefaultObject())
@@ -133,11 +190,6 @@ void ARWGameModeBase::HandleMatchIsWaitingToStart()
 			}
 		}
 	}
-}
-
-void ARWGameModeBase::HandleMatchHasStarted()
-{
-	Super::HandleMatchHasStarted();
 
 	for (auto Iter = RespawnTimers.CreateIterator(); Iter; ++Iter)
 	{
@@ -164,6 +216,49 @@ void ARWGameModeBase::HandleMatchHasStarted()
 			}
 		}
 	}
+}
+
+AActor* ARWGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
+{
+	// Choose a player start
+	APlayerStart* FoundPlayerStart = nullptr;
+	UClass* PawnClass = GetDefaultPawnClassForController(Player);
+	ACombatCharacter* PawnToFit = PawnClass ? PawnClass->GetDefaultObject<ACombatCharacter>() : nullptr;
+	TArray<ARWPlayerStart*> UnOccupiedStartPoints;
+	TArray<ARWPlayerStart*> OccupiedStartPoints;
+	UWorld* World = GetWorld();
+
+	for (TActorIterator<ARWPlayerStart> It(World); It; ++It)
+	{
+		ARWPlayerStart* PlayerStart = *It;
+
+		if (PawnToFit->Affiliation != PawnToFit->Affiliation)
+		{
+			continue;
+		}
+
+		FVector ActorLocation = PlayerStart->GetActorLocation();
+		const FRotator ActorRotation = PlayerStart->GetActorRotation();
+		if (!World->EncroachingBlockingGeometry(PawnToFit, ActorLocation, ActorRotation))
+		{
+			UnOccupiedStartPoints.Add(PlayerStart);
+		}
+		else if (World->FindTeleportSpot(PawnToFit, ActorLocation, ActorRotation))
+		{
+			OccupiedStartPoints.Add(PlayerStart);
+		}
+	}
+
+	if (UnOccupiedStartPoints.Num() > 0)
+	{
+		FoundPlayerStart = UnOccupiedStartPoints[FMath::RandRange(0, UnOccupiedStartPoints.Num() - 1)];
+	}
+	else if (OccupiedStartPoints.Num() > 0)
+	{
+		FoundPlayerStart = OccupiedStartPoints[FMath::RandRange(0, OccupiedStartPoints.Num() - 1)];
+	}
+
+	return FoundPlayerStart;
 }
 
 void ARWGameModeBase::OnCombatCharacterKilled(AActor* Killer, ACombatCharacter* Victim)

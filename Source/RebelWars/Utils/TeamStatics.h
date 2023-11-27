@@ -9,9 +9,18 @@
 UENUM(BlueprintType)
 enum class EAffiliation : uint8
 {
-	Neutrals = 0,
+	None = 0,
 	Rebels = 1,
 	CRF = 2
+};
+
+USTRUCT()
+struct FTeam
+{
+	GENERATED_BODY()
+
+	EAffiliation Affiliation;
+	TArray<APlayerState*> Players;
 };
 
 UCLASS()

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Controllers/RWHumanControllerBase.h"
+#include "Controllers/HumanControllerBase.h"
 
-#include "HumanPlayerController.generated.h"
+#include "GameplayHumanController.generated.h"
 
 class ACombatCharacter;
 class ARWPlayerCameraManager;
@@ -15,18 +15,24 @@ namespace CameraMode
 }
 
 UCLASS()
-class REBELWARS_API AHumanPlayerController : public ARWHumanControllerBase
+class REBELWARS_API AGameplayHumanController : public AHumanControllerBase
 {
 	GENERATED_BODY()
 	
 public:
-	AHumanPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	AGameplayHumanController();
 	virtual void BeginPlay() override;
 
 	void AddViewPunch(FRotator InRotator);
 	FRotator GetCurrentViewPunchAngle() const;
 
 	ARWPlayerCameraManager* GetRWPlayerCameraManager() const;
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void ToggleInGameMenu();
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void ToggleTeamSelect();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera")
 	FVector DeathCameraOffsetLocation;
@@ -36,7 +42,10 @@ public:
 
 protected:
 	virtual void Tick(float DeltaTime) override;
+	virtual void PostInitializeComponents() override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void InitPlayerState() override;
+	virtual void SetupInputComponent() override;
 
 	FVector CurrentDeathCameraLocation;
 };

@@ -13,7 +13,7 @@
 #include "Components/InteractableComponent.h"
 #include "Player/RWPlayerStart.h"
 #include "AIController.h"
-#include "Controllers/HumanPlayerController.h"
+#include "Controllers/GameplayHumanController.h"
 #include "Kismet/KismetMathLibrary.h"
 
 ACombatCharacter::ACombatCharacter()
@@ -62,7 +62,7 @@ ACombatCharacter::ACombatCharacter()
 
 	Tags.Add(FName(TEXT("character")));
 
-	Affiliation = EAffiliation::Neutrals;
+	Affiliation = EAffiliation::None;
 	MovementType = ECharacterMovementType::Run;
 
 	TargetActorRotation = GetActorRotation();
@@ -85,7 +85,7 @@ void ACombatCharacter::Landed(const FHitResult& Hit)
 
 	float VelocityZ = GetVelocity().Z / 2.0f;
 
-	if (AHumanPlayerController* HumanController = GetController<AHumanPlayerController>())
+	if (AGameplayHumanController* HumanController = GetController<AGameplayHumanController>())
 	{
 		HumanController->AddViewPunch(FRotator(0.0f, 0.0f, VelocityZ));
 	}
