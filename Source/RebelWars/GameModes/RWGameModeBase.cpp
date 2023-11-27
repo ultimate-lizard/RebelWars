@@ -1,6 +1,7 @@
 #include "GameModes/RWGameModeBase.h"
 
 #include "GameFramework/PlayerState.h"
+#include "GameFramework/PlayerController.h"
 #include "Characters/CombatCharacter.h"
 #include "GameModes/RWGameStateBase.h"
 #include "Controllers/CombatAIController.h"
@@ -75,18 +76,20 @@ void ARWGameModeBase::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	if (APlayerState* PlayerState = NewPlayer->GetPlayerState<APlayerState>())
+	if (ARWPlayerState* PlayerState = NewPlayer->GetPlayerState<ARWPlayerState>())
 	{
 		if (!RespawnTimers.Find(PlayerState->GetPlayerId()))
 		{
 			RespawnTimers.Add(PlayerState->GetPlayerId(), FTimerHandle());
 		}
+
+		ServerJoinTeam_Implementation(PlayerState, EAffiliation::Spectators);
 	}
 
-	if (GetMatchState() != MatchState::InProgress)
-	{
-		StartPlay();
-	}
+	//if (GetMatchState() != MatchState::InProgress)
+	//{
+	//	StartPlay();
+	//}
 }
 
 void ARWGameModeBase::Logout(AController* Exiting)
@@ -122,7 +125,7 @@ void ARWGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor*
 
 bool ARWGameModeBase::ReadyToStartMatch_Implementation()
 {
-	const uint32 MinPlayers = 1;
+	const uint32 MinPlayers = 2;
 	if (NumPlayers < MinPlayers)
 	{
 		return false;
@@ -144,9 +147,85 @@ bool ARWGameModeBase::MustSpectate_Implementation(APlayerController* NewPlayerCo
 	return true;
 }
 
+void ARWGameModeBase::ServerJoinTeam_Implementation(ARWPlayerState* PlayerState, EAffiliation Team)
+{
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+	{
+		ServerJoinTeam(PlayerState, Team);
+		return;
+	}
+
+	JoinTeam(PlayerState, Team);
+}
+
 int32 ARWGameModeBase::GetBotDifficulty() const
 {
 	return BotDifficulty;
+}
+
+void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, *FString::Printf(TEXT("Player %s has joined team %i"), *PlayerState->GetPlayerName(), Team));
+
+	APlayerController* PlayerStateController = nullptr;
+	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
+	{
+		APlayerController* PlayerController = Iterator->Get();
+		if (PlayerController->GetPlayerState<ARWPlayerState>() == PlayerState)
+		{
+			PlayerStateController = PlayerController;
+		}
+	}
+
+
+	if (PlayerStateController)
+	{
+		if (Team == EAffiliation::Spectators)
+		{
+			
+		}
+		else
+		{
+
+		}
+	}
+
+	ACombatCharacter* PlayerPawn = PlayerState->GetPawn<ACombatCharacter>();
+
+	if (PlayerPawn)
+	{
+		if (PlayerPawn->Affiliation != Team)
+		{
+			// Kill
+			PlayerPawn->SetHealth(0.0f);
+			PlayerPawn->BroadcastBecomeRagdoll();
+		}
+	}
+
+	if (Team == EAffiliation::Spectators)
+	{
+		if (PlayerStateController)
+		{
+			PlayerStateController->ChangeState(NAME_Spectating);
+			if (FTimerHandle* RespawnTimer = RespawnTimers.Find(PlayerState->GetPlayerId()))
+			{
+				RespawnTimer->Invalidate();
+				RespawnTimers.Remove(PlayerState->GetPlayerId());
+			}
+		}
+	}
+	else
+	{
+		if (!PlayerStateController->GetPawn())
+		{
+			RestartPlayer(PlayerStateController);
+		}
+
+		if (PlayerPawn)
+		{
+			PlayerPawn->Affiliation = Team;
+		}
+	}
 }
 
 bool ARWGameModeBase::IsTeamSelectAllowed() const

@@ -8,6 +8,14 @@ ARWHUD::ARWHUD()
 	HUDWidgetInstance = nullptr;
 }
 
+void ARWHUD::SetHUDWidgetVisibility(bool bVisibility)
+{
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->SetVisibility(bVisibility ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Hidden);
+	}
+}
+
 void ARWHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -18,6 +26,7 @@ void ARWHUD::BeginPlay()
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->AddToViewport();
+			SetHUDWidgetVisibility(true);
 		}
 	}
 }

@@ -13,6 +13,9 @@ class REBELWARS_API ARWHUD : public AHUD
 public:
 	ARWHUD();
 
+	UFUNCTION(BlueprintCallable)
+	void SetHUDWidgetVisibility(bool bVisibility);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UUserWidget> HUDWidgetClass;
 

@@ -7,6 +7,7 @@
 #include "GameFramework/SpectatorPawn.h"
 #include "GameFramework/PlayerState.h"
 #include "UI/GameWidgetsData.h"
+#include "UI/RWHUD.h"
 #include "Blueprint/UserWidget.h"
 
 AGameplayHumanController::AGameplayHumanController() :
@@ -34,6 +35,11 @@ void AGameplayHumanController::BeginPlay()
 	{
 		TeamSelectWidget->AddToViewport();
 		TeamSelectWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (IsInState(NAME_Spectating))
+	{
+		ToggleTeamSelect();
 	}
 }
 
@@ -78,6 +84,11 @@ void AGameplayHumanController::Tick(float DeltaTime)
 			}
 		}
 	}
+}
+
+void AGameplayHumanController::SetSpectatorPawn(ASpectatorPawn* NewSpectatorPawn)
+{
+	Super::SetSpectatorPawn(NewSpectatorPawn);
 }
 
 void AGameplayHumanController::PostInitializeComponents()
@@ -125,12 +136,33 @@ void AGameplayHumanController::SetupInputComponent()
 
 void AGameplayHumanController::ToggleInGameMenu()
 {
+	if (TeamSelectWidget->IsVisible())
+	{
+		ToggleScreen(TeamSelectWidget);
+		return;
+	}
+
 	ToggleScreen(InGameMenuWidget);
+
+	if (ARWHUD* RWHUD = GetHUD<ARWHUD>())
+	{
+		RWHUD->SetHUDWidgetVisibility(!InGameMenuWidget->IsVisible());
+	}
 }
 
 void AGameplayHumanController::ToggleTeamSelect()
 {
+	if (InGameMenuWidget->IsVisible())
+	{
+		return;
+	}
+
 	ToggleScreen(TeamSelectWidget);
+
+	if (ARWHUD* RWHUD = GetHUD<ARWHUD>())
+	{
+		RWHUD->SetHUDWidgetVisibility(!TeamSelectWidget->IsVisible());
+	}
 }
 
 void AGameplayHumanController::ToggleScreen(UUserWidget* GameScreenWidget)

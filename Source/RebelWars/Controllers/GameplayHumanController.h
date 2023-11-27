@@ -46,6 +46,7 @@ public:
 protected:
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void SetSpectatorPawn(ASpectatorPawn* NewSpectatorPawn) override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void InitPlayerState() override;
 	virtual void SetupInputComponent() override;

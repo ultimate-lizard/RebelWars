@@ -11,7 +11,8 @@ enum class EAffiliation : uint8
 {
 	None = 0,
 	Rebels = 1,
-	CRF = 2
+	CRF = 2,
+	Spectators
 };
 
 USTRUCT()

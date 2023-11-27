@@ -44,8 +44,13 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Movement")
 	ECharacterMovementType GetMovementType() const;
 
+	void SetHealth(float NewHealth);
 	UFUNCTION(BlueprintPure)
 	float GetCurrentHealth() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadcastBecomeRagdoll(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
+	void BroadcastBecomeRagdoll_Implementation(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
 
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
@@ -118,14 +123,9 @@ protected:
 	virtual void Resurrect();
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void OnHealthUpdate();
-	void SetHealth(float NewHealth);
 
 	void SetRagdollEnabled(bool bEnableRagdoll);
 	bool IsRagdoll() const;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void BroadcastBecomeRagdoll(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
-	void BroadcastBecomeRagdoll_Implementation(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
 
 	UFUNCTION()
 	void OnRep_CurrentHealth();

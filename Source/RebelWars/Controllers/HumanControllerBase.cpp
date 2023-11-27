@@ -1,6 +1,7 @@
 #include "Controllers/HumanControllerBase.h"
 
 #include "GameFramework/PlayerInput.h"
+#include "GameFramework/SpectatorPawn.h"
 #include "Blueprint/UserWidget.h"
 #include "UI/GameWidgetsData.h"
 
@@ -61,27 +62,42 @@ void AHumanControllerBase::SetPlayer(UPlayer* InPlayer)
 
 void AHumanControllerBase::SetUIInteractionModeEnabled(bool bEnabled)
 {
+	APawn* ControlledPawn = GetPawn();
+	ASpectatorPawn* ControlledSpectatorPawn = GetSpectatorPawn();
+
 	if (bEnabled)
 	{
-		if (APawn* ControlledPawn = GetPawn())
+		if (ControlledPawn)
 		{
 			ControlledPawn->DisableInput(this);
+		}
+		
+		if (ControlledSpectatorPawn)
+		{
+			ControlledSpectatorPawn->DisableInput(this);
 		}
 
 		FInputModeGameAndUI InputMode;
 		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockOnCapture);
+
 		SetInputMode(InputMode);
 		SetShowMouseCursor(true);
 	}
 	else
 	{
-		if (APawn* ControlledPawn = GetPawn())
+		if (ControlledPawn)
 		{
 			ControlledPawn->EnableInput(this);
 		}
 
+		if (ControlledSpectatorPawn)
+		{
+			ControlledSpectatorPawn->EnableInput(this);
+		}
+
 		FInputModeGameOnly InputMode;
 		SetInputMode(InputMode);
+
 		SetShowMouseCursor(false);
 	}
 }
