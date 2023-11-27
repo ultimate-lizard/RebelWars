@@ -2,11 +2,12 @@
 
 #include "Characters/CombatCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/RWPlayerCameraManager.h"
 #include "GameFramework/SpectatorPawn.h"
 #include "GameFramework/PlayerState.h"
-#include "Kismet/GameplayStatics.h"
-#include "UI/UIManager.h"
+#include "UI/GameWidgetsData.h"
+#include "Blueprint/UserWidget.h"
 
 AGameplayHumanController::AGameplayHumanController() :
 	Super()
@@ -22,6 +23,18 @@ AGameplayHumanController::AGameplayHumanController() :
 void AGameplayHumanController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (InGameMenuWidget)
+	{
+		InGameMenuWidget->AddToViewport();
+		InGameMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (TeamSelectWidget)
+	{
+		TeamSelectWidget->AddToViewport();
+		TeamSelectWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void AGameplayHumanController::AddViewPunch(FRotator InAngles)
@@ -65,15 +78,24 @@ void AGameplayHumanController::Tick(float DeltaTime)
 			}
 		}
 	}
-
-	// ServerViewNextPlayer();
 }
 
 void AGameplayHumanController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	
+	if (GameWidgetsData)
+	{
+		if (TSubclassOf<UUserWidget> InGameMenuClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::InGameMenu))
+		{
+			InGameMenuWidget = CreateWidget(GetGameInstance(), InGameMenuClass);
+		}
+
+		if (TSubclassOf<UUserWidget> TeamSelectClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::TeamSelect))
+		{
+			TeamSelectWidget = CreateWidget(GetGameInstance(), TeamSelectClass);
+		}
+	}
 }
 
 void AGameplayHumanController::OnPossess(APawn* InPawn)
@@ -103,21 +125,22 @@ void AGameplayHumanController::SetupInputComponent()
 
 void AGameplayHumanController::ToggleInGameMenu()
 {
-	if (UUIManager* UIManager = GetUIManager())
-	{
-		const bool bNewVisibility = !UIManager->IsGameScreenVisible(GameScreens::InGameMenu);
-		UIManager->SetGameScreenVisibility(GameScreens::InGameMenu, bNewVisibility);
-		UGameplayStatics::SetGamePaused(GetWorld(), bNewVisibility);
-		SetUIInteractionModeEnabled(bNewVisibility);
-	}
+	ToggleScreen(InGameMenuWidget);
 }
 
 void AGameplayHumanController::ToggleTeamSelect()
 {
-	if (UUIManager* UIManager = GetUIManager())
+	ToggleScreen(TeamSelectWidget);
+}
+
+void AGameplayHumanController::ToggleScreen(UUserWidget* GameScreenWidget)
+{
+	if (!GameScreenWidget)
 	{
-		const bool bNewVisibility = !UIManager->IsGameScreenVisible(GameScreens::TeamSelect);
-		UIManager->SetGameScreenVisibility(GameScreens::TeamSelect, bNewVisibility);
-		SetUIInteractionModeEnabled(bNewVisibility);
+		return;
 	}
+
+	bool bNewVisibility = !GameScreenWidget->IsVisible();
+	GameScreenWidget->SetVisibility(bNewVisibility ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	SetUIInteractionModeEnabled(bNewVisibility);
 }

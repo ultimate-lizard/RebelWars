@@ -9,10 +9,12 @@
 #include "Player/RWPlayerStart.h"
 #include "Player/RWPlayerState.h"
 #include "EngineUtils.h"
+#include "UI/RWHUD.h"
 
 ARWGameModeBase::ARWGameModeBase() :
 	Super()
 {
+
 }
 
 APawn* ARWGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)

@@ -11,14 +11,7 @@ UCLASS()
 class REBELWARS_API URWGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
-public:
-	UUIManager* GetUIManager();
 
 protected:
-	virtual void Init() override;
 
-private:
-	UPROPERTY(Transient)
-	UUIManager* UIManager;
 };

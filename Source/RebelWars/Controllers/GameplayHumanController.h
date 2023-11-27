@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ToggleTeamSelect();
 
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void ToggleScreen(UUserWidget* GameScreenWidget);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera")
 	FVector DeathCameraOffsetLocation;
 
@@ -41,11 +44,18 @@ public:
 	FRotator DeathCameraOffsetRotation;
 
 protected:
-	virtual void Tick(float DeltaTime) override;
 	virtual void PostInitializeComponents() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void InitPlayerState() override;
 	virtual void SetupInputComponent() override;
 
 	FVector CurrentDeathCameraLocation;
+
+private:
+	UPROPERTY(Transient)
+	UUserWidget* InGameMenuWidget;
+
+	UPROPERTY(Transient)
+	UUserWidget* TeamSelectWidget;
 };

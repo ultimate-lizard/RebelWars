@@ -2,23 +2,16 @@
 
 #include "GameFramework/PlayerInput.h"
 #include "Blueprint/UserWidget.h"
-#include "UI/GameScreens.h"
-#include "RWGameInstance.h"
+#include "UI/GameWidgetsData.h"
 
 AHumanControllerBase::AHumanControllerBase()
 	: Super()
 {
-
-}
-
-UUIManager* AHumanControllerBase::GetUIManager()
-{
-	if (URWGameInstance* RWGameInstance = GetGameInstance<URWGameInstance>())
+	ConstructorHelpers::FObjectFinder<UGameWidgetsData> FoundGameScreens(TEXT("/Game/UI/GameScreens"));
+	if (FoundGameScreens.Succeeded())
 	{
-		return RWGameInstance->GetUIManager();
+		GameWidgetsData = FoundGameScreens.Object;
 	}
-
-	return nullptr;
 }
 
 void AHumanControllerBase::BeginPlay()

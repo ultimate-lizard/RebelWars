@@ -5,8 +5,6 @@
 
 #include "RWHUD.generated.h"
 
-class UUserWidget;
-
 UCLASS()
 class REBELWARS_API ARWHUD : public AHUD
 {
@@ -14,11 +12,14 @@ class REBELWARS_API ARWHUD : public AHUD
 	
 public:
 	ARWHUD();
-	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UUserWidget> HUDWidgetClass;
 
+protected:
+	virtual void BeginPlay() override;
+
 private:
+	UPROPERTY(Transient)
 	UUserWidget* HUDWidgetInstance;
 };

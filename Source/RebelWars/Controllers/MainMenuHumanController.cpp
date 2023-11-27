@@ -1,14 +1,30 @@
 #include "Controllers/MainMenuHumanController.h"
 
-#include "UI/UIManager.h"
+#include "UI/GameWidgetsData.h"
+#include "Blueprint/UserWidget.h"
+
+AMainMenuHumanController::AMainMenuHumanController()
+	: Super()
+{
+}
+
+void AMainMenuHumanController::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (TSubclassOf<UUserWidget> MainMenuWidgetClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::MainMenu))
+	{
+		MainMenuWidget = CreateWidget(GetGameInstance(), MainMenuWidgetClass);
+	}
+}
 
 void AMainMenuHumanController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UUIManager* UIManager = GetUIManager())
+	if (MainMenuWidget)
 	{
-		UIManager->SetGameScreenVisibility(GameScreens::MainMenu, true);
+		MainMenuWidget->AddToViewport();
 	}
 	
 	SetUIInteractionModeEnabled(true);

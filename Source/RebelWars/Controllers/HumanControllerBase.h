@@ -5,16 +5,7 @@
 
 #include "HumanControllerBase.generated.h"
 
-class UGameScreens;
-class UUserWidget;
-class UUIManager;
-
-namespace GameScreens
-{
-	static const FName MainMenu(TEXT("MainMenu"));
-	static const FName InGameMenu(TEXT("InGameMenu"));
-	static const FName TeamSelect(TEXT("TeamSelect"));
-}
+class UGameWidgetsData;
 
 UCLASS()
 class REBELWARS_API AHumanControllerBase : public APlayerController
@@ -30,19 +21,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Mouse")
 	void SetMouseSensitivity(float NewSensitivity);
 
-	// void SetGameScreenVisibility(FName GameScreenName, bool bVisible);
+	UFUNCTION(BlueprintCallable)
 	void SetUIInteractionModeEnabled(bool bEnabled);
-
-	// bool IsGameScreenVisible(FName GameScreenName) const;
 
 	UPROPERTY(Config)
 	float MouseSensitivity;
-
-	UUIManager* GetUIManager();
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 	virtual void SetupInputComponent() override;
 	virtual void SetPlayer(UPlayer* InPlayer) override;
+
+	UGameWidgetsData* GameWidgetsData;
 };
