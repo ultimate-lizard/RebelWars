@@ -36,15 +36,14 @@ void ARWGameModeBase::RestartPlayer(AController* NewPlayer)
 
 	Super::RestartPlayer(NewPlayer);
 
-	if (APawn* RestartedPawn = NewPlayer->GetPawn())
+	if (ACombatCharacter* RestartedPawn = NewPlayer->GetPawn<ACombatCharacter>())
 	{
-		if (ACombatCharacter* CombatCharacter = Cast<ACombatCharacter>(RestartedPawn))
+		if (!RestartedPawn->OnKillDelegate.Contains(this, FName(TEXT("OnCombatCharacterKilled"))))
 		{
-			if (!CombatCharacter->OnKillDelegate.Contains(this, FName(TEXT("OnCombatCharacterKilled"))))
-			{
-				CombatCharacter->OnKillDelegate.AddDynamic(this, &ARWGameModeBase::OnCombatCharacterKilled);
-			}
+			RestartedPawn->OnKillDelegate.AddDynamic(this, &ARWGameModeBase::OnCombatCharacterKilled);
 		}
+
+		// RestartedPawn->Restart();
 	}
 }
 
@@ -86,10 +85,10 @@ void ARWGameModeBase::PostLogin(APlayerController* NewPlayer)
 		ServerJoinTeam_Implementation(PlayerState, EAffiliation::Spectators);
 	}
 
-	//if (GetMatchState() != MatchState::InProgress)
-	//{
-	//	StartPlay();
-	//}
+	if (GetMatchState() != MatchState::InProgress)
+	{
+		StartPlay();
+	}
 }
 
 void ARWGameModeBase::Logout(AController* Exiting)
@@ -107,6 +106,11 @@ void ARWGameModeBase::Logout(AController* Exiting)
 
 void ARWGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor* StartSpot)
 {
+	if (!NewPlayer || !StartSpot)
+	{
+		return;
+	}
+
 	if (APawn* NewPlayerPawn = NewPlayer->GetPawn())
 	{
 		Super::RestartPlayerAtPlayerStart(NewPlayer, StartSpot);
@@ -125,7 +129,7 @@ void ARWGameModeBase::RestartPlayerAtPlayerStart(AController* NewPlayer, AActor*
 
 bool ARWGameModeBase::ReadyToStartMatch_Implementation()
 {
-	const uint32 MinPlayers = 2;
+	const uint32 MinPlayers = 3;
 	if (NumPlayers < MinPlayers)
 	{
 		return false;
@@ -177,24 +181,11 @@ void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
 		}
 	}
 
-
-	if (PlayerStateController)
-	{
-		if (Team == EAffiliation::Spectators)
-		{
-			
-		}
-		else
-		{
-
-		}
-	}
-
 	ACombatCharacter* PlayerPawn = PlayerState->GetPawn<ACombatCharacter>();
 
 	if (PlayerPawn)
 	{
-		if (PlayerPawn->Affiliation != Team)
+		if (PlayerPawn->GetAffiliation() != Team)
 		{
 			// Kill
 			PlayerPawn->SetHealth(0.0f);
@@ -219,11 +210,12 @@ void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
 		if (!PlayerStateController->GetPawn())
 		{
 			RestartPlayer(PlayerStateController);
+			PlayerPawn = PlayerState->GetPawn<ACombatCharacter>();
 		}
 
 		if (PlayerPawn)
 		{
-			PlayerPawn->Affiliation = Team;
+			PlayerPawn->SetAffiliation(Team);
 		}
 	}
 }
@@ -313,7 +305,7 @@ AActor* ARWGameModeBase::ChoosePlayerStart_Implementation(AController* Player)
 	{
 		ARWPlayerStart* PlayerStart = *It;
 
-		if (PawnToFit->Affiliation != PawnToFit->Affiliation)
+		if (PawnToFit->GetAffiliation() != PawnToFit->GetAffiliation())
 		{
 			continue;
 		}

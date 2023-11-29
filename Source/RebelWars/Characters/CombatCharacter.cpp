@@ -110,13 +110,8 @@ void ACombatCharacter::PossessedBy(AController* NewController)
 
 	if (ARWPlayerStart* ActorStartSpot = Cast<ARWPlayerStart>(NewController->StartSpot.Get()))
 	{
-		Affiliation = ActorStartSpot->PlayerStartAffiliation;
+		SetAffiliation(ActorStartSpot->PlayerStartAffiliation);
 	}
-
-	FGenericTeamId Team(UTeamStatics::GetTeamIdFromAffiliation(Affiliation));
-	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
-
-	SetGenericTeamId(Team);
 }
 
 void ACombatCharacter::PostInitializeComponents()
@@ -131,6 +126,10 @@ void ACombatCharacter::PostInitializeComponents()
 void ACombatCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetAffiliation(Affiliation);
+
+	OnRestartDelegate.Broadcast(this);
 }
 
 void ACombatCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -314,6 +313,21 @@ void ACombatCharacter::SelectWeaponSlot(int32 Index)
 	InventoryComponent->EquipFirearm(static_cast<EInventorySlot>(Index));
 }
 
+void ACombatCharacter::SetAffiliation(EAffiliation InAffiliation)
+{
+	Affiliation = InAffiliation;
+
+	FGenericTeamId Team(UTeamStatics::GetTeamIdFromAffiliation(Affiliation));
+	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
+
+	SetGenericTeamId(Team);
+}
+
+EAffiliation ACombatCharacter::GetAffiliation() const
+{
+	return Affiliation;
+}
+
 float ACombatCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	if (GetWorldTimerManager().IsTimerActive(DamageAccumulationTimer))
@@ -374,26 +388,35 @@ void ACombatCharacter::Kill()
 
 	SetGenericTeamId(TeamId.NoTeam);
 
+	if (AController* CurrentController = GetController())
+	{
+		CurrentController->SetIgnoreMoveInput(true);
+	}
+
 	OnKillDelegate.Broadcast(nullptr, this);
 }
 
-void ACombatCharacter::Resurrect()
+void ACombatCharacter::Restart()
 {
+	Super::Restart();
+
 	bIsDead = false;
 
 	SetRagdollEnabled(false);
 
-	FGenericTeamId Team(UTeamStatics::GetTeamIdFromAffiliation(Affiliation));
-	Team.SetAttitudeSolver(&UTeamStatics::SolveAttitudeImpl);
-
-	SetGenericTeamId(Team);
+	SetAffiliation(Affiliation);
 
 	if (InventoryComponent)
 	{
 		InventoryComponent->GiveStartingWeapons();
 	}
 
-	OnResurrectDelegate.Broadcast(this);
+	if (AController* CurrentController = GetController())
+	{
+		CurrentController->SetIgnoreMoveInput(false);
+	}
+
+	OnRestartDelegate.Broadcast(this);
 }
 
 void ACombatCharacter::MoveForward(float InRate)
@@ -587,7 +610,7 @@ void ACombatCharacter::OnHealthUpdate()
 	}
 	else if (CurrentHealth > 0.0f && IsDead())
 	{
-		Resurrect();
+		Restart();
 	}
 }
 
@@ -625,11 +648,6 @@ void ACombatCharacter::SetRagdollEnabled(bool bEnableRagdoll)
 				CharacterMesh->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 25.0f), FQuat::MakeFromEuler(FVector(0.0f, 0.0f, -90.0f)));
 			}
 		}
-	}
-
-	if (AController* CurrentController = GetController())
-	{
-		CurrentController->SetIgnoreMoveInput(bEnableRagdoll ? true : false);
 	}
 }
 

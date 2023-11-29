@@ -12,7 +12,7 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GiveStartingWeapons();
+	// GiveStartingWeapons();
 }
 
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

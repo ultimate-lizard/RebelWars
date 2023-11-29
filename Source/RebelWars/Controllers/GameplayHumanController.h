@@ -50,6 +50,12 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void InitPlayerState() override;
 	virtual void SetupInputComponent() override;
+	virtual void BeginSpectatingState() override;
+
+	virtual void ClientSetSpectatorWaiting_Implementation(bool bWaiting) override;
+
+	bool GetHUDPendingVisibility();
+	void UpdateHUDVisibility();
 
 	FVector CurrentDeathCameraLocation;
 

@@ -60,6 +60,30 @@ void AHumanControllerBase::SetPlayer(UPlayer* InPlayer)
 	Super::SetPlayer(InPlayer);
 }
 
+void AHumanControllerBase::BeginPlayingState()
+{
+	Super::BeginPlayingState();
+
+	OnHumanPlayerRestartDelegate.Broadcast();
+}
+
+void AHumanControllerBase::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
+
+	if (PreviousPawn)
+	{
+		PreviousPawn->Destroy();
+	}
+}
+
+void AHumanControllerBase::OnUnPossess()
+{
+	PreviousPawn = GetPawn();
+
+	Super::OnUnPossess();
+}
+
 void AHumanControllerBase::SetUIInteractionModeEnabled(bool bEnabled)
 {
 	APawn* ControlledPawn = GetPawn();

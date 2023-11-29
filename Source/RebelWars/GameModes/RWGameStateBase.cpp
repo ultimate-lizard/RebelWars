@@ -34,13 +34,13 @@ void ARWGameStateBase::AddPlayerToTeam(ARWPlayerState* InPlayerState, EAffiliati
 	//	}
 	//}
 
-	if (InPlayerState)
-	{
-		if (ACombatCharacter* PlayerPawn = InPlayerState->GetPawn<ACombatCharacter>())
-		{
-			PlayerPawn->Affiliation = InTeam;
-		}
-	}
+	//if (InPlayerState)
+	//{
+	//	if (ACombatCharacter* PlayerPawn = InPlayerState->GetPawn<ACombatCharacter>())
+	//	{
+	//		PlayerPawn->SetAffiliation(InTeam);
+	//	}
+	//}
 }
 
 void ARWGameStateBase::SetNumTeams(int32 InNumTeams)

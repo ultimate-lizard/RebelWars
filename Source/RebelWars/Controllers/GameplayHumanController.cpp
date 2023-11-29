@@ -10,6 +10,8 @@
 #include "UI/RWHUD.h"
 #include "Blueprint/UserWidget.h"
 
+static bool bWidgetsCreated = false;
+
 AGameplayHumanController::AGameplayHumanController() :
 	Super()
 {
@@ -24,6 +26,24 @@ AGameplayHumanController::AGameplayHumanController() :
 void AGameplayHumanController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!IsLocalController())
+	{
+		return;
+	}
+
+	if (GameWidgetsData)
+	{
+		if (TSubclassOf<UUserWidget> InGameMenuClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::InGameMenu))
+		{
+			InGameMenuWidget = CreateWidget(this, InGameMenuClass);
+		}
+
+		if (TSubclassOf<UUserWidget> TeamSelectClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::TeamSelect))
+		{
+			TeamSelectWidget = CreateWidget(this, TeamSelectClass);
+		}
+	}
 
 	if (InGameMenuWidget)
 	{
@@ -84,6 +104,41 @@ void AGameplayHumanController::Tick(float DeltaTime)
 			}
 		}
 	}
+
+	if (!bWidgetsCreated && IsLocalController())
+	{
+		if (GameWidgetsData)
+		{
+			if (TSubclassOf<UUserWidget> InGameMenuClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::InGameMenu))
+			{
+				InGameMenuWidget = CreateWidget(this, InGameMenuClass);
+			}
+
+			if (TSubclassOf<UUserWidget> TeamSelectClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::TeamSelect))
+			{
+				TeamSelectWidget = CreateWidget(this, TeamSelectClass);
+			}
+		}
+
+		if (InGameMenuWidget)
+		{
+			InGameMenuWidget->AddToViewport();
+			InGameMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+
+		if (TeamSelectWidget)
+		{
+			TeamSelectWidget->AddToViewport();
+			TeamSelectWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+
+		if (IsInState(NAME_Spectating))
+		{
+			ToggleTeamSelect();
+		}
+
+		bWidgetsCreated = true;
+	}
 }
 
 void AGameplayHumanController::SetSpectatorPawn(ASpectatorPawn* NewSpectatorPawn)
@@ -95,23 +150,14 @@ void AGameplayHumanController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	if (GameWidgetsData)
-	{
-		if (TSubclassOf<UUserWidget> InGameMenuClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::InGameMenu))
-		{
-			InGameMenuWidget = CreateWidget(GetGameInstance(), InGameMenuClass);
-		}
 
-		if (TSubclassOf<UUserWidget> TeamSelectClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::TeamSelect))
-		{
-			TeamSelectWidget = CreateWidget(GetGameInstance(), TeamSelectClass);
-		}
-	}
 }
 
 void AGameplayHumanController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	UpdateHUDVisibility();
 }
 
 void AGameplayHumanController::InitPlayerState()
@@ -134,35 +180,83 @@ void AGameplayHumanController::SetupInputComponent()
 	InputComponent->BindAction(FName("OpenTeamSelect"), EInputEvent::IE_Pressed, this, &AGameplayHumanController::ToggleTeamSelect);
 }
 
+void AGameplayHumanController::BeginSpectatingState()
+{
+	Super::BeginSpectatingState();
+
+	UpdateHUDVisibility();
+
+	SetIgnoreMoveInput(false);
+}
+
+void AGameplayHumanController::ClientSetSpectatorWaiting_Implementation(bool bWaiting)
+{
+	Super::ClientSetSpectatorWaiting_Implementation(bWaiting);
+}
+
+bool AGameplayHumanController::GetHUDPendingVisibility()
+{
+	if (TeamSelectWidget)
+	{
+		if (TeamSelectWidget->IsVisible())
+		{
+			return false;
+		}
+	}
+
+	if (InGameMenuWidget)
+	{
+		if (InGameMenuWidget->IsVisible())
+		{
+			return false;
+		}
+	}
+
+	if (GetStateName() == NAME_Spectating)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void AGameplayHumanController::UpdateHUDVisibility()
+{
+	if (ARWHUD* RWHUD = GetHUD<ARWHUD>())
+	{
+		RWHUD->SetHUDWidgetVisibility(GetHUDPendingVisibility());
+	}
+}
+
 void AGameplayHumanController::ToggleInGameMenu()
 {
-	if (TeamSelectWidget->IsVisible())
+	if (TeamSelectWidget)
 	{
-		ToggleScreen(TeamSelectWidget);
-		return;
+		if (TeamSelectWidget->IsVisible())
+		{
+			ToggleScreen(TeamSelectWidget);
+			return;
+		}
 	}
 
 	ToggleScreen(InGameMenuWidget);
 
-	if (ARWHUD* RWHUD = GetHUD<ARWHUD>())
-	{
-		RWHUD->SetHUDWidgetVisibility(!InGameMenuWidget->IsVisible());
-	}
+	UpdateHUDVisibility();
 }
 
 void AGameplayHumanController::ToggleTeamSelect()
 {
-	if (InGameMenuWidget->IsVisible())
+	if (InGameMenuWidget)
 	{
-		return;
+		if (InGameMenuWidget->IsVisible())
+		{
+			return;
+		}
 	}
 
 	ToggleScreen(TeamSelectWidget);
 
-	if (ARWHUD* RWHUD = GetHUD<ARWHUD>())
-	{
-		RWHUD->SetHUDWidgetVisibility(!TeamSelectWidget->IsVisible());
-	}
+	UpdateHUDVisibility();
 }
 
 void AGameplayHumanController::ToggleScreen(UUserWidget* GameScreenWidget)

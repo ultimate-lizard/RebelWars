@@ -26,7 +26,7 @@ void ARWHUD::BeginPlay()
 		if (HUDWidgetInstance)
 		{
 			HUDWidgetInstance->AddToViewport();
-			SetHUDWidgetVisibility(true);
+			SetHUDWidgetVisibility(false);
 		}
 	}
 }

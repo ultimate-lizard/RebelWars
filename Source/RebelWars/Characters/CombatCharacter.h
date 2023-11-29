@@ -12,7 +12,7 @@ class UInteractableComponent;
 class ACombatCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnKill, AActor*, Killer, ACombatCharacter*, Victim);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnResurrect, ACombatCharacter*, ResurrectedActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRestart, ACombatCharacter*, RestartedActor);
 
 UENUM(BlueprintType)
 enum class ECharacterMovementType : uint8
@@ -33,27 +33,6 @@ public:
 
 	virtual void SetPlayerDefaults() override;
 	virtual void Landed(const FHitResult& Hit) override;
-
-	UFUNCTION(BlueprintPure)
-	bool IsArmed() const;
-
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Movement")
-	void SetMovementType(ECharacterMovementType InMovementType);
-	void SetMovementType_Implementation(ECharacterMovementType InMovementType);
-
-	UFUNCTION(BlueprintPure, Category = "Movement")
-	ECharacterMovementType GetMovementType() const;
-
-	void SetHealth(float NewHealth);
-	UFUNCTION(BlueprintPure)
-	float GetCurrentHealth() const;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void BroadcastBecomeRagdoll(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
-	void BroadcastBecomeRagdoll_Implementation(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
-
-	UFUNCTION(BlueprintPure)
-	bool IsDead() const;
 
 	virtual void AttachWeaponMesh(class AFirearm* InFirearm);
 	USkeletalMeshComponent* GetHandsMesh1P();
@@ -80,6 +59,32 @@ public:
 
 	void SelectWeaponSlot(int32 InIndex);
 
+	void SetAffiliation(EAffiliation InAffiliation);
+	EAffiliation GetAffiliation() const;
+
+	virtual void Restart() override;
+
+	UFUNCTION(BlueprintPure)
+	bool IsArmed() const;
+
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Movement")
+	void SetMovementType(ECharacterMovementType InMovementType);
+	void SetMovementType_Implementation(ECharacterMovementType InMovementType);
+
+	UFUNCTION(BlueprintPure, Category = "Movement")
+	ECharacterMovementType GetMovementType() const;
+
+	void SetHealth(float NewHealth);
+	UFUNCTION(BlueprintPure)
+	float GetCurrentHealth() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadcastBecomeRagdoll(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
+	void BroadcastBecomeRagdoll_Implementation(FVector ImpulseDirection = FVector::ZeroVector, FVector ImpulseLocation = FVector::ZeroVector);
+
+	UFUNCTION(BlueprintPure)
+	bool IsDead() const;
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector ViewModelOffset = FVector(-10.0f, 5.0f, -15.0f);
@@ -93,14 +98,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ClampMin = "0.0"))
 	float MaxRunSpeed;
 
-	UPROPERTY(EditAnywhere, Category = "Team")
-	EAffiliation Affiliation;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnKill OnKillDelegate;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnResurrect OnResurrectDelegate;
+	FOnRestart OnRestartDelegate;
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -120,7 +122,6 @@ protected:
 	void TraceInteractables();
 
 	virtual void Kill();
-	virtual void Resurrect();
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	void OnHealthUpdate();
 
@@ -140,7 +141,6 @@ protected:
 	void ServerUse();
 	void ServerUse_Implementation();
 
-protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UInventoryComponent* InventoryComponent;
 
@@ -155,6 +155,9 @@ protected:
 
 	UPROPERTY(ReplicatedUsing=OnRep_CurrentHealth)
 	float CurrentHealth;
+
+	UPROPERTY(EditAnywhere, Category = "Team")
+	EAffiliation Affiliation;
 
 	bool bIsDead;
 

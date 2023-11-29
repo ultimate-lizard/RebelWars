@@ -7,6 +7,8 @@
 
 class UGameWidgetsData;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHumanPlayerRestart);
+
 UCLASS()
 class REBELWARS_API AHumanControllerBase : public APlayerController
 {
@@ -27,11 +29,21 @@ public:
 	UPROPERTY(Config)
 	float MouseSensitivity;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnHumanPlayerRestart OnHumanPlayerRestartDelegate;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void PostInitializeComponents() override;
 	virtual void SetupInputComponent() override;
 	virtual void SetPlayer(UPlayer* InPlayer) override;
+	virtual void BeginPlayingState() override;
+	virtual void OnPossess(APawn* aPawn) override;
+	virtual void OnUnPossess() override;
 
 	UGameWidgetsData* GameWidgetsData;
+
+private:
+	UPROPERTY(Transient)
+	APawn* PreviousPawn;
 };
