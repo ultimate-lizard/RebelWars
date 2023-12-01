@@ -15,8 +15,6 @@ class REBELWARS_API AHumanControllerBase : public APlayerController
 	GENERATED_BODY()
 	
 public:
-	AHumanControllerBase();
-
 	UFUNCTION(BlueprintPure, Category = "Mouse")
 	float GetMouseSensitivity() const;
 
@@ -40,8 +38,6 @@ protected:
 	virtual void BeginPlayingState() override;
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void OnUnPossess() override;
-
-	UGameWidgetsData* GameWidgetsData;
 
 private:
 	UPROPERTY(Transient)

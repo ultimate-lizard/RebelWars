@@ -2,6 +2,7 @@
 
 #include "UI/GameWidgetsData.h"
 #include "Blueprint/UserWidget.h"
+#include "RWGameInstance.h"
 
 AMainMenuHumanController::AMainMenuHumanController()
 	: Super()
@@ -11,20 +12,18 @@ AMainMenuHumanController::AMainMenuHumanController()
 void AMainMenuHumanController::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	if (TSubclassOf<UUserWidget> MainMenuWidgetClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::MainMenu))
-	{
-		MainMenuWidget = CreateWidget(GetGameInstance(), MainMenuWidgetClass);
-	}
 }
 
 void AMainMenuHumanController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (MainMenuWidget)
+	if (URWGameInstance* RWGameInstance = GetGameInstance<URWGameInstance>())
 	{
-		MainMenuWidget->AddToViewport();
+		if (UUserWidget* MainMenuWidget = RWGameInstance->FindGameWidget(GameScreens::MainMenu))
+		{
+			MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+		}
 	}
 	
 	SetUIInteractionModeEnabled(true);

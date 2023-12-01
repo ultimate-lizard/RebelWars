@@ -58,11 +58,4 @@ protected:
 	void UpdateHUDVisibility();
 
 	FVector CurrentDeathCameraLocation;
-
-private:
-	UPROPERTY(Transient)
-	UUserWidget* InGameMenuWidget;
-
-	UPROPERTY(Transient)
-	UUserWidget* TeamSelectWidget;
 };

@@ -5,16 +5,6 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/GameWidgetsData.h"
 
-AHumanControllerBase::AHumanControllerBase()
-	: Super()
-{
-	ConstructorHelpers::FObjectFinder<UGameWidgetsData> FoundGameScreens(TEXT("/Game/UI/GameScreens"));
-	if (FoundGameScreens.Succeeded())
-	{
-		GameWidgetsData = FoundGameScreens.Object;
-	}
-}
-
 void AHumanControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
