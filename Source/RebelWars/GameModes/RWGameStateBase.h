@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameStateBase.h"
+#include "GameFramework/GameState.h"
 #include "Utils/TeamStatics.h"
 
 #include "RWGameStateBase.generated.h"
@@ -12,7 +12,7 @@ class ARWPlayerState;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnKillFeed, AActor*, Killer, ACombatCharacter*, Victim);
 
 UCLASS()
-class REBELWARS_API ARWGameStateBase : public AGameStateBase
+class REBELWARS_API ARWGameStateBase : public AGameState
 {
 	GENERATED_BODY()
 

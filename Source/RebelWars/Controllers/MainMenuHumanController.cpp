@@ -23,6 +23,7 @@ void AMainMenuHumanController::BeginPlay()
 		if (UUserWidget* MainMenuWidget = RWGameInstance->FindGameWidget(GameScreens::MainMenu))
 		{
 			MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+			MainMenuWidget->AddToViewport();
 		}
 	}
 	

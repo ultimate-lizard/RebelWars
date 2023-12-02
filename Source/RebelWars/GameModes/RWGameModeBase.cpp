@@ -15,7 +15,7 @@
 ARWGameModeBase::ARWGameModeBase() :
 	Super()
 {
-
+	GameStateClass = ARWGameStateBase::StaticClass();
 }
 
 APawn* ARWGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot)
@@ -38,10 +38,10 @@ void ARWGameModeBase::RestartPlayer(AController* NewPlayer)
 
 	if (ACombatCharacter* RestartedPawn = NewPlayer->GetPawn<ACombatCharacter>())
 	{
-		if (!RestartedPawn->OnKillDelegate.Contains(this, FName(TEXT("OnCombatCharacterKilled"))))
-		{
-			RestartedPawn->OnKillDelegate.AddDynamic(this, &ARWGameModeBase::OnCombatCharacterKilled);
-		}
+		//if (!RestartedPawn->OnKillDelegate.Contains(this, FName(TEXT("OnCombatCharacterKilled"))))
+		//{
+		//	RestartedPawn->OnKillDelegate.AddDynamic(this, &ARWGameModeBase::OnCombatCharacterKilled);
+		//}
 
 		// RestartedPawn->Restart();
 	}
@@ -82,12 +82,12 @@ void ARWGameModeBase::PostLogin(APlayerController* NewPlayer)
 			RespawnTimers.Add(PlayerState->GetPlayerId(), FTimerHandle());
 		}
 
-		ServerJoinTeam_Implementation(PlayerState, EAffiliation::Spectators);
+		// JoinTeam(PlayerState, EAffiliation::Spectators);
 	}
 
 	if (GetMatchState() != MatchState::InProgress)
 	{
-		StartPlay();
+		// StartPlay();
 	}
 }
 
@@ -151,17 +151,6 @@ bool ARWGameModeBase::MustSpectate_Implementation(APlayerController* NewPlayerCo
 	return true;
 }
 
-void ARWGameModeBase::ServerJoinTeam_Implementation(ARWPlayerState* PlayerState, EAffiliation Team)
-{
-	if (GetLocalRole() < ENetRole::ROLE_Authority)
-	{
-		ServerJoinTeam(PlayerState, Team);
-		return;
-	}
-
-	JoinTeam(PlayerState, Team);
-}
-
 int32 ARWGameModeBase::GetBotDifficulty() const
 {
 	return BotDifficulty;
@@ -190,6 +179,7 @@ void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
 			// Kill
 			PlayerPawn->SetHealth(0.0f);
 			PlayerPawn->BroadcastBecomeRagdoll();
+			PlayerStateController->ServerSetSpectatorLocation(PlayerPawn->GetActorLocation(), PlayerPawn->GetActorRotation());
 		}
 	}
 
@@ -198,6 +188,7 @@ void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
 		if (PlayerStateController)
 		{
 			PlayerStateController->ChangeState(NAME_Spectating);
+			PlayerStateController->ClientGotoState(NAME_Spectating);
 			if (FTimerHandle* RespawnTimer = RespawnTimers.Find(PlayerState->GetPlayerId()))
 			{
 				RespawnTimer->Invalidate();

@@ -45,10 +45,6 @@ protected:
 	virtual void HandleMatchHasStarted() override;
 	virtual AActor* ChoosePlayerStart_Implementation(AController* Player) override;
 
-	UFUNCTION(Server, Reliable)
-	virtual void ServerJoinTeam(ARWPlayerState* PlayerState, EAffiliation Team);
-	virtual void ServerJoinTeam_Implementation(ARWPlayerState* PlayerState, EAffiliation Team);
-
 	UFUNCTION()
 	virtual void OnCombatCharacterKilled(AActor* Killer, ACombatCharacter* Victim);
 

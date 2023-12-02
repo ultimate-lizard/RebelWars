@@ -9,6 +9,8 @@
 #include "UI/GameWidgetsData.h"
 #include "UI/RWHUD.h"
 #include "Blueprint/UserWidget.h"
+#include "RWGameInstance.h"
+#include "GameModes/RWGameModeBase.h"
 
 static bool bWidgetsCreated = false;
 
@@ -20,7 +22,10 @@ AGameplayHumanController::AGameplayHumanController() :
 	DeathCameraOffsetLocation = FVector(0.0f, 0.0f, -80.0f);
 	DeathCameraOffsetRotation = FRotator::MakeFromEuler(FVector(0.0f, 90.0f, 0.0f));
 
-	SetCameraMode(CameraMode::Default);	
+	SetCameraMode(CameraMode::Default);
+
+	InGameMenuWidget = nullptr;
+	TeamSelectWidget = nullptr;
 }
 
 void AGameplayHumanController::BeginPlay()
@@ -30,36 +35,6 @@ void AGameplayHumanController::BeginPlay()
 	if (!IsLocalController())
 	{
 		return;
-	}
-
-	/*if (GameWidgetsData)
-	{
-		if (TSubclassOf<UUserWidget> InGameMenuClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::InGameMenu))
-		{
-			InGameMenuWidget = CreateWidget(this, InGameMenuClass);
-		}
-
-		if (TSubclassOf<UUserWidget> TeamSelectClass = GameWidgetsData->WidgetsClasses.FindRef(GameScreens::TeamSelect))
-		{
-			TeamSelectWidget = CreateWidget(this, TeamSelectClass);
-		}
-	}
-
-	if (InGameMenuWidget)
-	{
-		InGameMenuWidget->AddToViewport();
-		InGameMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}
-
-	if (TeamSelectWidget)
-	{
-		TeamSelectWidget->AddToViewport();
-		TeamSelectWidget->SetVisibility(ESlateVisibility::Collapsed);
-	}*/
-
-	if (IsInState(NAME_Spectating))
-	{
-		ToggleTeamSelect();
 	}
 }
 
@@ -106,18 +81,6 @@ void AGameplayHumanController::Tick(float DeltaTime)
 	}
 }
 
-void AGameplayHumanController::SetSpectatorPawn(ASpectatorPawn* NewSpectatorPawn)
-{
-	Super::SetSpectatorPawn(NewSpectatorPawn);
-}
-
-void AGameplayHumanController::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-
-
-}
-
 void AGameplayHumanController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -149,9 +112,46 @@ void AGameplayHumanController::BeginSpectatingState()
 {
 	Super::BeginSpectatingState();
 
+	SetIgnoreMoveInput(false);
+	SetIgnoreLookInput(false);
+	ClientIgnoreMoveInput(false);
+	ClientIgnoreLookInput(false);
+
+	SetCameraMode(CameraMode::Default);
+
+	if (!IsLocalPlayerController())
+	{
+		return;
+	}
+
+	if (URWGameInstance* RWGameInstance = GetGameInstance<URWGameInstance>())
+	{
+		InGameMenuWidget = RWGameInstance->FindGameWidget(GameScreens::InGameMenu);
+		if (InGameMenuWidget)
+		{
+			InGameMenuWidget->AddToViewport();
+			InGameMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+
+		TeamSelectWidget = RWGameInstance->FindGameWidget(GameScreens::TeamSelect);
+		if (TeamSelectWidget)
+		{
+			TeamSelectWidget->AddToViewport();
+			TeamSelectWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+
 	UpdateHUDVisibility();
 
-	SetIgnoreMoveInput(false);
+	// TODO: Add precoutions
+	ToggleTeamSelect();
+}
+
+void AGameplayHumanController::BeginPlayingState()
+{
+	Super::BeginPlayingState();
+
+	UpdateHUDVisibility();
 }
 
 void AGameplayHumanController::ClientSetSpectatorWaiting_Implementation(bool bWaiting)
@@ -161,7 +161,7 @@ void AGameplayHumanController::ClientSetSpectatorWaiting_Implementation(bool bWa
 
 bool AGameplayHumanController::GetHUDPendingVisibility()
 {
-	/*if (TeamSelectWidget)
+	if (TeamSelectWidget)
 	{
 		if (TeamSelectWidget->IsVisible())
 		{
@@ -175,7 +175,7 @@ bool AGameplayHumanController::GetHUDPendingVisibility()
 		{
 			return false;
 		}
-	}*/
+	}
 
 	if (GetStateName() == NAME_Spectating)
 	{
@@ -193,33 +193,38 @@ void AGameplayHumanController::UpdateHUDVisibility()
 	}
 }
 
+void AGameplayHumanController::ServerRequestTeamSwitch_Implementation(EAffiliation NewTeam)
+{
+	RequestTeamSwitch(NewTeam);
+}
+
 void AGameplayHumanController::ToggleInGameMenu()
 {
-	//if (TeamSelectWidget)
-	//{
-	//	if (TeamSelectWidget->IsVisible())
-	//	{
-	//		ToggleScreen(TeamSelectWidget);
-	//		return;
-	//	}
-	//}
+	if (TeamSelectWidget)
+	{
+		if (TeamSelectWidget->IsVisible())
+		{
+			ToggleScreen(TeamSelectWidget);
+			return;
+		}
+	}
 
-	//ToggleScreen(InGameMenuWidget);
+	ToggleScreen(InGameMenuWidget);
 
 	UpdateHUDVisibility();
 }
 
 void AGameplayHumanController::ToggleTeamSelect()
 {
-	//if (InGameMenuWidget)
-	//{
-	//	if (InGameMenuWidget->IsVisible())
-	//	{
-	//		return;
-	//	}
-	//}
+	if (InGameMenuWidget)
+	{
+		if (InGameMenuWidget->IsVisible())
+		{
+			return;
+		}
+	}
 
-	//ToggleScreen(TeamSelectWidget);
+	ToggleScreen(TeamSelectWidget);
 
 	UpdateHUDVisibility();
 }
@@ -234,4 +239,21 @@ void AGameplayHumanController::ToggleScreen(UUserWidget* GameScreenWidget)
 	bool bNewVisibility = !GameScreenWidget->IsVisible();
 	GameScreenWidget->SetVisibility(bNewVisibility ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	SetUIInteractionModeEnabled(bNewVisibility);
+}
+
+void AGameplayHumanController::RequestTeamSwitch(EAffiliation NewTeam)
+{
+	if (GetLocalRole() < ENetRole::ROLE_Authority)
+	{
+		ServerRequestTeamSwitch(NewTeam);
+		return;
+	}
+
+	if (GetWorld())
+	{
+		if (ARWGameModeBase* RWGameMode = GetWorld()->GetAuthGameMode<ARWGameModeBase>())
+		{
+			RWGameMode->JoinTeam(GetPlayerState<ARWPlayerState>(), NewTeam);
+		}
+	}
 }

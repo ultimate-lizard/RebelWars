@@ -44,7 +44,6 @@ ULocalPlayer* URWGameInstance::CreateInitialPlayer(FString& OutError)
 		if (UUserWidget* NewWidget = Pair.Value)
 		{
 			NewWidget->SetOwningLocalPlayer(NewLocalPlayer);
-			NewWidget->AddToViewport();
 		}
 	}
 

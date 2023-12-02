@@ -1,351 +1,351 @@
-"../../../Engine/Content/Animation/DefaultAnimCurveCompressionSettings.uasset" 0
-"../../../Engine/Content/Animation/DefaultAnimCurveCompressionSettings.uexp" 1
+"../../../RebelWars/Content/Animated/SKEL_Hands1P.uasset" 0
+"../../../RebelWars/Content/Animated/SKEL_Hands1P.uexp" 1
 "../../../Engine/Content/Animation/DefaultAnimBoneCompressionSettings.uasset" 2
 "../../../Engine/Content/Animation/DefaultAnimBoneCompressionSettings.uexp" 3
-"D:/UE Projects/RebelWars/Content/Animated/SKEL_Hands1P.uasset" 4
-"D:/UE Projects/RebelWars/Content/Animated/SKEL_Hands1P.uexp" 5
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Default.uasset" 6
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Default.uexp" 7
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKUnarmed.uasset" 8
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKUnarmed.uexp" 9
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Throw.uasset" 10
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Throw.uexp" 11
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovTest.uasset" 12
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovTest.uexp" 13
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovUnarmed.uasset" 14
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovUnarmed.uexp" 15
-"D:/UE Projects/RebelWars/Content/Physics/Rebel/PHYS_Rebel1.uasset" 16
-"D:/UE Projects/RebelWars/Content/Physics/Rebel/PHYS_Rebel1.uexp" 17
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelTorso1.uasset" 18
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelTorso1.uexp" 19
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelTorso1.ubulk" 20
-"D:/UE Projects/RebelWars/Content/Materials/Rebel/M_RebelTorso1.uasset" 21
-"D:/UE Projects/RebelWars/Content/Materials/Rebel/M_RebelTorso1.uexp" 22
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelLegs1.uasset" 23
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelLegs1.uexp" 24
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelLegs1.ubulk" 25
-"D:/UE Projects/RebelWars/Content/Materials/Rebel/M_RebelLegs1.uasset" 26
-"D:/UE Projects/RebelWars/Content/Materials/Rebel/M_RebelLegs1.uexp" 27
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelHead1.uasset" 28
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelHead1.uexp" 29
-"D:/UE Projects/RebelWars/Content/Textures/Rebel/T_RebelHead1.ubulk" 30
-"D:/UE Projects/RebelWars/Content/Materials/Rebel/M_RebelHead1.uasset" 31
-"D:/UE Projects/RebelWars/Content/Materials/Rebel/M_RebelHead1.uexp" 32
-"D:/UE Projects/RebelWars/Content/Animated/SKEL_CombatCharacter.uasset" 33
-"D:/UE Projects/RebelWars/Content/Animated/SKEL_CombatCharacter.uexp" 34
-"D:/UE Projects/RebelWars/Content/Meshes/Rebel/SK_Rebel1.uasset" 35
-"D:/UE Projects/RebelWars/Content/Meshes/Rebel/SK_Rebel1.uexp" 36
-"D:/UE Projects/RebelWars/Content/Sound/Wav/makarovfire.uasset" 37
-"D:/UE Projects/RebelWars/Content/Sound/Wav/makarovfire.uexp" 38
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovFire.uasset" 39
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovFire.uexp" 40
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_Makarov1P.uasset" 41
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_Makarov1P.uexp" 42
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_Makarov1P.ubulk" 43
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_Makarov1P.uasset" 44
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_Makarov1P.uexp" 45
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SM_Makarov3P.uasset" 46
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SM_Makarov3P.uexp" 47
+"../../../Engine/Content/Animation/DefaultAnimCurveCompressionSettings.uasset" 4
+"../../../Engine/Content/Animation/DefaultAnimCurveCompressionSettings.uexp" 5
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Default.uasset" 6
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Default.uexp" 7
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKUnarmed.uasset" 8
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKUnarmed.uexp" 9
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Throw.uasset" 10
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Throw.uexp" 11
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovTest.uasset" 12
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovTest.uexp" 13
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovUnarmed.uasset" 14
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovUnarmed.uexp" 15
+"../../../RebelWars/Content/Physics/Rebel/PHYS_Rebel1.uasset" 16
+"../../../RebelWars/Content/Physics/Rebel/PHYS_Rebel1.uexp" 17
+"../../../RebelWars/Content/Textures/Rebel/T_RebelTorso1.uasset" 18
+"../../../RebelWars/Content/Textures/Rebel/T_RebelTorso1.uexp" 19
+"../../../RebelWars/Content/Textures/Rebel/T_RebelTorso1.ubulk" 20
+"../../../RebelWars/Content/Materials/Rebel/M_RebelTorso1.uasset" 21
+"../../../RebelWars/Content/Materials/Rebel/M_RebelTorso1.uexp" 22
+"../../../RebelWars/Content/Textures/Rebel/T_RebelLegs1.uasset" 23
+"../../../RebelWars/Content/Textures/Rebel/T_RebelLegs1.uexp" 24
+"../../../RebelWars/Content/Textures/Rebel/T_RebelLegs1.ubulk" 25
+"../../../RebelWars/Content/Materials/Rebel/M_RebelLegs1.uasset" 26
+"../../../RebelWars/Content/Materials/Rebel/M_RebelLegs1.uexp" 27
+"../../../RebelWars/Content/Textures/Rebel/T_RebelHead1.uasset" 28
+"../../../RebelWars/Content/Textures/Rebel/T_RebelHead1.uexp" 29
+"../../../RebelWars/Content/Textures/Rebel/T_RebelHead1.ubulk" 30
+"../../../RebelWars/Content/Materials/Rebel/M_RebelHead1.uasset" 31
+"../../../RebelWars/Content/Materials/Rebel/M_RebelHead1.uexp" 32
+"../../../RebelWars/Content/Animated/SKEL_CombatCharacter.uasset" 33
+"../../../RebelWars/Content/Animated/SKEL_CombatCharacter.uexp" 34
+"../../../RebelWars/Content/Meshes/Rebel/SK_Rebel1.uasset" 35
+"../../../RebelWars/Content/Meshes/Rebel/SK_Rebel1.uexp" 36
+"../../../RebelWars/Content/Sound/Wav/makarovfire.uasset" 37
+"../../../RebelWars/Content/Sound/Wav/makarovfire.uexp" 38
+"../../../RebelWars/Content/Sound/SC_MakarovFire.uasset" 39
+"../../../RebelWars/Content/Sound/SC_MakarovFire.uexp" 40
+"../../../RebelWars/Content/Textures/Weapons/T_Makarov1P.uasset" 41
+"../../../RebelWars/Content/Textures/Weapons/T_Makarov1P.uexp" 42
+"../../../RebelWars/Content/Textures/Weapons/T_Makarov1P.ubulk" 43
+"../../../RebelWars/Content/Materials/Weapons/M_Makarov1P.uasset" 44
+"../../../RebelWars/Content/Materials/Weapons/M_Makarov1P.uexp" 45
+"../../../RebelWars/Content/Meshes/Weapons/SM_Makarov3P.uasset" 46
+"../../../RebelWars/Content/Meshes/Weapons/SM_Makarov3P.uexp" 47
 "../../../Engine/Content/EngineMaterials/OrientParticle.uasset" 48
 "../../../Engine/Content/EngineMaterials/OrientParticle.uexp" 49
 "../../../Engine/Content/EngineMaterials/DefaultParticle.uasset" 50
 "../../../Engine/Content/EngineMaterials/DefaultParticle.uexp" 51
-"D:/UE Projects/RebelWars/Content/FX/PS_TestMuzzleflash.uasset" 52
-"D:/UE Projects/RebelWars/Content/FX/PS_TestMuzzleflash.uexp" 53
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDefaultDry.uasset" 54
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDefaultDry.uexp" 55
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovMagOutStart.uasset" 56
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovMagOutStart.uexp" 57
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovMagOutStart.uasset" 58
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovMagOutStart.uexp" 59
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovMagOutFinish.uasset" 60
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovMagOutFinish.uexp" 61
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovMagOutFinish.uasset" 62
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovMagOutFinish.uexp" 63
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovMagInsert.uasset" 64
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovMagInsert.uexp" 65
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovMagInsert.uasset" 66
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovMagInsert.uexp" 67
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovSlideLockRelease.uasset" 68
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovSlideLockRelease.uexp" 69
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovSlideLockRelease.uasset" 70
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovSlideLockRelease.uexp" 71
-"D:/UE Projects/RebelWars/Content/Sound/Wav/equipment_rumble.uasset" 72
-"D:/UE Projects/RebelWars/Content/Sound/Wav/equipment_rumble.uexp" 73
-"D:/UE Projects/RebelWars/Content/Sound/SC_EquipmentRumble.uasset" 74
-"D:/UE Projects/RebelWars/Content/Sound/SC_EquipmentRumble.uexp" 75
-"D:/UE Projects/RebelWars/Content/Sound/Wav/grab.uasset" 76
-"D:/UE Projects/RebelWars/Content/Sound/Wav/grab.uexp" 77
-"D:/UE Projects/RebelWars/Content/Sound/SC_Grab.uasset" 78
-"D:/UE Projects/RebelWars/Content/Sound/SC_Grab.uexp" 79
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovReloadDry.uasset" 80
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovReloadDry.uexp" 81
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovReloadDry.uasset" 82
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovReloadDry.uexp" 83
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovReload.uasset" 84
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovReload.uexp" 85
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovReload.uasset" 86
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovReload.uexp" 87
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovFireDry.uasset" 88
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovFireDry.uexp" 89
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovFireDry.uasset" 90
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovFireDry.uexp" 91
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovFire.uasset" 92
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovFire.uexp" 93
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovFire.uasset" 94
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovFire.uexp" 95
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovDeploy.uasset" 96
-"D:/UE Projects/RebelWars/Content/Sound/Wav/MakarovDeploy.uexp" 97
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovDeploy.uasset" 98
-"D:/UE Projects/RebelWars/Content/Sound/SC_MakarovDeploy.uexp" 99
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDeploy.uasset" 100
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDeploy.uexp" 101
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovDeploy.uasset" 102
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovDeploy.uexp" 103
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDefault.uasset" 104
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDefault.uexp" 105
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolHipIdle.uasset" 106
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolHipIdle.uexp" 107
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolReload.uasset" 108
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolReload.uexp" 109
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AM_RebelPistolReload.uasset" 110
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AM_RebelPistolReload.uexp" 111
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolHipFire.uasset" 112
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolHipFire.uexp" 113
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AM_RebelPistolHipFire.uasset" 114
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AM_RebelPistolHipFire.uexp" 115
-"D:/UE Projects/RebelWars/Content/Physics/Weapons/PHYS_Makarov1P.uasset" 116
-"D:/UE Projects/RebelWars/Content/Physics/Weapons/PHYS_Makarov1P.uexp" 117
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SK_Makarov1P.uasset" 118
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SK_Makarov1P.uexp" 119
-"D:/UE Projects/RebelWars/Content/MakarovRecoilCurve.uasset" 120
-"D:/UE Projects/RebelWars/Content/MakarovRecoilCurve.uexp" 121
-"D:/UE Projects/RebelWars/Content/Blueprints/Items/BP_Makarov.uasset" 122
-"D:/UE Projects/RebelWars/Content/Blueprints/Items/BP_Makarov.uexp" 123
-"D:/UE Projects/RebelWars/Content/Sound/Wav/RemingtonFire.uasset" 124
-"D:/UE Projects/RebelWars/Content/Sound/Wav/RemingtonFire.uexp" 125
-"D:/UE Projects/RebelWars/Content/Sound/SC_RemingtonFire.uasset" 126
-"D:/UE Projects/RebelWars/Content/Sound/SC_RemingtonFire.uexp" 127
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_Remington.uasset" 128
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_Remington.uexp" 129
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_Remington.ubulk" 130
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_Remington.uasset" 131
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_Remington.uexp" 132
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SM_Remington3P.uasset" 133
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SM_Remington3P.uexp" 134
-"D:/UE Projects/RebelWars/Content/Textures/T_Shell.uasset" 135
-"D:/UE Projects/RebelWars/Content/Textures/T_Shell.uexp" 136
-"D:/UE Projects/RebelWars/Content/Textures/T_Shell.ubulk" 137
-"D:/UE Projects/RebelWars/Content/Materials/M_Shell.uasset" 138
-"D:/UE Projects/RebelWars/Content/Materials/M_Shell.uexp" 139
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SK_Remington1P.uasset" 140
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SK_Remington1P.uexp" 141
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonDefault.uasset" 142
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonDefault.uexp" 143
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadStart.uasset" 144
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadStart.uexp" 145
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadStart.uasset" 146
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadStart.uexp" 147
-"D:/UE Projects/RebelWars/Content/Sound/Wav/RemingtopSlideUp.uasset" 148
-"D:/UE Projects/RebelWars/Content/Sound/Wav/RemingtopSlideUp.uexp" 149
-"D:/UE Projects/RebelWars/Content/Sound/SC_RemingtopSlideUp.uasset" 150
-"D:/UE Projects/RebelWars/Content/Sound/SC_RemingtopSlideUp.uexp" 151
-"D:/UE Projects/RebelWars/Content/Sound/Wav/RemingtopSlideDown.uasset" 152
-"D:/UE Projects/RebelWars/Content/Sound/Wav/RemingtopSlideDown.uexp" 153
-"D:/UE Projects/RebelWars/Content/Sound/SC_RemingtopSlideDown.uasset" 154
-"D:/UE Projects/RebelWars/Content/Sound/SC_RemingtopSlideDown.uexp" 155
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadEndDry.uasset" 156
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadEndDry.uexp" 157
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadEndDry.uasset" 158
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadEndDry.uexp" 159
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadEnd.uasset" 160
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadEnd.uexp" 161
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadEnd.uasset" 162
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadEnd.uexp" 163
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReload.uasset" 164
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReload.uexp" 165
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReload.uasset" 166
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReload.uexp" 167
-"D:/UE Projects/RebelWars/Content/Sound/Wav/RemingtonLoadRound.uasset" 168
-"D:/UE Projects/RebelWars/Content/Sound/Wav/RemingtonLoadRound.uexp" 169
-"D:/UE Projects/RebelWars/Content/Sound/SC_RemingtonLoadRound.uasset" 170
-"D:/UE Projects/RebelWars/Content/Sound/SC_RemingtonLoadRound.uexp" 171
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonLoadShell.uasset" 172
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonLoadShell.uexp" 173
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonLoadShell.uasset" 174
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonLoadShell.uexp" 175
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonFire.uasset" 176
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonFire.uexp" 177
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonFire.uasset" 178
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonFire.uexp" 179
-"D:/UE Projects/RebelWars/Content/Sound/Wav/AKDeploy.uasset" 180
-"D:/UE Projects/RebelWars/Content/Sound/Wav/AKDeploy.uexp" 181
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKDeploy.uasset" 182
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKDeploy.uexp" 183
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonDeploy.uasset" 184
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonDeploy.uexp" 185
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonDeploy.uasset" 186
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonDeploy.uexp" 187
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleHipIdle.uasset" 188
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleHipIdle.uexp" 189
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleReload.uasset" 190
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleReload.uexp" 191
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AM_RebelRifleReload.uasset" 192
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AM_RebelRifleReload.uexp" 193
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleHipFire.uasset" 194
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleHipFire.uexp" 195
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AM_RebelRifleHipFire.uasset" 196
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AM_RebelRifleHipFire.uexp" 197
-"D:/UE Projects/RebelWars/Content/Blueprints/Items/BP_Remington.uasset" 198
-"D:/UE Projects/RebelWars/Content/Blueprints/Items/BP_Remington.uexp" 199
-"../../../Engine/Content/EditorBlueprintResources/StandardMacros.uasset" 200
-"../../../Engine/Content/EditorBlueprintResources/StandardMacros.uexp" 201
-"D:/UE Projects/RebelWars/Content/AI/EQC_TargetContext.uasset" 202
-"D:/UE Projects/RebelWars/Content/AI/EQC_TargetContext.uexp" 203
-"D:/UE Projects/RebelWars/Content/AI/EQS_TakeCover.uasset" 204
-"D:/UE Projects/RebelWars/Content/AI/EQS_TakeCover.uexp" 205
-"D:/UE Projects/RebelWars/Content/AI/EQS_Push.uasset" 206
-"D:/UE Projects/RebelWars/Content/AI/EQS_Push.uexp" 207
-"D:/UE Projects/RebelWars/Content/AI/EQS_KeepDistanceAndHeight.uasset" 208
-"D:/UE Projects/RebelWars/Content/AI/EQS_KeepDistanceAndHeight.uexp" 209
-"D:/UE Projects/RebelWars/Content/AI/EQS_KeepDistance.uasset" 210
-"D:/UE Projects/RebelWars/Content/AI/EQS_KeepDistance.uexp" 211
-"D:/UE Projects/RebelWars/Content/AI/BB_Rebel.uasset" 212
-"D:/UE Projects/RebelWars/Content/AI/BB_Rebel.uexp" 213
-"D:/UE Projects/RebelWars/Content/AI/BT_Rebel.uasset" 214
-"D:/UE Projects/RebelWars/Content/AI/BT_Rebel.uexp" 215
-"D:/UE Projects/RebelWars/Content/Blueprints/Controllers/BP_CombatAIController.uasset" 216
-"D:/UE Projects/RebelWars/Content/Blueprints/Controllers/BP_CombatAIController.uexp" 217
-"D:/UE Projects/RebelWars/Content/Physics/PHYS_Hands1P.uasset" 218
-"D:/UE Projects/RebelWars/Content/Physics/PHYS_Hands1P.uexp" 219
-"D:/UE Projects/RebelWars/Content/Textures/T_Hands1P.uasset" 220
-"D:/UE Projects/RebelWars/Content/Textures/T_Hands1P.uexp" 221
-"D:/UE Projects/RebelWars/Content/Textures/T_Hands1P.ubulk" 222
-"D:/UE Projects/RebelWars/Content/Materials/M_Hand1P.uasset" 223
-"D:/UE Projects/RebelWars/Content/Materials/M_Hand1P.uexp" 224
-"D:/UE Projects/RebelWars/Content/Meshes/SK_Hands1P.uasset" 225
-"D:/UE Projects/RebelWars/Content/Meshes/SK_Hands1P.uexp" 226
-"D:/UE Projects/RebelWars/Content/Animated/Animation/ANIM_Unarmed.uasset" 227
-"D:/UE Projects/RebelWars/Content/Animated/Animation/ANIM_Unarmed.uexp" 228
-"D:/UE Projects/RebelWars/Content/Animated/ABP_Hands1P.uasset" 229
-"D:/UE Projects/RebelWars/Content/Animated/ABP_Hands1P.uexp" 230
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkRight.uasset" 231
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkRight.uexp" 232
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkLeft.uasset" 233
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkLeft.uexp" 234
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkForward.uasset" 235
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkForward.uexp" 236
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkBackwards.uasset" 237
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkBackwards.uexp" 238
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedStand.uasset" 239
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedStand.uexp" 240
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunRight.uasset" 241
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunRight.uexp" 242
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunLeft.uasset" 243
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunLeft.uexp" 244
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedIdle.uasset" 245
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedIdle.uexp" 246
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunForward.uasset" 247
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunForward.uexp" 248
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunBackwards.uasset" 249
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunBackwards.uexp" 250
-"D:/UE Projects/RebelWars/Content/Animated/BS_CombatCharacterLocomotion.uasset" 251
-"D:/UE Projects/RebelWars/Content/Animated/BS_CombatCharacterLocomotion.uexp" 252
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTopRight.uasset" 253
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTopRight.uexp" 254
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTopLeft.uasset" 255
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTopLeft.uexp" 256
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTop.uasset" 257
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTop.uexp" 258
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetRight.uasset" 259
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetRight.uexp" 260
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetLeft.uasset" 261
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetLeft.uexp" 262
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetForward.uasset" 263
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetForward.uexp" 264
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDownRight.uasset" 265
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDownRight.uexp" 266
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDownLeft.uasset" 267
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDownLeft.uexp" 268
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDown.uasset" 269
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDown.uexp" 270
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AO_RebelUnarmed.uasset" 271
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AO_RebelUnarmed.uexp" 272
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUpRight.uasset" 273
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUpRight.uexp" 274
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUpLeft.uasset" 275
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUpLeft.uexp" 276
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUp.uasset" 277
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUp.uexp" 278
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetRight.uasset" 279
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetRight.uexp" 280
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetLeft.uasset" 281
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetLeft.uexp" 282
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetForward.uasset" 283
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetForward.uexp" 284
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDownRight.uasset" 285
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDownRight.uexp" 286
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDownLeft.uasset" 287
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDownLeft.uexp" 288
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDown.uasset" 289
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDown.uexp" 290
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AO_RebelRifle.uasset" 291
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AO_RebelRifle.uexp" 292
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUpRight.uasset" 293
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUpRight.uexp" 294
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUpLeft.uasset" 295
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUpLeft.uexp" 296
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUp.uasset" 297
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUp.uexp" 298
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetRight.uasset" 299
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetRight.uexp" 300
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetLeft.uasset" 301
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetLeft.uexp" 302
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetForward.uasset" 303
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetForward.uexp" 304
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDownRight.uasset" 305
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDownRight.uexp" 306
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDownLeft.uasset" 307
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDownLeft.uexp" 308
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDown.uasset" 309
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDown.uexp" 310
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AO_RebelPistol.uasset" 311
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Rebel/AO_RebelPistol.uexp" 312
-"D:/UE Projects/RebelWars/Content/Animated/ABP_CombatCharacter.uasset" 313
-"D:/UE Projects/RebelWars/Content/Animated/ABP_CombatCharacter.uexp" 314
-"D:/UE Projects/RebelWars/Content/Blueprints/Characters/BP_CombatCharacter.uasset" 315
-"D:/UE Projects/RebelWars/Content/Blueprints/Characters/BP_CombatCharacter.uexp" 316
-"D:/UE Projects/RebelWars/Content/UI/WBP_WeaponSelection.uasset" 317
-"D:/UE Projects/RebelWars/Content/UI/WBP_WeaponSelection.uexp" 318
-"D:/UE Projects/RebelWars/Content/UI/WBP_Crosshair.uasset" 319
-"D:/UE Projects/RebelWars/Content/UI/WBP_Crosshair.uexp" 320
-"D:/UE Projects/RebelWars/Content/UI/WBP_HUD.uasset" 321
-"D:/UE Projects/RebelWars/Content/UI/WBP_HUD.uexp" 322
-"D:/UE Projects/RebelWars/Content/UI/BP_RWHUD.uasset" 323
-"D:/UE Projects/RebelWars/Content/UI/BP_RWHUD.uexp" 324
-"D:/UE Projects/RebelWars/Content/Blueprints/GameModes/BP_GameModeBase.uasset" 325
-"D:/UE Projects/RebelWars/Content/Blueprints/GameModes/BP_GameModeBase.uexp" 326
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_F1.uasset" 327
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_F1.uexp" 328
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_F1.ubulk" 329
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_F1.uasset" 330
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_F1.uexp" 331
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SM_F1.uasset" 332
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SM_F1.uexp" 333
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Engage.uasset" 334
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Engage.uexp" 335
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Engage.uasset" 336
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Engage.uexp" 337
-"D:/UE Projects/RebelWars/Content/Physics/Weapons/PHYS_F11P.uasset" 338
-"D:/UE Projects/RebelWars/Content/Physics/Weapons/PHYS_F11P.uexp" 339
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SK_F1.uasset" 340
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SK_F1.uexp" 341
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Deploy.uasset" 342
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Deploy.uexp" 343
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Deploy.uasset" 344
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Deploy.uexp" 345
-"D:/UE Projects/RebelWars/Content/Blueprints/Items/BP_F1.uasset" 346
-"D:/UE Projects/RebelWars/Content/Blueprints/Items/BP_F1.uexp" 347
+"../../../RebelWars/Content/FX/PS_TestMuzzleflash.uasset" 52
+"../../../RebelWars/Content/FX/PS_TestMuzzleflash.uexp" 53
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDefaultDry.uasset" 54
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDefaultDry.uexp" 55
+"../../../RebelWars/Content/Sound/Wav/MakarovMagOutStart.uasset" 56
+"../../../RebelWars/Content/Sound/Wav/MakarovMagOutStart.uexp" 57
+"../../../RebelWars/Content/Sound/SC_MakarovMagOutStart.uasset" 58
+"../../../RebelWars/Content/Sound/SC_MakarovMagOutStart.uexp" 59
+"../../../RebelWars/Content/Sound/Wav/MakarovMagOutFinish.uasset" 60
+"../../../RebelWars/Content/Sound/Wav/MakarovMagOutFinish.uexp" 61
+"../../../RebelWars/Content/Sound/SC_MakarovMagOutFinish.uasset" 62
+"../../../RebelWars/Content/Sound/SC_MakarovMagOutFinish.uexp" 63
+"../../../RebelWars/Content/Sound/Wav/MakarovMagInsert.uasset" 64
+"../../../RebelWars/Content/Sound/Wav/MakarovMagInsert.uexp" 65
+"../../../RebelWars/Content/Sound/SC_MakarovMagInsert.uasset" 66
+"../../../RebelWars/Content/Sound/SC_MakarovMagInsert.uexp" 67
+"../../../RebelWars/Content/Sound/Wav/MakarovSlideLockRelease.uasset" 68
+"../../../RebelWars/Content/Sound/Wav/MakarovSlideLockRelease.uexp" 69
+"../../../RebelWars/Content/Sound/SC_MakarovSlideLockRelease.uasset" 70
+"../../../RebelWars/Content/Sound/SC_MakarovSlideLockRelease.uexp" 71
+"../../../RebelWars/Content/Sound/Wav/equipment_rumble.uasset" 72
+"../../../RebelWars/Content/Sound/Wav/equipment_rumble.uexp" 73
+"../../../RebelWars/Content/Sound/SC_EquipmentRumble.uasset" 74
+"../../../RebelWars/Content/Sound/SC_EquipmentRumble.uexp" 75
+"../../../RebelWars/Content/Sound/Wav/grab.uasset" 76
+"../../../RebelWars/Content/Sound/Wav/grab.uexp" 77
+"../../../RebelWars/Content/Sound/SC_Grab.uasset" 78
+"../../../RebelWars/Content/Sound/SC_Grab.uexp" 79
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovReloadDry.uasset" 80
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovReloadDry.uexp" 81
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovReloadDry.uasset" 82
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovReloadDry.uexp" 83
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovReload.uasset" 84
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovReload.uexp" 85
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovReload.uasset" 86
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovReload.uexp" 87
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovFireDry.uasset" 88
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovFireDry.uexp" 89
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovFireDry.uasset" 90
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovFireDry.uexp" 91
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovFire.uasset" 92
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovFire.uexp" 93
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovFire.uasset" 94
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovFire.uexp" 95
+"../../../RebelWars/Content/Sound/Wav/MakarovDeploy.uasset" 96
+"../../../RebelWars/Content/Sound/Wav/MakarovDeploy.uexp" 97
+"../../../RebelWars/Content/Sound/SC_MakarovDeploy.uasset" 98
+"../../../RebelWars/Content/Sound/SC_MakarovDeploy.uexp" 99
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDeploy.uasset" 100
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDeploy.uexp" 101
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovDeploy.uasset" 102
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/AM_MakarovDeploy.uexp" 103
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDefault.uasset" 104
+"../../../RebelWars/Content/Animated/Animation/Weapons/Makarov/ANIM_MakarovDefault.uexp" 105
+"../../../RebelWars/Content/MakarovRecoilCurve.uasset" 106
+"../../../RebelWars/Content/MakarovRecoilCurve.uexp" 107
+"../../../RebelWars/Content/Physics/Weapons/PHYS_Makarov1P.uasset" 108
+"../../../RebelWars/Content/Physics/Weapons/PHYS_Makarov1P.uexp" 109
+"../../../RebelWars/Content/Meshes/Weapons/SK_Makarov1P.uasset" 110
+"../../../RebelWars/Content/Meshes/Weapons/SK_Makarov1P.uexp" 111
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolHipIdle.uasset" 112
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolHipIdle.uexp" 113
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolHipFire.uasset" 114
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolHipFire.uexp" 115
+"../../../RebelWars/Content/Animated/Animation/Rebel/AM_RebelPistolHipFire.uasset" 116
+"../../../RebelWars/Content/Animated/Animation/Rebel/AM_RebelPistolHipFire.uexp" 117
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolReload.uasset" 118
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelPistolReload.uexp" 119
+"../../../RebelWars/Content/Animated/Animation/Rebel/AM_RebelPistolReload.uasset" 120
+"../../../RebelWars/Content/Animated/Animation/Rebel/AM_RebelPistolReload.uexp" 121
+"../../../RebelWars/Content/Blueprints/Items/BP_Makarov.uasset" 122
+"../../../RebelWars/Content/Blueprints/Items/BP_Makarov.uexp" 123
+"../../../RebelWars/Content/Sound/Wav/RemingtonFire.uasset" 124
+"../../../RebelWars/Content/Sound/Wav/RemingtonFire.uexp" 125
+"../../../RebelWars/Content/Sound/SC_RemingtonFire.uasset" 126
+"../../../RebelWars/Content/Sound/SC_RemingtonFire.uexp" 127
+"../../../RebelWars/Content/Textures/Weapons/T_Remington.uasset" 128
+"../../../RebelWars/Content/Textures/Weapons/T_Remington.uexp" 129
+"../../../RebelWars/Content/Textures/Weapons/T_Remington.ubulk" 130
+"../../../RebelWars/Content/Materials/Weapons/M_Remington.uasset" 131
+"../../../RebelWars/Content/Materials/Weapons/M_Remington.uexp" 132
+"../../../RebelWars/Content/Meshes/Weapons/SM_Remington3P.uasset" 133
+"../../../RebelWars/Content/Meshes/Weapons/SM_Remington3P.uexp" 134
+"../../../RebelWars/Content/Textures/T_Shell.uasset" 135
+"../../../RebelWars/Content/Textures/T_Shell.uexp" 136
+"../../../RebelWars/Content/Textures/T_Shell.ubulk" 137
+"../../../RebelWars/Content/Materials/M_Shell.uasset" 138
+"../../../RebelWars/Content/Materials/M_Shell.uexp" 139
+"../../../RebelWars/Content/Meshes/Weapons/SK_Remington1P.uasset" 140
+"../../../RebelWars/Content/Meshes/Weapons/SK_Remington1P.uexp" 141
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonDefault.uasset" 142
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonDefault.uexp" 143
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadStart.uasset" 144
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadStart.uexp" 145
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadStart.uasset" 146
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadStart.uexp" 147
+"../../../RebelWars/Content/Sound/Wav/RemingtopSlideUp.uasset" 148
+"../../../RebelWars/Content/Sound/Wav/RemingtopSlideUp.uexp" 149
+"../../../RebelWars/Content/Sound/SC_RemingtopSlideUp.uasset" 150
+"../../../RebelWars/Content/Sound/SC_RemingtopSlideUp.uexp" 151
+"../../../RebelWars/Content/Sound/Wav/RemingtopSlideDown.uasset" 152
+"../../../RebelWars/Content/Sound/Wav/RemingtopSlideDown.uexp" 153
+"../../../RebelWars/Content/Sound/SC_RemingtopSlideDown.uasset" 154
+"../../../RebelWars/Content/Sound/SC_RemingtopSlideDown.uexp" 155
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadEndDry.uasset" 156
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadEndDry.uexp" 157
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadEndDry.uasset" 158
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadEndDry.uexp" 159
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadEnd.uasset" 160
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReloadEnd.uexp" 161
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadEnd.uasset" 162
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReloadEnd.uexp" 163
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReload.uasset" 164
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonReload.uexp" 165
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReload.uasset" 166
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonReload.uexp" 167
+"../../../RebelWars/Content/Sound/Wav/RemingtonLoadRound.uasset" 168
+"../../../RebelWars/Content/Sound/Wav/RemingtonLoadRound.uexp" 169
+"../../../RebelWars/Content/Sound/SC_RemingtonLoadRound.uasset" 170
+"../../../RebelWars/Content/Sound/SC_RemingtonLoadRound.uexp" 171
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonLoadShell.uasset" 172
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonLoadShell.uexp" 173
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonLoadShell.uasset" 174
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonLoadShell.uexp" 175
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonFire.uasset" 176
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonFire.uexp" 177
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonFire.uasset" 178
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonFire.uexp" 179
+"../../../RebelWars/Content/Sound/Wav/AKDeploy.uasset" 180
+"../../../RebelWars/Content/Sound/Wav/AKDeploy.uexp" 181
+"../../../RebelWars/Content/Sound/SC_AKDeploy.uasset" 182
+"../../../RebelWars/Content/Sound/SC_AKDeploy.uexp" 183
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonDeploy.uasset" 184
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/ANIM_RemingtonDeploy.uexp" 185
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonDeploy.uasset" 186
+"../../../RebelWars/Content/Animated/Animation/Weapons/Remington/AM_RemingtonDeploy.uexp" 187
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleHipIdle.uasset" 188
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleHipIdle.uexp" 189
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleHipFire.uasset" 190
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleHipFire.uexp" 191
+"../../../RebelWars/Content/Animated/Animation/Rebel/AM_RebelRifleHipFire.uasset" 192
+"../../../RebelWars/Content/Animated/Animation/Rebel/AM_RebelRifleHipFire.uexp" 193
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleReload.uasset" 194
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelRifleReload.uexp" 195
+"../../../RebelWars/Content/Animated/Animation/Rebel/AM_RebelRifleReload.uasset" 196
+"../../../RebelWars/Content/Animated/Animation/Rebel/AM_RebelRifleReload.uexp" 197
+"../../../RebelWars/Content/Blueprints/Items/BP_Remington.uasset" 198
+"../../../RebelWars/Content/Blueprints/Items/BP_Remington.uexp" 199
+"../../../RebelWars/Content/AI/BB_Rebel.uasset" 200
+"../../../RebelWars/Content/AI/BB_Rebel.uexp" 201
+"../../../Engine/Content/EditorBlueprintResources/StandardMacros.uasset" 202
+"../../../Engine/Content/EditorBlueprintResources/StandardMacros.uexp" 203
+"../../../RebelWars/Content/AI/EQC_TargetContext.uasset" 204
+"../../../RebelWars/Content/AI/EQC_TargetContext.uexp" 205
+"../../../RebelWars/Content/AI/EQS_KeepDistance.uasset" 206
+"../../../RebelWars/Content/AI/EQS_KeepDistance.uexp" 207
+"../../../RebelWars/Content/AI/EQS_KeepDistanceAndHeight.uasset" 208
+"../../../RebelWars/Content/AI/EQS_KeepDistanceAndHeight.uexp" 209
+"../../../RebelWars/Content/AI/EQS_Push.uasset" 210
+"../../../RebelWars/Content/AI/EQS_Push.uexp" 211
+"../../../RebelWars/Content/AI/EQS_TakeCover.uasset" 212
+"../../../RebelWars/Content/AI/EQS_TakeCover.uexp" 213
+"../../../RebelWars/Content/AI/BT_Rebel.uasset" 214
+"../../../RebelWars/Content/AI/BT_Rebel.uexp" 215
+"../../../RebelWars/Content/Blueprints/Controllers/BP_CombatAIController.uasset" 216
+"../../../RebelWars/Content/Blueprints/Controllers/BP_CombatAIController.uexp" 217
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUpRight.uasset" 218
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUpRight.uexp" 219
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUpLeft.uasset" 220
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUpLeft.uexp" 221
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUp.uasset" 222
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetUp.uexp" 223
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetRight.uasset" 224
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetRight.uexp" 225
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetLeft.uasset" 226
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetLeft.uexp" 227
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetForward.uasset" 228
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetForward.uexp" 229
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDownRight.uasset" 230
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDownRight.uexp" 231
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDownLeft.uasset" 232
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDownLeft.uexp" 233
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDown.uasset" 234
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Pistol/ANIM_RebelPistolAnimOffsetDown.uexp" 235
+"../../../RebelWars/Content/Animated/Animation/Rebel/AO_RebelPistol.uasset" 236
+"../../../RebelWars/Content/Animated/Animation/Rebel/AO_RebelPistol.uexp" 237
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUpRight.uasset" 238
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUpRight.uexp" 239
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUpLeft.uasset" 240
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUpLeft.uexp" 241
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUp.uasset" 242
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetUp.uexp" 243
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetRight.uasset" 244
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetRight.uexp" 245
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetLeft.uasset" 246
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetLeft.uexp" 247
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetForward.uasset" 248
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetForward.uexp" 249
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDownRight.uasset" 250
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDownRight.uexp" 251
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDownLeft.uasset" 252
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDownLeft.uexp" 253
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDown.uasset" 254
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/ANIM_RebelRifleAimOffsetDown.uexp" 255
+"../../../RebelWars/Content/Animated/Animation/Rebel/AO_RebelRifle.uasset" 256
+"../../../RebelWars/Content/Animated/Animation/Rebel/AO_RebelRifle.uexp" 257
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedIdle.uasset" 258
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedIdle.uexp" 259
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTopRight.uasset" 260
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTopRight.uexp" 261
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTopLeft.uasset" 262
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTopLeft.uexp" 263
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTop.uasset" 264
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetTop.uexp" 265
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetRight.uasset" 266
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetRight.uexp" 267
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetLeft.uasset" 268
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetLeft.uexp" 269
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetForward.uasset" 270
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetForward.uexp" 271
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDownRight.uasset" 272
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDownRight.uexp" 273
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDownLeft.uasset" 274
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDownLeft.uexp" 275
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDown.uasset" 276
+"../../../RebelWars/Content/Animated/Animation/Rebel/AimOffset/Unarmed/ANIM_RebelUnarmedAimOffsetDown.uexp" 277
+"../../../RebelWars/Content/Animated/Animation/Rebel/AO_RebelUnarmed.uasset" 278
+"../../../RebelWars/Content/Animated/Animation/Rebel/AO_RebelUnarmed.uexp" 279
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunBackwards.uasset" 280
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunBackwards.uexp" 281
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunForward.uasset" 282
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunForward.uexp" 283
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunLeft.uasset" 284
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunLeft.uexp" 285
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunRight.uasset" 286
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedRunRight.uexp" 287
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedStand.uasset" 288
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedStand.uexp" 289
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkBackwards.uasset" 290
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkBackwards.uexp" 291
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkForward.uasset" 292
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkForward.uexp" 293
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkLeft.uasset" 294
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkLeft.uexp" 295
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkRight.uasset" 296
+"../../../RebelWars/Content/Animated/Animation/Rebel/ANIM_RebelUnarmedWalkRight.uexp" 297
+"../../../RebelWars/Content/Animated/BS_CombatCharacterLocomotion.uasset" 298
+"../../../RebelWars/Content/Animated/BS_CombatCharacterLocomotion.uexp" 299
+"../../../RebelWars/Content/Animated/ABP_CombatCharacter.uasset" 300
+"../../../RebelWars/Content/Animated/ABP_CombatCharacter.uexp" 301
+"../../../RebelWars/Content/Animated/Animation/ANIM_Unarmed.uasset" 302
+"../../../RebelWars/Content/Animated/Animation/ANIM_Unarmed.uexp" 303
+"../../../RebelWars/Content/Animated/ABP_Hands1P.uasset" 304
+"../../../RebelWars/Content/Animated/ABP_Hands1P.uexp" 305
+"../../../RebelWars/Content/Physics/PHYS_Hands1P.uasset" 306
+"../../../RebelWars/Content/Physics/PHYS_Hands1P.uexp" 307
+"../../../RebelWars/Content/Textures/T_Hands1P.uasset" 308
+"../../../RebelWars/Content/Textures/T_Hands1P.uexp" 309
+"../../../RebelWars/Content/Textures/T_Hands1P.ubulk" 310
+"../../../RebelWars/Content/Materials/M_Hand1P.uasset" 311
+"../../../RebelWars/Content/Materials/M_Hand1P.uexp" 312
+"../../../RebelWars/Content/Meshes/SK_Hands1P.uasset" 313
+"../../../RebelWars/Content/Meshes/SK_Hands1P.uexp" 314
+"../../../RebelWars/Content/Blueprints/Characters/BP_CombatCharacter.uasset" 315
+"../../../RebelWars/Content/Blueprints/Characters/BP_CombatCharacter.uexp" 316
+"../../../RebelWars/Content/UI/WBP_WeaponSelection.uasset" 317
+"../../../RebelWars/Content/UI/WBP_WeaponSelection.uexp" 318
+"../../../RebelWars/Content/UI/WBP_Crosshair.uasset" 319
+"../../../RebelWars/Content/UI/WBP_Crosshair.uexp" 320
+"../../../RebelWars/Content/UI/WBP_HUD.uasset" 321
+"../../../RebelWars/Content/UI/WBP_HUD.uexp" 322
+"../../../RebelWars/Content/UI/BP_RWHUD.uasset" 323
+"../../../RebelWars/Content/UI/BP_RWHUD.uexp" 324
+"../../../RebelWars/Content/Blueprints/GameModes/BP_GameModeBase.uasset" 325
+"../../../RebelWars/Content/Blueprints/GameModes/BP_GameModeBase.uexp" 326
+"../../../RebelWars/Content/Textures/Weapons/T_F1.uasset" 327
+"../../../RebelWars/Content/Textures/Weapons/T_F1.uexp" 328
+"../../../RebelWars/Content/Textures/Weapons/T_F1.ubulk" 329
+"../../../RebelWars/Content/Materials/Weapons/M_F1.uasset" 330
+"../../../RebelWars/Content/Materials/Weapons/M_F1.uexp" 331
+"../../../RebelWars/Content/Meshes/Weapons/SM_F1.uasset" 332
+"../../../RebelWars/Content/Meshes/Weapons/SM_F1.uexp" 333
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Engage.uasset" 334
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Engage.uexp" 335
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Engage.uasset" 336
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Engage.uexp" 337
+"../../../RebelWars/Content/Physics/Weapons/PHYS_F11P.uasset" 338
+"../../../RebelWars/Content/Physics/Weapons/PHYS_F11P.uexp" 339
+"../../../RebelWars/Content/Meshes/Weapons/SK_F1.uasset" 340
+"../../../RebelWars/Content/Meshes/Weapons/SK_F1.uexp" 341
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Deploy.uasset" 342
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/ANIM_F1Deploy.uexp" 343
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Deploy.uasset" 344
+"../../../RebelWars/Content/Animated/Animation/Weapons/F1/AM_F1Deploy.uexp" 345
+"../../../RebelWars/Content/Blueprints/Items/BP_F1.uasset" 346
+"../../../RebelWars/Content/Blueprints/Items/BP_F1.uexp" 347
 "../../../Engine/Plugins/FX/Niagara/Content/Enums/Ribbons/ENiagara_UnsetDirectSetRandom.uasset" 348
 "../../../Engine/Plugins/FX/Niagara/Content/Enums/Ribbons/ENiagara_UnsetDirectSetRandom.uexp" 349
 "../../../Engine/Plugins/FX/Niagara/Content/Enums/ENiagaraRandomnessMode.uasset" 350
@@ -382,24 +382,24 @@
 "../../../Engine/Plugins/FX/Niagara/Content/Enums/ENiagaraScaleColorMode.uexp" 381
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Update/Color/ScaleColor.uasset" 382
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Update/Color/ScaleColor.uexp" 383
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformBase.uasset" 384
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformBase.uexp" 385
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformVector.uasset" 386
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformVector.uexp" 387
-"../../../Engine/Plugins/FX/Niagara/Content/Enums/ENiagaraRandomnessEvaluation.uasset" 388
-"../../../Engine/Plugins/FX/Niagara/Content/Enums/ENiagaraRandomnessEvaluation.uexp" 389
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRangeInteger.uasset" 390
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRangeInteger.uexp" 391
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomBool.uasset" 392
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomBool.uexp" 393
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/SimulationPosition.uasset" 394
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/SimulationPosition.uexp" 395
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRangeFloat.uasset" 396
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRangeFloat.uexp" 397
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRange.uasset" 398
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRange.uexp" 399
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/LinearColor/HueShiftLinearColor.uasset" 400
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/LinearColor/HueShiftLinearColor.uexp" 401
+"../../../Engine/Plugins/FX/Niagara/Content/Enums/ENiagaraRandomnessEvaluation.uasset" 384
+"../../../Engine/Plugins/FX/Niagara/Content/Enums/ENiagaraRandomnessEvaluation.uexp" 385
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRangeInteger.uasset" 386
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRangeInteger.uexp" 387
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomBool.uasset" 388
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomBool.uexp" 389
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/SimulationPosition.uasset" 390
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/SimulationPosition.uexp" 391
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRangeFloat.uasset" 392
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRangeFloat.uexp" 393
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRange.uasset" 394
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/V2/CalculateRandomRange.uexp" 395
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/LinearColor/HueShiftLinearColor.uasset" 396
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/LinearColor/HueShiftLinearColor.uexp" 397
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformBase.uasset" 398
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformBase.uexp" 399
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformVector.uasset" 400
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformVector.uexp" 401
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Spawn/Initialization/V2/InitializeParticle.uasset" 402
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Spawn/Initialization/V2/InitializeParticle.uexp" 403
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Emitter/SpawnBurst_Instantaneous.uasset" 404
@@ -412,10 +412,10 @@
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Emitter/EmitterState.uexp" 411
 "../../../Engine/Plugins/FX/Niagara/Content/DynamicInputs/ValueFromCurve/FloatFromCurve.uasset" 412
 "../../../Engine/Plugins/FX/Niagara/Content/DynamicInputs/ValueFromCurve/FloatFromCurve.uexp" 413
-"D:/UE Projects/RebelWars/Content/Textures/FX/T_Muzzleflash1.uasset" 414
-"D:/UE Projects/RebelWars/Content/Textures/FX/T_Muzzleflash1.uexp" 415
-"D:/UE Projects/RebelWars/Content/Materials/FX/M_Muzzleflash1.uasset" 416
-"D:/UE Projects/RebelWars/Content/Materials/FX/M_Muzzleflash1.uexp" 417
+"../../../RebelWars/Content/Textures/FX/T_Muzzleflash1.uasset" 414
+"../../../RebelWars/Content/Textures/FX/T_Muzzleflash1.uexp" 415
+"../../../RebelWars/Content/Materials/FX/M_Muzzleflash1.uasset" 416
+"../../../RebelWars/Content/Materials/FX/M_Muzzleflash1.uexp" 417
 "../../../Engine/Plugins/FX/Niagara/Content/Enums/SpriteRenderer/ENiagara_ScaleSpriteSize.uasset" 418
 "../../../Engine/Plugins/FX/Niagara/Content/Enums/SpriteRenderer/ENiagara_ScaleSpriteSize.uexp" 419
 "../../../Engine/Plugins/FX/Niagara/Content/Enums/ENiagaraTorusMode.uasset" 420
@@ -472,16 +472,16 @@
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Emitter/SpawnRate.uexp" 471
 "../../../Engine/Plugins/FX/Niagara/Content/DefaultAssets/DefaultSpriteMaterial.uasset" 472
 "../../../Engine/Plugins/FX/Niagara/Content/DefaultAssets/DefaultSpriteMaterial.uexp" 473
-"D:/UE Projects/RebelWars/Content/FX/NewNiagaraSystem.uasset" 474
-"D:/UE Projects/RebelWars/Content/FX/NewNiagaraSystem.uexp" 475
+"../../../RebelWars/Content/FX/NewNiagaraSystem.uasset" 474
+"../../../RebelWars/Content/FX/NewNiagaraSystem.uexp" 475
 "../../../Engine/Plugins/FX/Niagara/Content/VectorFields/Assets/TilingCurl32.uasset" 476
 "../../../Engine/Plugins/FX/Niagara/Content/VectorFields/Assets/TilingCurl32.uexp" 477
 "../../../Engine/Plugins/FX/Niagara/Content/Functions/ProjectVectorOnPlane.uasset" 478
 "../../../Engine/Plugins/FX/Niagara/Content/Functions/ProjectVectorOnPlane.uexp" 479
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformPosition.uasset" 480
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformPosition.uexp" 481
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/NormalizeDistanceRange.uasset" 482
-"../../../Engine/Plugins/FX/Niagara/Content/Functions/NormalizeDistanceRange.uexp" 483
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/NormalizeDistanceRange.uasset" 480
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/NormalizeDistanceRange.uexp" 481
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformPosition.uasset" 482
+"../../../Engine/Plugins/FX/Niagara/Content/Functions/Localspace/TransformPosition.uexp" 483
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Update/Forces/VortexForce.uasset" 484
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Update/Forces/VortexForce.uexp" 485
 "../../../Engine/Plugins/FX/Niagara/Content/VectorFields/Assets/TilingCurl64.uasset" 486
@@ -502,28 +502,28 @@
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Update/Forces/GravityForce.uexp" 501
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Update/Forces/Drag.uasset" 502
 "../../../Engine/Plugins/FX/Niagara/Content/Modules/Update/Forces/Drag.uexp" 503
-"D:/UE Projects/RebelWars/Content/FX/NewNiagaraSystem1.uasset" 504
-"D:/UE Projects/RebelWars/Content/FX/NewNiagaraSystem1.uexp" 505
-"D:/UE Projects/RebelWars/Content/Materials/FX/SM_Muzzleflash1.uasset" 506
-"D:/UE Projects/RebelWars/Content/Materials/FX/SM_Muzzleflash1.uexp" 507
-"D:/UE Projects/RebelWars/Content/FX/PS_MuzzleflashAk.uasset" 508
-"D:/UE Projects/RebelWars/Content/FX/PS_MuzzleflashAk.uexp" 509
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_AK3P.uasset" 510
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_AK3P.uexp" 511
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_AK3P.uasset" 512
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_AK3P.uexp" 513
-"D:/UE Projects/RebelWars/Content/Physics/Weapons/PHYS_Remington1P.uasset" 514
-"D:/UE Projects/RebelWars/Content/Physics/Weapons/PHYS_Remington1P.uexp" 515
-"D:/UE Projects/RebelWars/Content/Sound/Wav/drop_heavy_weapon.uasset" 516
-"D:/UE Projects/RebelWars/Content/Sound/Wav/drop_heavy_weapon.uexp" 517
-"D:/UE Projects/RebelWars/Content/UI/MainMenu/WBP_Options.uasset" 518
-"D:/UE Projects/RebelWars/Content/UI/MainMenu/WBP_Options.uexp" 519
-"D:/UE Projects/RebelWars/Content/UI/WBP_TeamSelect.uasset" 520
-"D:/UE Projects/RebelWars/Content/UI/WBP_TeamSelect.uexp" 521
-"D:/UE Projects/RebelWars/Content/UI/WBP_InGameMenu.uasset" 522
-"D:/UE Projects/RebelWars/Content/UI/WBP_InGameMenu.uexp" 523
-"D:/UE Projects/RebelWars/Content/UI/MainMenu/WBP_StartGame.uasset" 524
-"D:/UE Projects/RebelWars/Content/UI/MainMenu/WBP_StartGame.uexp" 525
+"../../../RebelWars/Content/FX/NewNiagaraSystem1.uasset" 504
+"../../../RebelWars/Content/FX/NewNiagaraSystem1.uexp" 505
+"../../../RebelWars/Content/Materials/FX/SM_Muzzleflash1.uasset" 506
+"../../../RebelWars/Content/Materials/FX/SM_Muzzleflash1.uexp" 507
+"../../../RebelWars/Content/FX/PS_MuzzleflashAk.uasset" 508
+"../../../RebelWars/Content/FX/PS_MuzzleflashAk.uexp" 509
+"../../../RebelWars/Content/Textures/Weapons/T_AK3P.uasset" 510
+"../../../RebelWars/Content/Textures/Weapons/T_AK3P.uexp" 511
+"../../../RebelWars/Content/Materials/Weapons/M_AK3P.uasset" 512
+"../../../RebelWars/Content/Materials/Weapons/M_AK3P.uexp" 513
+"../../../RebelWars/Content/Physics/Weapons/PHYS_Remington1P.uasset" 514
+"../../../RebelWars/Content/Physics/Weapons/PHYS_Remington1P.uexp" 515
+"../../../RebelWars/Content/Sound/Wav/drop_heavy_weapon.uasset" 516
+"../../../RebelWars/Content/Sound/Wav/drop_heavy_weapon.uexp" 517
+"../../../RebelWars/Content/UI/MainMenu/WBP_Options.uasset" 518
+"../../../RebelWars/Content/UI/MainMenu/WBP_Options.uexp" 519
+"../../../RebelWars/Content/UI/WBP_TeamSelect.uasset" 520
+"../../../RebelWars/Content/UI/WBP_TeamSelect.uexp" 521
+"../../../RebelWars/Content/UI/WBP_InGameMenu.uasset" 522
+"../../../RebelWars/Content/UI/WBP_InGameMenu.uexp" 523
+"../../../RebelWars/Content/UI/MainMenu/WBP_StartGame.uasset" 524
+"../../../RebelWars/Content/UI/MainMenu/WBP_StartGame.uexp" 525
 "../../../Engine/Content/EngineFonts/Faces/RobotoRegular.uasset" 526
 "../../../Engine/Content/EngineFonts/Faces/RobotoRegular.uexp" 527
 "../../../Engine/Content/EngineFonts/Faces/RobotoRegular.ufont" 528
@@ -544,15 +544,15 @@
 "../../../Engine/Content/EngineFonts/Faces/DroidSansFallback.ufont" 543
 "../../../Engine/Content/EngineFonts/Roboto.uasset" 544
 "../../../Engine/Content/EngineFonts/Roboto.uexp" 545
-"D:/UE Projects/RebelWars/Content/Fonts/armalite.uasset" 546
-"D:/UE Projects/RebelWars/Content/Fonts/armalite.uexp" 547
-"D:/UE Projects/RebelWars/Content/Fonts/armalite.ufont" 548
-"D:/UE Projects/RebelWars/Content/Fonts/ArmaliteFont.uasset" 549
-"D:/UE Projects/RebelWars/Content/Fonts/ArmaliteFont.uexp" 550
-"D:/UE Projects/RebelWars/Content/UI/MainMenu/WBP_MainMenu.uasset" 551
-"D:/UE Projects/RebelWars/Content/UI/MainMenu/WBP_MainMenu.uexp" 552
-"D:/UE Projects/RebelWars/Content/UI/GameScreens.uasset" 553
-"D:/UE Projects/RebelWars/Content/UI/GameScreens.uexp" 554
+"../../../RebelWars/Content/Fonts/armalite.uasset" 546
+"../../../RebelWars/Content/Fonts/armalite.uexp" 547
+"../../../RebelWars/Content/Fonts/armalite.ufont" 548
+"../../../RebelWars/Content/Fonts/ArmaliteFont.uasset" 549
+"../../../RebelWars/Content/Fonts/ArmaliteFont.uexp" 550
+"../../../RebelWars/Content/UI/MainMenu/WBP_MainMenu.uasset" 551
+"../../../RebelWars/Content/UI/MainMenu/WBP_MainMenu.uexp" 552
+"../../../RebelWars/Content/UI/GameScreens.uasset" 553
+"../../../RebelWars/Content/UI/GameScreens.uexp" 554
 "../../../Engine/Content/EngineMaterials/T_Default_Material_Grid_N.uasset" 555
 "../../../Engine/Content/EngineMaterials/T_Default_Material_Grid_N.uexp" 556
 "../../../Engine/Content/EngineMaterials/T_Default_Material_Grid_N.ubulk" 557
@@ -920,10 +920,10 @@
 "../../../Engine/Plugins/Editor/SpeedTreeImporter/Content/SpeedTree9/SpeedTreeCameraFacing.uexp" 919
 "../../../Engine/Plugins/Editor/SpeedTreeImporter/Content/SpeedTree9/SpeedTreeMaster.uasset" 920
 "../../../Engine/Plugins/Editor/SpeedTreeImporter/Content/SpeedTree9/SpeedTreeMaster.uexp" 921
-"../../../Engine/Content/BasicShapes/Cylinder.uasset" 922
-"../../../Engine/Content/BasicShapes/Cylinder.uexp" 923
-"../../../Engine/Content/ArtTools/RenderToTexture/Materials/Debug/M_Emissive_Color.uasset" 924
-"../../../Engine/Content/ArtTools/RenderToTexture/Materials/Debug/M_Emissive_Color.uexp" 925
+"../../../Engine/Content/ArtTools/RenderToTexture/Materials/Debug/M_Emissive_Color.uasset" 922
+"../../../Engine/Content/ArtTools/RenderToTexture/Materials/Debug/M_Emissive_Color.uexp" 923
+"../../../Engine/Content/BasicShapes/Cylinder.uasset" 924
+"../../../Engine/Content/BasicShapes/Cylinder.uexp" 925
 "../../../Engine/Plugins/Lumin/MagicLeapPassableWorld/Content/MagicLeapARPinInfoActor.uasset" 926
 "../../../Engine/Plugins/Lumin/MagicLeapPassableWorld/Content/MagicLeapARPinInfoActor.uexp" 927
 "../../../Engine/Content/Functions/Engine_MaterialFunctions02/Utility/BreakOutFloat4Components.uasset" 928
@@ -959,72 +959,72 @@
 "../../../Engine/Plugins/Runtime/Oculus/OculusVR/Content/Meshes/RightTouchController.uexp" 958
 "../../../Engine/Plugins/Runtime/Oculus/OculusVR/Content/Meshes/RightTouchForQuestRiftSController.uasset" 959
 "../../../Engine/Plugins/Runtime/Oculus/OculusVR/Content/Meshes/RightTouchForQuestRiftSController.uexp" 960
-"../../../Engine/Content/BasicShapes/Cube.uasset" 961
-"../../../Engine/Content/BasicShapes/Cube.uexp" 962
-"../../../Engine/Content/BasicShapes/BasicShapeMaterial.uasset" 963
-"../../../Engine/Content/BasicShapes/BasicShapeMaterial.uexp" 964
-"D:/UE Projects/RebelWars/Content/Blueprints/Player/BP_PlayerStart.uasset" 965
-"D:/UE Projects/RebelWars/Content/Blueprints/Player/BP_PlayerStart.uexp" 966
-"D:/UE Projects/RebelWars/Content/Levels/DesertVillage.uexp" 967
-"D:/UE Projects/RebelWars/Content/Levels/DesertVillage.umap" 968
-"D:/UE Projects/RebelWars/Content/Blueprints/GameModes/BP_GameModeMainMenu.uasset" 969
-"D:/UE Projects/RebelWars/Content/Blueprints/GameModes/BP_GameModeMainMenu.uexp" 970
-"D:/UE Projects/RebelWars/Content/Levels/MainMenu.uexp" 971
-"D:/UE Projects/RebelWars/Content/Levels/MainMenu.umap" 972
-"D:/UE Projects/RebelWars/Content/Levels/Sandbox_BuiltData.uasset" 973
-"D:/UE Projects/RebelWars/Content/Levels/Sandbox_BuiltData.uexp" 974
-"D:/UE Projects/RebelWars/Content/Levels/Sandbox_BuiltData.ubulk" 975
-"D:/UE Projects/RebelWars/Content/Sound/Wav/ak_shot.uasset" 976
-"D:/UE Projects/RebelWars/Content/Sound/Wav/ak_shot.uexp" 977
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKShot.uasset" 978
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKShot.uexp" 979
-"D:/UE Projects/RebelWars/Content/Physics/Weapons/PHYS_AK1P.uasset" 980
-"D:/UE Projects/RebelWars/Content/Physics/Weapons/PHYS_AK1P.uexp" 981
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_AK1P.uasset" 982
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_AK1P.uexp" 983
-"D:/UE Projects/RebelWars/Content/Textures/Weapons/T_AK1P.ubulk" 984
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_AK1P.uasset" 985
-"D:/UE Projects/RebelWars/Content/Materials/Weapons/M_AK1P.uexp" 986
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SK_AK1P.uasset" 987
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SK_AK1P.uexp" 988
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKDefault.uasset" 989
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKDefault.uexp" 990
-"D:/UE Projects/RebelWars/Content/Sound/Wav/ak_slide.uasset" 991
-"D:/UE Projects/RebelWars/Content/Sound/Wav/ak_slide.uexp" 992
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKSlide.uasset" 993
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKSlide.uexp" 994
-"D:/UE Projects/RebelWars/Content/Sound/Wav/ak_mag_takeout.uasset" 995
-"D:/UE Projects/RebelWars/Content/Sound/Wav/ak_mag_takeout.uexp" 996
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKMagTakeout.uasset" 997
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKMagTakeout.uexp" 998
-"D:/UE Projects/RebelWars/Content/Sound/Wav/ak_mag_insert.uasset" 999
-"D:/UE Projects/RebelWars/Content/Sound/Wav/ak_mag_insert.uexp" 1000
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKMagInsert.uasset" 1001
-"D:/UE Projects/RebelWars/Content/Sound/SC_AKMagInsert.uexp" 1002
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKReloadDry.uasset" 1003
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKReloadDry.uexp" 1004
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKReloadDry.uasset" 1005
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKReloadDry.uexp" 1006
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKReload.uasset" 1007
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKReload.uexp" 1008
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKReload.uasset" 1009
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKReload.uexp" 1010
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKFire.uasset" 1011
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKFire.uexp" 1012
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKFire.uasset" 1013
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKFire.uexp" 1014
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKDeploy.uasset" 1015
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKDeploy.uexp" 1016
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKDeploy.uasset" 1017
-"D:/UE Projects/RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKDeploy.uexp" 1018
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SM_AK3P.uasset" 1019
-"D:/UE Projects/RebelWars/Content/Meshes/Weapons/SM_AK3P.uexp" 1020
-"D:/UE Projects/RebelWars/Content/AKMRecoilCurve.uasset" 1021
-"D:/UE Projects/RebelWars/Content/AKMRecoilCurve.uexp" 1022
-"D:/UE Projects/RebelWars/Content/Blueprints/Items/BP_AK.uasset" 1023
-"D:/UE Projects/RebelWars/Content/Blueprints/Items/BP_AK.uexp" 1024
-"D:/UE Projects/RebelWars/Content/Levels/Sandbox.uexp" 1025
-"D:/UE Projects/RebelWars/Content/Levels/Sandbox.umap" 1026
+"../../../RebelWars/Content/Blueprints/Player/BP_PlayerStart.uasset" 961
+"../../../RebelWars/Content/Blueprints/Player/BP_PlayerStart.uexp" 962
+"../../../Engine/Content/BasicShapes/Cube.uasset" 963
+"../../../Engine/Content/BasicShapes/Cube.uexp" 964
+"../../../Engine/Content/BasicShapes/BasicShapeMaterial.uasset" 965
+"../../../Engine/Content/BasicShapes/BasicShapeMaterial.uexp" 966
+"../../../RebelWars/Content/Levels/DesertVillage.uexp" 967
+"../../../RebelWars/Content/Levels/DesertVillage.umap" 968
+"../../../RebelWars/Content/Blueprints/GameModes/BP_GameModeMainMenu.uasset" 969
+"../../../RebelWars/Content/Blueprints/GameModes/BP_GameModeMainMenu.uexp" 970
+"../../../RebelWars/Content/Levels/MainMenu.uexp" 971
+"../../../RebelWars/Content/Levels/MainMenu.umap" 972
+"../../../RebelWars/Content/Sound/Wav/ak_shot.uasset" 973
+"../../../RebelWars/Content/Sound/Wav/ak_shot.uexp" 974
+"../../../RebelWars/Content/Sound/SC_AKShot.uasset" 975
+"../../../RebelWars/Content/Sound/SC_AKShot.uexp" 976
+"../../../RebelWars/Content/Physics/Weapons/PHYS_AK1P.uasset" 977
+"../../../RebelWars/Content/Physics/Weapons/PHYS_AK1P.uexp" 978
+"../../../RebelWars/Content/Textures/Weapons/T_AK1P.uasset" 979
+"../../../RebelWars/Content/Textures/Weapons/T_AK1P.uexp" 980
+"../../../RebelWars/Content/Textures/Weapons/T_AK1P.ubulk" 981
+"../../../RebelWars/Content/Materials/Weapons/M_AK1P.uasset" 982
+"../../../RebelWars/Content/Materials/Weapons/M_AK1P.uexp" 983
+"../../../RebelWars/Content/Meshes/Weapons/SK_AK1P.uasset" 984
+"../../../RebelWars/Content/Meshes/Weapons/SK_AK1P.uexp" 985
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKDefault.uasset" 986
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKDefault.uexp" 987
+"../../../RebelWars/Content/Sound/Wav/ak_slide.uasset" 988
+"../../../RebelWars/Content/Sound/Wav/ak_slide.uexp" 989
+"../../../RebelWars/Content/Sound/SC_AKSlide.uasset" 990
+"../../../RebelWars/Content/Sound/SC_AKSlide.uexp" 991
+"../../../RebelWars/Content/Sound/Wav/ak_mag_takeout.uasset" 992
+"../../../RebelWars/Content/Sound/Wav/ak_mag_takeout.uexp" 993
+"../../../RebelWars/Content/Sound/SC_AKMagTakeout.uasset" 994
+"../../../RebelWars/Content/Sound/SC_AKMagTakeout.uexp" 995
+"../../../RebelWars/Content/Sound/Wav/ak_mag_insert.uasset" 996
+"../../../RebelWars/Content/Sound/Wav/ak_mag_insert.uexp" 997
+"../../../RebelWars/Content/Sound/SC_AKMagInsert.uasset" 998
+"../../../RebelWars/Content/Sound/SC_AKMagInsert.uexp" 999
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKReloadDry.uasset" 1000
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKReloadDry.uexp" 1001
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKReloadDry.uasset" 1002
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKReloadDry.uexp" 1003
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKReload.uasset" 1004
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKReload.uexp" 1005
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKReload.uasset" 1006
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKReload.uexp" 1007
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKFire.uasset" 1008
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKFire.uexp" 1009
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKFire.uasset" 1010
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKFire.uexp" 1011
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKDeploy.uasset" 1012
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/ANIM_AKDeploy.uexp" 1013
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKDeploy.uasset" 1014
+"../../../RebelWars/Content/Animated/Animation/Weapons/AK/AM_AKDeploy.uexp" 1015
+"../../../RebelWars/Content/AKMRecoilCurve.uasset" 1016
+"../../../RebelWars/Content/AKMRecoilCurve.uexp" 1017
+"../../../RebelWars/Content/Meshes/Weapons/SM_AK3P.uasset" 1018
+"../../../RebelWars/Content/Meshes/Weapons/SM_AK3P.uexp" 1019
+"../../../RebelWars/Content/Blueprints/Items/BP_AK.uasset" 1020
+"../../../RebelWars/Content/Blueprints/Items/BP_AK.uexp" 1021
+"../../../RebelWars/Content/Levels/Sandbox_BuiltData.uasset" 1022
+"../../../RebelWars/Content/Levels/Sandbox_BuiltData.uexp" 1023
+"../../../RebelWars/Content/Levels/Sandbox_BuiltData.ubulk" 1024
+"../../../RebelWars/Content/Levels/Sandbox.uexp" 1025
+"../../../RebelWars/Content/Levels/Sandbox.umap" 1026
 "../../../Engine/Content/Maps/Entry_BuiltData.uasset" 1027
 "../../../Engine/Content/Maps/Entry_BuiltData.uexp" 1028
 "../../../Engine/Content/Maps/Entry.uexp" 1029

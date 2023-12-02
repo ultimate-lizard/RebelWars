@@ -37,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ToggleScreen(UUserWidget* GameScreenWidget);
 
+	UFUNCTION(BlueprintCallable, Category = "Team")
+	void RequestTeamSwitch(EAffiliation NewTeam);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera")
 	FVector DeathCameraOffsetLocation;
 
@@ -44,18 +47,25 @@ public:
 	FRotator DeathCameraOffsetRotation;
 
 protected:
-	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetSpectatorPawn(ASpectatorPawn* NewSpectatorPawn) override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void InitPlayerState() override;
 	virtual void SetupInputComponent() override;
 	virtual void BeginSpectatingState() override;
+	virtual void BeginPlayingState() override;
 
 	virtual void ClientSetSpectatorWaiting_Implementation(bool bWaiting) override;
 
 	bool GetHUDPendingVisibility();
 	void UpdateHUDVisibility();
 
+	UFUNCTION(Server, Reliable)
+	virtual void ServerRequestTeamSwitch(EAffiliation NewTeam);
+	virtual void ServerRequestTeamSwitch_Implementation(EAffiliation NewTeam);
+
 	FVector CurrentDeathCameraLocation;
+
+private:
+	UUserWidget* InGameMenuWidget;
+	UUserWidget* TeamSelectWidget;
 };
