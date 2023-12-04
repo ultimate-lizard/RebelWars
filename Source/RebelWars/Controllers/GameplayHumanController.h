@@ -28,6 +28,8 @@ public:
 
 	ARWPlayerCameraManager* GetRWPlayerCameraManager() const;
 
+	virtual void EndSpectatingOnly();
+
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ToggleInGameMenu();
 
@@ -54,10 +56,12 @@ protected:
 	virtual void BeginSpectatingState() override;
 	virtual void BeginPlayingState() override;
 
-	virtual void ClientSetSpectatorWaiting_Implementation(bool bWaiting) override;
+	virtual void OnRep_Pawn() override;
+	virtual void OnRep_PlayerState() override;
 
 	bool GetHUDPendingVisibility();
 	void UpdateHUDVisibility();
+	void InitWidgets();
 
 	UFUNCTION(Server, Reliable)
 	virtual void ServerRequestTeamSwitch(EAffiliation NewTeam);

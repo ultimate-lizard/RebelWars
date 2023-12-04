@@ -4,6 +4,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/RWPlayerCameraManager.h"
+#include "Player/RWPlayerState.h"
 #include "GameFramework/SpectatorPawn.h"
 #include "GameFramework/PlayerState.h"
 #include "UI/GameWidgetsData.h"
@@ -32,9 +33,9 @@ void AGameplayHumanController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!IsLocalController())
+	if (IsLocalController() && HasAuthority())
 	{
-		return;
+		InitWidgets();
 	}
 }
 
@@ -59,6 +60,14 @@ FRotator AGameplayHumanController::GetCurrentViewPunchAngle() const
 ARWPlayerCameraManager* AGameplayHumanController::GetRWPlayerCameraManager() const
 {
 	return Cast<ARWPlayerCameraManager>(PlayerCameraManager);
+}
+
+void AGameplayHumanController::EndSpectatingOnly()
+{
+	bPlayerIsWaiting = true; // Can't spawn, we are only allowed to be a spectator.
+	PlayerState->SetIsOnlyASpectator(false);
+	PlayerState->SetIsSpectator(false);
+	ChangeState(NAME_Playing);
 }
 
 void AGameplayHumanController::Tick(float DeltaTime)
@@ -124,27 +133,10 @@ void AGameplayHumanController::BeginSpectatingState()
 		return;
 	}
 
-	if (URWGameInstance* RWGameInstance = GetGameInstance<URWGameInstance>())
-	{
-		InGameMenuWidget = RWGameInstance->FindGameWidget(GameScreens::InGameMenu);
-		if (InGameMenuWidget)
-		{
-			InGameMenuWidget->AddToViewport();
-			InGameMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-		}
-
-		TeamSelectWidget = RWGameInstance->FindGameWidget(GameScreens::TeamSelect);
-		if (TeamSelectWidget)
-		{
-			TeamSelectWidget->AddToViewport();
-			TeamSelectWidget->SetVisibility(ESlateVisibility::Collapsed);
-		}
-	}
-
 	UpdateHUDVisibility();
 
 	// TODO: Add precoutions
-	ToggleTeamSelect();
+	// ToggleTeamSelect();
 }
 
 void AGameplayHumanController::BeginPlayingState()
@@ -154,9 +146,28 @@ void AGameplayHumanController::BeginPlayingState()
 	UpdateHUDVisibility();
 }
 
-void AGameplayHumanController::ClientSetSpectatorWaiting_Implementation(bool bWaiting)
+void AGameplayHumanController::OnRep_Pawn()
 {
-	Super::ClientSetSpectatorWaiting_Implementation(bWaiting);
+	Super::OnRep_Pawn();
+
+	if (GetPawn() == nullptr)
+	{
+		StartSpectatingOnly();
+	}
+	else
+	{
+		if (GetStateName() == NAME_Spectating)
+		{
+			EndSpectatingOnly();
+		}
+	}
+}
+
+void AGameplayHumanController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitWidgets();
 }
 
 bool AGameplayHumanController::GetHUDPendingVisibility()
@@ -190,6 +201,26 @@ void AGameplayHumanController::UpdateHUDVisibility()
 	if (ARWHUD* RWHUD = GetHUD<ARWHUD>())
 	{
 		RWHUD->SetHUDWidgetVisibility(GetHUDPendingVisibility());
+	}
+}
+
+void AGameplayHumanController::InitWidgets()
+{
+	if (URWGameInstance* RWGameInstance = GetGameInstance<URWGameInstance>())
+	{
+		InGameMenuWidget = RWGameInstance->FindGameWidget(GameScreens::InGameMenu);
+		if (InGameMenuWidget)
+		{
+			InGameMenuWidget->AddToViewport();
+			InGameMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+
+		TeamSelectWidget = RWGameInstance->FindGameWidget(GameScreens::TeamSelect);
+		if (TeamSelectWidget)
+		{
+			TeamSelectWidget->AddToViewport();
+			TeamSelectWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
 	}
 }
 

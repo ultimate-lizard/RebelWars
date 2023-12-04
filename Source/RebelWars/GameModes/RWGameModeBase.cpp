@@ -160,13 +160,13 @@ void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, *FString::Printf(TEXT("Player %s has joined team %i"), *PlayerState->GetPlayerName(), Team));
 
-	APlayerController* PlayerStateController = nullptr;
+	AGameplayHumanController* PlayerStateController = nullptr;
 	for (FConstPlayerControllerIterator Iterator = GetWorld()->GetPlayerControllerIterator(); Iterator; ++Iterator)
 	{
 		APlayerController* PlayerController = Iterator->Get();
 		if (PlayerController->GetPlayerState<ARWPlayerState>() == PlayerState)
 		{
-			PlayerStateController = PlayerController;
+			PlayerStateController = Cast<AGameplayHumanController>(PlayerController);
 		}
 	}
 
@@ -179,7 +179,7 @@ void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
 			// Kill
 			PlayerPawn->SetHealth(0.0f);
 			PlayerPawn->BroadcastBecomeRagdoll();
-			PlayerStateController->ServerSetSpectatorLocation(PlayerPawn->GetActorLocation(), PlayerPawn->GetActorRotation());
+			// PlayerStateController->ServerSetSpectatorLocation(PlayerPawn->GetActorLocation(), PlayerPawn->GetActorRotation());
 		}
 	}
 
@@ -187,8 +187,9 @@ void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
 	{
 		if (PlayerStateController)
 		{
-			PlayerStateController->ChangeState(NAME_Spectating);
-			PlayerStateController->ClientGotoState(NAME_Spectating);
+			//PlayerStateController->ChangeState(NAME_Spectating);
+			//PlayerStateController->ClientGotoState(NAME_Spectating);
+			PlayerStateController->StartSpectatingOnly();
 			if (FTimerHandle* RespawnTimer = RespawnTimers.Find(PlayerState->GetPlayerId()))
 			{
 				RespawnTimer->Invalidate();
@@ -200,6 +201,7 @@ void ARWGameModeBase::JoinTeam(ARWPlayerState* PlayerState, EAffiliation Team)
 	{
 		if (!PlayerStateController->GetPawn())
 		{
+			PlayerStateController->EndSpectatingOnly();
 			RestartPlayer(PlayerStateController);
 			PlayerPawn = PlayerState->GetPawn<ACombatCharacter>();
 		}
